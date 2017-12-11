@@ -40,6 +40,7 @@ private_key_path="/home/ubuntu/is540pf.pem"
 identity_db_host="db2.wso2.com"
 identity_db_username="root"
 identity_db_password="root123"
+identity_db_name="identity_db"
 
 output_home="/home/ubuntu/output"
 output_directory=$output_home/$scenario
@@ -53,6 +54,8 @@ for concurrency in "${concurencies[@]}"
 do
 	#echo $concurency
 	echo "=========================== CONCURRENCY LEVEL: $concurrency started ============================"
+	echo "Cleaning the database....."
+	mysql -u $identity_db_username -p$identity_db_password -h $identity_db_host $identity_db_name < setup/clean-database.sql
 	echo "Initial MySQLSlap"
 	sudo mysqlslap --user=$identity_db_username --password=$identity_db_password --host=$identity_db_host --concurrency=50 --iterations=10 --auto-generate-sql --verbose >> $output_directory/mySQLSlap_$concurrency.log
 	#carbon_home="/home/ubuntu/is_540/wso2is-5.4.0-beta"
@@ -95,6 +98,8 @@ ENDSSH2
 	echo "Copying SAR logs from Identity Server...."
 	scp -i $private_key_path $is_540_host_username@$is_540_host:~/sar_$scenario$concurrency.log $output_directory/sar_log_$concurrency.log
 
+	echo "Cleaning the database....."
+	mysql -u $identity_db_username -p$identity_db_password -h $identity_db_host $identity_db_name < setup/clean-database.sql
 
 	echo "=========================== CONCURRENCY LEVEL: $concurrency ended ============================"
 done

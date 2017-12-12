@@ -31,7 +31,7 @@ time_to_run=10800
 is_540_host="idp.wso2.com"
 is_540_host_username="ubuntu"
 
-carbon_home="/home/ubuntu/is_540/wso2is-5.4.0-beta"
+carbon_home="/home/ubuntu/is_540/wso2is-5.4.0"
 java_home="/home/ubuntu/software/jdk1.8.0_144"
 jmeter_home="/home/ubuntu/software/apache-jmeter-3.3"
 output_directory="/home/ubuntu/output"
@@ -49,7 +49,7 @@ mkdir -p $output_directory
 #echo $scenario
 #echo $script_location
 echo "************************ Start Performance test for $scenario using script: $script_location ***************************************"
-concurencies=(100 200 300 400 1000)  
+concurencies=(100 200 300 400 500)
 for concurrency in "${concurencies[@]}"
 do
 	#echo $concurency

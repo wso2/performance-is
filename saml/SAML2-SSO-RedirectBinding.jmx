@@ -25,7 +25,7 @@
           </elementProp>
           <elementProp name="timeToRun" elementType="Argument">
             <stringProp name="Argument.name">timeToRun</stringProp>
-            <stringProp name="Argument.value">${__P(time,,3600)}</stringProp>
+            <stringProp name="Argument.value">${__P(time)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -92,7 +92,7 @@
         <longProp name="ThreadGroup.start_time">1513058215000</longProp>
         <longProp name="ThreadGroup.end_time">1513058215000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">3600</stringProp>
+        <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
         <stringProp name="ThreadGroup.delay">10</stringProp>
       </ThreadGroup>
       <hashTree>

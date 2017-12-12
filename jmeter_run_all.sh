@@ -73,7 +73,7 @@ do
 		sudo service sysstat restart
 		echo "************** starting identity server ***************"
 		sh $carbon_home/bin/wso2server.sh restart
-		sleep 200
+		sleep 100
 		echo "************** finished starting identity server *******************"
 		exit
 ENDSSH

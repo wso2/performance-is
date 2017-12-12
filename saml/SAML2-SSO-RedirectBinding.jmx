@@ -23,6 +23,11 @@
             <stringProp name="Argument.value">1000000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="timeToRun" elementType="Argument">
+            <stringProp name="Argument.name">timeToRun</stringProp>
+            <stringProp name="Argument.value">${__P(time,,3600)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -70,7 +75,7 @@
           </elementProp>
           <elementProp name="SAMLRequest" elementType="Argument">
             <stringProp name="Argument.name">SAMLRequest</stringProp>
-            <stringProp name="Argument.value">nZPdbtswDIVfxdC9%2F5IUTYXYRZagWIBu8xJ3F7vTFKbRIEueSKfp20%2B2k80Y2iDYrUgeHn6kZvfHSgcHcKisyVgaJSwAI%2B1WmeeMPZUP4ZTd5zMUla75vKG9WcOvBpACX2eQd4GMNc5wK1AhN6IC5CT5Zv7pkY%2BihNfOkpVWs2COCI58o4U12FTgNuAOSsLT%2BjFje6Kax7G2Uui9ReLTZJrE5MQB%2FJui10jaKt7bCqKfWLNg6U0oI6jz3Rajr1Z4M0kiJarIumd%2BN5mM49YhomXBg3USuhEythMagQWrZcb8wCssBKI6wN8AYgMrgyQMZWyUpLdhMg3HaZnc8fGE36TRbZp8Z0Fxmu2DMj2xSyB%2B9EnIP5ZlERZfNiULvp3J%2BwR25tx1d9cTFmeuLP%2BH1yweKvb6o5p%2F9hKrZWG1kq%2BDNqPrN6m1fVk4EOSZkWugw1sJuizQvqhtuOtSed3OjgSGWLApWk9fG6HVToHLWO%2BYxX88n%2B4Ott0K%2FQURHOm%2FzC9sVQunsMUORyHpBJ4PlRfaU13DbtDh6iVcTJNcttL%2BuT26F%2Bu27RGB9JOVThisraN%2BbW%2F6yfvYe0Dy88aHfzX%2FDQ%3D%3D</stringProp>
+            <stringProp name="Argument.value">nZNRj9owDMe%2FSpV32lKYjosoJwY6Dem2ddC7h71lwYxMadLFLnDffkkLWzXtENprbP%2F998%2FO9OFU6egADpU1ORvGKYvASLtV5nvOnsvHwYQ9zKYoKl3zeUN7s4afDSBFvs4gbwM5a5zhVqBCbkQFyEnyzfzjE8%2FilNfOkpVWs2iOCI58o4U12FTgNuAOSsLz%2Bilne6KaJ4m2Uui9ReKTdJIm5MQB%2FJui11jaKtnbCuIfWLNo6U0oI6j1HYrRV6ttHR%2FRZiGX34%2FHoyQYRLQserROQjtBznZCI7BotcyZn3eFhUBUB%2FgTQGxgZZCEoZxl6fBukE4Go2GZ3vPRmL8bxnfD9CuLivNo75XpgF3j8K1LQv6hLItB8XlTsujlAt4nsAvmtru7HbC4YGWzv3BNk75ip5%2FV%2FJOXWC0Lq5V87bXJbl%2Bk1va4cCDIMyPXQIu3EnRdILyo7WDXpvI6zI4Ehli0KYKnL43QaqfA5axzzJLfns9nB9t2hf6ACE70X%2BYXtqqFUxiww0lIOoPnfeWF9lTXsOt1uHkJV9Mkl0HaP4ejO1q3DUcE0k9WOmGwto66tf3Tz6yLvQVkdtl4%2F6vOfgE%3D</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -87,7 +92,7 @@
         <longProp name="ThreadGroup.start_time">1363247040000</longProp>
         <longProp name="ThreadGroup.end_time">1363247040000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">3600</stringProp>
+        <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
         <stringProp name="ThreadGroup.delay">10</stringProp>
       </ThreadGroup>
       <hashTree>

@@ -55,7 +55,7 @@
           </elementProp>
           <elementProp name="SAMLRequest" elementType="Argument">
             <stringProp name="Argument.name">SAMLRequest</stringProp>
-            <stringProp name="Argument.value">nVPbjtowEP2VyO%2B5wi6sRVhR0KpI2zaFbB%2F65pqhuErs1DMBtl9fO4EWVS1CfZ0ZnzmX8eTxWFfBHiwqo3OWRgkLQEuzUfprzl7Kp3DMHqcTFHXV8FlLO72C7y0gBe6dRt41ctZazY1AhVyLGpCT5OvZu2eeRQlvrCEjTcWCGSJYcovmRmNbg12D3SsJL6vnnO2IGh7HILPwbhim96MwHd%2BHaTaIpKmbliBMI1GLH0aLA%2FoaHyfjJCYr9lAZqejVF%2BOdqSH6hg0LFo6l0oI6YR4dHbzaNNEBTdYBPAyHg9grQDQseDJWQicxZ1tRIbBguciZM2SJhUBUe%2FjdQGxhqZGEppxlSToKk3E4SMvkgQ%2BG%2FC6NRmnymQXFSfsbpXtHrxn1pR9C%2FrYsi7D4sC5Z8OmcjBtg5xy67fb2BMTZdzb9w65JfInY42cNf%2B8glovCVEq%2BXqzJbk%2B6qsxhbkGQ84xsC529taDrAL6iNuG2G%2BWN144EmliwLjynj62o1FaBzVnPmMW%2FOJ%2FuEjZdhO7CCI70X%2BTn7t6EVehth6OQdDKeXyLPK%2BfqCrYXG24O4eqY5NJDu7I%2FuoOxG39EIJ2y0gqNjbHUx%2FZXPtO%2B9y9DpufEL%2F%2Fy9Cc%3D</stringProp>
+            <stringProp name="Argument.value">nZNRj9owDMe%2FSpV32lKYjosoJwY6Dem2ddC7h71lwYxMadLFLnDffkkLWzXtENprbP%2F998%2FO9OFU6egADpU1ORvGKYvASLtV5nvOnsvHwYQ9zKYoKl3zeUN7s4afDSBFvs4gbwM5a5zhVqBCbkQFyEnyzfzjE8%2FilNfOkpVWs2iOCI58o4U12FTgNuAOSsLz%2Bilne6KaJ4m2Uui9ReKTdJIm5MQB%2FJui11jaKtnbCuIfWLNo6U0oI6j1HYrRV6ttHR%2FRZiGX34%2FHoyQYRLQserROQjtBznZCI7BotcyZn3eFhUBUB%2FgTQGxgZZCEoZxl6fBukE4Go2GZ3vPRmL8bxnfD9CuLivNo75XpgF3j8K1LQv6hLItB8XlTsujlAt4nsAvmtru7HbC4YGWzv3BNk75ip5%2FV%2FJOXWC0Lq5V87bXJbl%2Bk1va4cCDIMyPXQIu3EnRdILyo7WDXpvI6zI4Ehli0KYKnL43QaqfA5axzzJLfns9nB9t2hf6ACE70X%2BYXtqqFUxiww0lIOoPnfeWF9lTXsOt1uHkJV9Mkl0HaP4ejO1q3DUcE0k9WOmGwto66tf3Tz6yLvQVkdtl4%2F6vOfgE%3D</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="password" elementType="Argument">
@@ -159,6 +159,15 @@ byte[] encryptedUid = Base64.encodeBase64(credentilas.getBytes());
               <stringProp name="-1606201635">HTTP/1.1 200 OK</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="SAML Response Present" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-1163693106">SAMLResponse</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">2</intProp>
           </ResponseAssertion>

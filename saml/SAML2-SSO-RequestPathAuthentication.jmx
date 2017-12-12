@@ -15,12 +15,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="noOfUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfUsers</stringProp>
-            <stringProp name="Argument.value">100000</stringProp>
+            <stringProp name="Argument.value">1000000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfThreads" elementType="Argument">
             <stringProp name="Argument.name">noOfThreads</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="timeToRun" elementType="Argument">
@@ -56,6 +56,11 @@
           <elementProp name="SAMLRequest" elementType="Argument">
             <stringProp name="Argument.name">SAMLRequest</stringProp>
             <stringProp name="Argument.value">nVPbjtowEP2VyO%2B5wi6sRVhR0KpI2zaFbB%2F65pqhuErs1DMBtl9fO4EWVS1CfZ0ZnzmX8eTxWFfBHiwqo3OWRgkLQEuzUfprzl7Kp3DMHqcTFHXV8FlLO72C7y0gBe6dRt41ctZazY1AhVyLGpCT5OvZu2eeRQlvrCEjTcWCGSJYcovmRmNbg12D3SsJL6vnnO2IGh7HILPwbhim96MwHd%2BHaTaIpKmbliBMI1GLH0aLA%2FoaHyfjJCYr9lAZqejVF%2BOdqSH6hg0LFo6l0oI6YR4dHbzaNNEBTdYBPAyHg9grQDQseDJWQicxZ1tRIbBguciZM2SJhUBUe%2FjdQGxhqZGEppxlSToKk3E4SMvkgQ%2BG%2FC6NRmnymQXFSfsbpXtHrxn1pR9C%2FrYsi7D4sC5Z8OmcjBtg5xy67fb2BMTZdzb9w65JfInY42cNf%2B8glovCVEq%2BXqzJbk%2B6qsxhbkGQ84xsC529taDrAL6iNuG2G%2BWN144EmliwLjynj62o1FaBzVnPmMW%2FOJ%2FuEjZdhO7CCI70X%2BTn7t6EVehth6OQdDKeXyLPK%2BfqCrYXG24O4eqY5NJDu7I%2FuoOxG39EIJ2y0gqNjbHUx%2FZXPtO%2B9y9DpufEL%2F%2Fy9Cc%3D</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="password" elementType="Argument">
+            <stringProp name="Argument.name">password</stringProp>
+            <stringProp name="Argument.value">password</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -135,7 +140,7 @@
             <stringProp name="filename"></stringProp>
             <stringProp name="script">import org.apache.commons.codec.binary.Base64;
 
-String credentilas= vars.get(&quot;usernamePrefix&quot;)+vars.get(&quot;user_count_id&quot;)+&quot;:password&quot;;
+String credentilas= vars.get(&quot;usernamePrefix&quot;)+vars.get(&quot;user_count_id&quot;)+&quot;:&quot;+vars.get(&quot;password&quot;);
 
 byte[] encryptedUid = Base64.encodeBase64(credentilas.getBytes());
       vars.put(&quot;sectoken&quot;,new String(encryptedUid));</stringProp>

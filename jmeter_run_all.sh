@@ -26,7 +26,7 @@ if [ -z "$2" ]
 	exit
 fi
 
-
+time_to_run=10800
 
 is_540_host="idp.wso2.com"
 is_540_host_username="ubuntu"
@@ -79,7 +79,7 @@ do
 ENDSSH
 	echo "Ended SSH to IS node"
 	echo "Going to start JMeter run"
-	$jmeter_home/bin/jmeter -Jconcurrency=$concurrency -n -t $script_location -l $output_directory/log_$concurrency.jtl
+	$jmeter_home/bin/jmeter -Jconcurrency=$concurrency -Jtime=time_to_run -n -t $script_location -l $output_directory/log_$concurrency.jtl
 	#cd /home/ubuntu	
 	echo "MySQLSlap at the end of the current concurrency run..."
 	sudo mysqlslap --user=$identity_db_username --password=$identity_db_password --host=$identity_db_host --concurrency=50 --iterations=10 --auto-generate-sql --verbose >> $output_directory/mySQLSlap_$concurrency.log

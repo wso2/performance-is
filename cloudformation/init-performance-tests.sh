@@ -36,7 +36,7 @@ default_key_name="if-perf-test"
 key_name="$default_key_name"
 default_db_allocated_storage=20
 db_allocated_storage="$default_db_allocated_storage"
-default_instance_type=t2.micro
+default_instance_type=c5.large
 wso2_is_instance_type="$default_instance_type"
 bastion_instance_type="$default_instance_type"
 default_wso2_env_is_alb_scheme="internal"
@@ -54,19 +54,16 @@ is_installer_url=""
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
-# todo change param names
-
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -f <is_performance_distribution> -k <key_file> -u <is_installer_url>"
-    echo "   -arn <alb_certificate_arn> -ak <aws_access_key> -as <aws_access_secret>"
-    echo "   [-n <key_name>]"
-    echo "   [-dbe <db_engine>] [-dbv <db_engine_version>] [-dbc <db_class>]"
-    echo "   [-dbu <db_username>] [-dbp <db_password>]"
-    echo "   [-dbs <db_allocated_storage>] [-J <jdk>]"
-    echo "   [-wi <wso2_is_instance_type>] [-bi <bastion_instance_type>]"
-    echo "   [-s <wso2_env_is_alb_scheme>]"
+    echo "$0 -k <key_file> -r <alb_certificate_arn>"
+    echo "   -a <aws_access_key> -s <aws_access_secret>"
+    echo "   [-n <key_name>] [-e <db_engine>] [-v <db_engine_version>]"
+    echo "   [-c <db_class>] [-u <db_username>] [-p <db_password>]"
+    echo "   [-s <db_allocated_storage>] [-J <jdk>]"
+    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
+    echo "   [-s <wso2_env_is_alb_scheme>] [-m <lb_scheme>]"
     echo "   [-w <minimum_stack_creation_wait_time>]"
     echo "   [-h] -- [run_performance_tests_options]"
     echo ""
@@ -91,7 +88,7 @@ function usage() {
     echo ""
 }
 
-while getopts "k:U:r:a:s:n:e:v:c:u:p:S:J:i:b:m:w:h" opts; do
+while getopts "k:r:a:s:n:e:v:c:u:p:S:J:i:b:m:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -296,7 +293,7 @@ estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performa
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.
-#$estimate_command
+$estimate_command
 
 temp_dir=$(mktemp -d)
 
@@ -309,7 +306,7 @@ cd $script_dir
 
 echo ""
 echo "Validating stack..."
-#aws cloudformation validate-template --template-body file://target/cf-template.yml
+aws cloudformation validate-template --template-body file://target/cf-template.yml
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name is-test-stack \
@@ -332,9 +329,8 @@ create_stack_command="aws cloudformation create-stack --stack-name is-test-stack
 echo ""
 echo "Creating stack..."
 echo "$create_stack_command"
-#stack_id="$($create_stack_command)"
-#stack_id=$(echo $stack_id|jq -r .StackId)
-stack_id="arn:aws:cloudformation:us-east-2:477266856205:stack/is-test-stack/75f986a0-d54f-11e8-878c-0a2103992610"
+stack_id="$($create_stack_command)"
+stack_id=$(echo $stack_id|jq -r .StackId)
 
 function exit_handler() {
     # Get stack events
@@ -359,7 +355,7 @@ function exit_handler() {
 }
 
 # Delete the stack in case of an error.
-#trap exit_handler EXIT
+trap exit_handler EXIT
 
 echo ""
 echo "Created stack: $stack_id"

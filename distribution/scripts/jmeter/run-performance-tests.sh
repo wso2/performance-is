@@ -52,7 +52,7 @@ function before_execute_test_scenario() {
         killall java
 
         echo "Starting identity server..."
-        sh $carbon_home/bin/wso2server.sh
+        sh $carbon_home/bin/wso2server.sh start
         echo "Waiting $waiting_time seconds..."
         for i in {$waiting_time..0}; do echo -ne "."; sleep 1; done; echo
 
@@ -69,7 +69,7 @@ ENDSSH
         killall java
 
         echo "Starting identity server..."
-        sh $carbon_home/bin/wso2server.sh
+        sh $carbon_home/bin/wso2server.sh start
         echo "Waiting $waiting_time seconds..."
         for i in {$waiting_time..0}; do echo -ne "."; sleep 1; done; echo
 

@@ -149,4 +149,10 @@ wso2is_1_host=$(get_ssh_hostname $wso2is_1_host_alias)
 wso2is_2_host=$(get_ssh_hostname $wso2is_2_host_alias)
 scp workspace/setup/setup-common.sh $wso2is_1_host:/home/ubuntu/
 scp workspace/sar/install-sar.sh $wso2is_1_host:/home/ubuntu/
+scp workspace/is/restart-is.sh $wso2is_1_host:/home/ubuntu/
 ssh $wso2is_1_host mkdir sar setup; mv install-sar.sh sar; mv setup-common.sh setup; ./setup/setup-common.sh -p openjdk-8-jdk -p zip -p jq -p bc
+
+scp workspace/setup/setup-common.sh $wso2is_2_host:/home/ubuntu/
+scp workspace/sar/install-sar.sh $wso2is_2_host:/home/ubuntu/
+scp workspace/is/restart-is.sh $wso2is_2_host:/home/ubuntu/
+ssh $wso2is_2_host mkdir sar setup; mv install-sar.sh sar; mv setup-common.sh setup; ./setup/setup-common.sh -p openjdk-8-jdk -p zip -p jq -p bc

@@ -133,7 +133,7 @@ if [[ -f $filename ]]; then
 fi
 
 # Create file and save headers
-echo -n "Scenario Name","Heap Size","Concurrency Levels", >$filename
+echo -n "Scenario Name","Heap Size","Concurrent Users", >$filename
 echo -n "# Samples","Error Count","Error %","Average (ms)","Standard Deviation (ms)","Min (ms)","Max (ms)", >>$filename
 echo -n "75th Percentile (ms)","90th Percentile (ms)","95th Percentile (ms)","98th Percentile (ms)", >>$filename
 echo -n "99th Percentile (ms)","99.9th Percentile (ms)","Throughput (Requests/sec)", >>$filename
@@ -194,11 +194,11 @@ function write_loadavg_details() {
 }
 
 # Results are in following directory structure:
-# results/${scenario_name}/${heap}_heap/${concurrency_level}_concurrency_level
+# results/${scenario_name}/${heap}_heap/${concurrent_users}__users
 
 for scenario_dir in $(find ${results_dir} -maxdepth 1 -type d | sort -V); do
     for heap_size_dir in $(find ${scenario_dir} -maxdepth 1 -type d -name '*_heap' | sort -V); do
-        for concurrency_dir in $(find ${heap_size_dir} -maxdepth 1 -type d -name '*_concurrency_level' | sort -V); do
+        for concurrency_dir in $(find ${heap_size_dir} -maxdepth 1 -type d -name '*_users' | sort -V); do
             current_dir="${concurrency_dir}"
             echo "Current directory: $current_dir."
             data_file="${current_dir}/results-measurement-summary.json"
@@ -211,9 +211,11 @@ for scenario_dir in $(find ${results_dir} -maxdepth 1 -type d | sort -V); do
             fi
 
             echo "Getting data from $data_file"
+            echo $scenario_dir
             scenario_name="$(echo $scenario_dir | sed -nE 's/.*.\/(.*)/\1/p')"
+            echo $scenario_name
             heap_size=$(echo $heap_size_dir | sed -nE 's/.*.\/([0-9]+[a-zA-Z])_heap.*/\1/p')
-            concurrent_users=$(echo $concurrency_dir | sed -nE 's/.*\/([0-9]+)_concurrency_level.*/\1/p')
+            concurrent_users=$(echo $concurrency_dir | sed -nE 's/.*\/([0-9]+)_users.*/\1/p')
 
             echo -n "$scenario_name,$heap_size,$concurrent_users" >>$filename
             write_column "${data_file}" "samples"

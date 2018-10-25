@@ -39,43 +39,8 @@ declare -A test_scenario0=(
 
 function before_execute_test_scenario() {
 
-    waiting_time=100 #seconds
-    carbon_home="/opt/wso2/wso2is-*"
-
-    echo "Cleaning up IS host 1..."
-    ssh $wso2is_1_host << ENDSSH
-        # cleanup any prev log files
-        sudo -s
-        rm -rf $carbon_home/repository/logs
-
-        echo "Killing All Carbon Servers..."
-        killall java
-
-        echo "Starting identity server..."
-        sh $carbon_home/bin/wso2server.sh start
-        echo "Waiting $waiting_time seconds..."
-        for i in {$waiting_time..0}; do echo -ne "."; sleep 1; done; echo
-
-        echo "Finished starting identity server..."
-        exit
-ENDSSH
-    echo "Cleaning up IS host 2..."
-    ssh $wso2is_2_host << ENDSSH
-        # cleanup any prev log files
-        sudo -s
-        rm -rf $carbon_home/repository/logs
-
-        echo "Killing All Carbon Servers..."
-        killall java
-
-        echo "Starting identity server..."
-        sh $carbon_home/bin/wso2server.sh start
-        echo "Waiting $waiting_time seconds..."
-        for i in {$waiting_time..0}; do echo -ne "."; sleep 1; done; echo
-
-        echo "Finished starting identity server..."
-        exit
-ENDSSH
+    ssh $wso2is_1_host "./restart-is.sh"
+    ssh $wso2is_2_host "./restart-is.sh"
     jmeter_params+=("port=443")
 }
 

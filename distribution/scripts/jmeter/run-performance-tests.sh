@@ -33,7 +33,7 @@ wso2is_2_host=$(get_ssh_hostname $wso2is_2_host_alias)
 
 declare -A test_scenario0=(
     [name]="authenticate_super_tenant_users"
-    [jmx]="authenticate/AuthenticateSuperTenantUser.jmx"
+    [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
     [skip]=false
 )
 declare -A test_scenario1=(
@@ -44,6 +44,36 @@ declare -A test_scenario1=(
 declare -A test_scenario2=(
     [name]="oauth_implicit_redirect_with_consent"
     [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
+    [skip]=false
+)
+declare -A test_scenario3=(
+    [name]="oauth_password_grant"
+    [jmx]="oauth/OAuth_Password_Grant.jmx"
+    [skip]=false
+)
+declare -A test_scenario4=(
+    [name]="oidc_auth_code_redirect_with_consent"
+    [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
+    [skip]=false
+)
+declare -A test_scenario5=(
+    [name]="oidc_implicit_redirect_with_consent"
+    [jmx]="oidc/OIDC_Implicit_Redirect_WithConsent.jmx"
+    [skip]=false
+)
+declare -A test_scenario6=(
+    [name]="oidc_password_grant"
+    [jmx]="oidc/OIDC_Password_Grant.jmx"
+    [skip]=false
+)
+declare -A test_scenario7=(
+    [name]="saml2_sso_redirect_binding"
+    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+    [skip]=false
+)
+declare -A test_scenario8=(
+    [name]="saml2_sso_request_path_authentication"
+    [jmx]="saml/SAML2_SSO_Request_Path_Authentication.jmx"
     [skip]=false
 )
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add SAML2 SSO Service Providers" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add OAuth Apps" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -23,9 +23,14 @@
             <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="adminCredentials" elementType="Argument">
-            <stringProp name="Argument.name">adminCredentials</stringProp>
-            <stringProp name="Argument.value">YWRtaW46YWRtaW4=</stringProp>
+          <elementProp name="adminUsername" elementType="Argument">
+            <stringProp name="Argument.name">adminUsername</stringProp>
+            <stringProp name="Argument.value">admin</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="adminPassword" elementType="Argument">
+            <stringProp name="Argument.name">adminPassword</stringProp>
+            <stringProp name="Argument.value">admin</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -33,24 +38,29 @@
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="travelocityAppNamePrefix" elementType="Argument">
-            <stringProp name="Argument.name">travelocityAppNamePrefix</stringProp>
-            <stringProp name="Argument.value">travelocityApp</stringProp>
+          <elementProp name="spNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">spNamePrefix</stringProp>
+            <stringProp name="Argument.value">app_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="issuerPrefix" elementType="Argument">
-            <stringProp name="Argument.name">issuerPrefix</stringProp>
-            <stringProp name="Argument.value">travelocity</stringProp>
+          <elementProp name="roleNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">roleNamePrefix</stringProp>
+            <stringProp name="Argument.value">appRole__</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="assertionConsumerUrlPrefix" elementType="Argument">
-            <stringProp name="Argument.name">assertionConsumerUrlPrefix</stringProp>
-            <stringProp name="Argument.value">http://localhost:8080/travelocity</stringProp>
+          <elementProp name="consumerKeyPrefix" elementType="Argument">
+            <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
+            <stringProp name="Argument.value">consumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="assertionConsumerUrlSufix" elementType="Argument">
-            <stringProp name="Argument.name">assertionConsumerUrlSufix</stringProp>
-            <stringProp name="Argument.value">com/home.jsp</stringProp>
+          <elementProp name="consumerSecretPrefix" elementType="Argument">
+            <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
+            <stringProp name="Argument.value">consumerSecret_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="callbackUrlPrefix" elementType="Argument">
+            <stringProp name="Argument.name">callbackUrlPrefix</stringProp>
+            <stringProp name="Argument.value">https://localhost/callback</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -63,14 +73,9 @@
             <stringProp name="Argument.value">${__P(concurrency,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="rampUpPeriod" elementType="Argument">
-            <stringProp name="Argument.name">rampUpPeriod</stringProp>
-            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="noOfSPs" elementType="Argument">
-            <stringProp name="Argument.name">noOfSPs</stringProp>
-            <stringProp name="Argument.value">${__P(spCount,1000)}</stringProp>
+          <elementProp name="spCount" elementType="Argument">
+            <stringProp name="Argument.name">spCount</stringProp>
+            <stringProp name="Argument.value">${__P(apps,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loopCount" elementType="Argument">
@@ -78,10 +83,15 @@
             <stringProp name="Argument.value">${__P(loopCount,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="rampUpPeriod" elementType="Argument">
+            <stringProp name="Argument.name">rampUpPeriod</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP for Travelocity" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -96,6 +106,29 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${spCount}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">sp_count_id</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()" enabled="true">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int y = x - (x/2)*2;
+if (y == 0) {
+	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else {
+	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+}
+</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
           <collectionProp name="CookieManager.cookies"/>
           <boolProp name="CookieManager.clearEachIteration">false</boolProp>
@@ -107,43 +140,30 @@
               <stringProp name="Header.name">Authorization</stringProp>
               <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
             </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="X-Server-Select" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
-          <stringProp name="CounterConfig.start">1</stringProp>
-          <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
-          <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">spId</stringProp>
-          <stringProp name="CounterConfig.format"></stringProp>
-          <boolProp name="CounterConfig.per_user">false</boolProp>
-        </CounterConfig>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register Travelocity" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://dto.saml.sso.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
+                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:aut=&quot;http://authentication.services.core.carbon.wso2.org&quot;&gt;&#xd;
    &lt;soapenv:Header/&gt;&#xd;
    &lt;soapenv:Body&gt;&#xd;
-      &lt;xsd:addRPServiceProvider&gt;      &#xd;
-         &lt;xsd:spDto&gt;        &#xd;
-            &lt;xsd1:assertionConsumerUrl&gt;${assertionConsumerUrlPrefix}_${spId}.${assertionConsumerUrlSufix}&lt;/xsd1:assertionConsumerUrl&gt;&#xd;
-            &lt;xsd1:assertionConsumerUrls&gt;${assertionConsumerUrlPrefix}_${spId}.${assertionConsumerUrlSufix}&lt;/xsd1:assertionConsumerUrls&gt;&#xd;
-            &lt;xsd1:defaultAssertionConsumerUrl&gt;${assertionConsumerUrlPrefix}_${spId}.${assertionConsumerUrlSufix}&lt;/xsd1:defaultAssertionConsumerUrl&gt;&#xd;
-            &lt;xsd1:digestAlgorithmURI&gt;http://www.w3.org/2000/09/xmldsig#sha1&lt;/xsd1:digestAlgorithmURI&gt;&#xd;
-            &lt;xsd1:doSignAssertions&gt;true&lt;/xsd1:doSignAssertions&gt;&#xd;
-            &lt;xsd1:doSignResponse&gt;false&lt;/xsd1:doSignResponse&gt;&#xd;
-            &lt;xsd1:doSingleLogout&gt;true&lt;/xsd1:doSingleLogout&gt;&#xd;
-            &lt;xsd1:doValidateSignatureInRequests&gt;false&lt;/xsd1:doValidateSignatureInRequests&gt;&#xd;
-            &lt;xsd1:enableAttributeProfile&gt;true&lt;/xsd1:enableAttributeProfile&gt;&#xd;
-            &lt;xsd1:enableAttributesByDefault&gt;true&lt;/xsd1:enableAttributesByDefault&gt;&#xd;
-             &lt;xsd1:issuer&gt;${issuerPrefix}_${spId}&lt;/xsd1:issuer&gt;           &#xd;
-            &lt;xsd1:signingAlgorithmURI&gt;http://www.w3.org/2000/09/xmldsig#rsa-sha1&lt;/xsd1:signingAlgorithmURI&gt;&#xd;
-         &lt;/xsd:spDto&gt;&#xd;
-      &lt;/xsd:addRPServiceProvider&gt;&#xd;
+      &lt;aut:login&gt;&#xd;
+         &lt;aut:username&gt;${adminUsername}&lt;/aut:username&gt;&#xd;
+         &lt;aut:password&gt;${adminPassword}&lt;/aut:password&gt;&#xd;
+      &lt;/aut:login&gt;&#xd;
    &lt;/soapenv:Body&gt;&#xd;
 &lt;/soapenv:Envelope&gt;</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -154,7 +174,7 @@
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/services/IdentitySAMLSSOConfigService.IdentitySAMLSSOConfigServiceHttpsSoap11Endpoint/</stringProp>
+          <stringProp name="HTTPSampler.path">/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -163,7 +183,6 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="TestPlan.comments">              &lt;xsd1:attributeConsumingServiceIndex&gt;testindex1235&lt;/xsd1:attributeConsumingServiceIndex&gt;</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
@@ -179,12 +198,8 @@
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">SOAPAction</stringProp>
-                <stringProp name="Header.value">urn:addRPServiceProvider</stringProp>
+                <stringProp name="Header.value">urn:login</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>
@@ -194,16 +209,27 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get ServiceIndex" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register OAuth App" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot;&gt;&#xd;
+                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://dto.oauth.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
    &lt;soapenv:Header/&gt;&#xd;
    &lt;soapenv:Body&gt;&#xd;
-      &lt;xsd:getServiceProviders/&gt;&#xd;
+      &lt;xsd:registerOAuthApplicationData&gt;&#xd;
+         &lt;xsd:application&gt;&#xd;
+            &lt;xsd1:OAuthVersion&gt;OAuth-2.0&lt;/xsd1:OAuthVersion&gt;&#xd;
+            &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt;&#xd;
+            &lt;xsd1:callbackUrl&gt;${callbackUrlPrefix}${sp_count_id}&lt;/xsd1:callbackUrl&gt;&#xd;
+            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
+            &lt;xsd1:oauthConsumerKey&gt;${consumerKeyPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerKey&gt;&#xd;
+            &lt;xsd1:oauthConsumerSecret&gt;${consumerSecretPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerSecret&gt;&#xd;
+            &lt;xsd1:pkceMandatory&gt;false&lt;/xsd1:pkceMandatory&gt;&#xd;
+            &lt;xsd1:pkceSupportPlain&gt;true&lt;/xsd1:pkceSupportPlain&gt;&#xd;
+         &lt;/xsd:application&gt;&#xd;
+      &lt;/xsd:registerOAuthApplicationData&gt;&#xd;
    &lt;/soapenv:Body&gt;&#xd;
 &lt;/soapenv:Envelope&gt;</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -214,7 +240,7 @@
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/services/IdentitySAMLSSOConfigService.IdentitySAMLSSOConfigServiceHttpsSoap11Endpoint/</stringProp>
+          <stringProp name="HTTPSampler.path">/services/OAuthAdminService.OAuthAdminServiceHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -235,25 +261,11 @@
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Service Index Extractor" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">serviceIndex</stringProp>
-            <stringProp name="RegexExtractor.regex">attributeConsumingServiceIndex&gt;(.*?)&lt;/</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
-            <stringProp name="RegexExtractor.default">NP_ServiceIndex</stringProp>
-            <stringProp name="RegexExtractor.match_number">1</stringProp>
-            <stringProp name="Sample.scope">all</stringProp>
-          </RegexExtractor>
-          <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">SOAPAction</stringProp>
-                <stringProp name="Header.value">urn:getServiceProviders</stringProp>
+                <stringProp name="Header.value">urn:registerOAuthApplicationData</stringProp>
               </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>
@@ -274,7 +286,7 @@
    &lt;soapenv:Body&gt;&#xd;
        &lt;xsd:createApplication&gt; &#xd;
       &lt;xsd:serviceProvider&gt; &#xd;
-            &lt;xsd1:applicationName&gt;${travelocityAppNamePrefix}_${spId}&lt;/xsd1:applicationName&gt; &#xd;
+            &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt; &#xd;
          &lt;/xsd:serviceProvider&gt; &#xd;
       &lt;/xsd:createApplication&gt; &#xd;
    &lt;/soapenv:Body&gt;&#xd;
@@ -311,10 +323,6 @@
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">SOAPAction</stringProp>
                 <stringProp name="Header.value">urn:createApplication</stringProp>
               </elementProp>
@@ -337,7 +345,7 @@
    &lt;soapenv:Body&gt;&#xd;
       &lt;xsd:getApplication&gt;&#xd;
          &lt;!--Optional:--&gt;&#xd;
-         &lt;xsd:applicationName&gt;${travelocityAppNamePrefix}_${spId}&lt;/xsd:applicationName&gt;&#xd;
+         &lt;xsd:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd:applicationName&gt;&#xd;
       &lt;/xsd:getApplication&gt;&#xd;
    &lt;/soapenv:Body&gt;&#xd;
 &lt;/soapenv:Envelope&gt;</stringProp>
@@ -383,10 +391,6 @@
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">SOAPAction</stringProp>
                 <stringProp name="Header.value">urn:getApplication</stringProp>
               </elementProp>
@@ -404,75 +408,58 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#xd;
-&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://model.common.application.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header /&gt;&#xd;
+                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://model.common.application.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
+   &lt;soapenv:Header/&gt;&#xd;
    &lt;soapenv:Body&gt;&#xd;
       &lt;xsd:updateApplication&gt;&#xd;
          &lt;!--Optional:--&gt;&#xd;
          &lt;xsd:serviceProvider&gt;&#xd;
             &lt;!--Optional:--&gt;&#xd;
             &lt;xsd1:applicationID&gt;${appID}&lt;/xsd1:applicationID&gt;&#xd;
-            &lt;xsd1:applicationName&gt;${travelocityAppNamePrefix}_${spId}&lt;/xsd1:applicationName&gt;&#xd;
-            &lt;xsd1:claimConfig&gt;&#xd;
-               &lt;xsd1:alwaysSendMappedLocalSubjectId&gt;true&lt;/xsd1:alwaysSendMappedLocalSubjectId&gt;&#xd;
-               &lt;xsd1:localClaimDialect&gt;true&lt;/xsd1:localClaimDialect&gt;&#xd;
-            &lt;/xsd1:claimConfig&gt;&#xd;
-            &lt;xsd1:description&gt;appDesc&lt;/xsd1:description&gt;&#xd;
-            &lt;xsd1:inboundAuthenticationConfig&gt;&#xd;
-               &lt;xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-                  &lt;xsd1:inboundAuthKey&gt;${issuerPrefix}_${spId}&lt;/xsd1:inboundAuthKey&gt;&#xd;
-                  &lt;xsd1:inboundAuthType&gt;samlsso&lt;/xsd1:inboundAuthType&gt;&#xd;
-                  &lt;xsd1:inboundConfigType&gt;standardAPP&lt;/xsd1:inboundConfigType&gt;&#xd;
-                  &lt;xsd1:properties&gt;&#xd;
-                     &lt;xsd1:confidential&gt;false&lt;/xsd1:confidential&gt;&#xd;
-                     &lt;xsd1:defaultValue xsd:nil=&quot;true&quot; /&gt;&#xd;
-                     &lt;xsd1:description xsd:nil=&quot;true&quot; /&gt;&#xd;
-                     &lt;xsd1:displayName xsd:nil=&quot;true&quot; /&gt;&#xd;
-                     &lt;xsd1:displayOrder&gt;0&lt;/xsd1:displayOrder&gt;&#xd;
-                     &lt;xsd1:name&gt;attrConsumServiceIndex&lt;/xsd1:name&gt;&#xd;
-                     &lt;xsd1:required&gt;false&lt;/xsd1:required&gt;&#xd;
-                     &lt;xsd1:type xsd:nil=&quot;true&quot; /&gt;&#xd;
-                     &lt;xsd1:value&gt;${serviceIndex}&lt;/xsd1:value&gt;&#xd;
-                  &lt;/xsd1:properties&gt;&#xd;
-               &lt;/xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-               &lt;xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-                  &lt;xsd1:friendlyName xsd:nil=&quot;true&quot; /&gt;&#xd;
-                  &lt;xsd1:inboundAuthKey&gt;${issuerPrefix}_${spId}&lt;/xsd1:inboundAuthKey&gt;&#xd;
-                  &lt;xsd1:inboundAuthType&gt;openid&lt;/xsd1:inboundAuthType&gt;&#xd;
-                  &lt;xsd1:inboundConfigType&gt;standardAPP&lt;/xsd1:inboundConfigType&gt;&#xd;
-               &lt;/xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-               &lt;xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-                  &lt;xsd1:friendlyName xsd:nil=&quot;true&quot; /&gt;&#xd;
-                  &lt;xsd1:inboundAuthKey&gt;${issuerPrefix}_${spId}&lt;/xsd1:inboundAuthKey&gt;&#xd;
-                  &lt;xsd1:inboundAuthType&gt;passivests&lt;/xsd1:inboundAuthType&gt;&#xd;
-                  &lt;xsd1:inboundConfigType&gt;standardAPP&lt;/xsd1:inboundConfigType&gt;&#xd;
-               &lt;/xsd1:inboundAuthenticationRequestConfigs&gt;&#xd;
-            &lt;/xsd1:inboundAuthenticationConfig&gt;&#xd;
-            &lt;xsd1:inboundProvisioningConfig&gt;&#xd;
-               &lt;xsd1:provisioningEnabled&gt;false&lt;/xsd1:provisioningEnabled&gt;&#xd;
-               &lt;xsd1:provisioningUserStore /&gt;&#xd;
-            &lt;/xsd1:inboundProvisioningConfig&gt;&#xd;
+                  &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt; &#xd;
+            &lt;xsd1:claimConfig&gt; &#xd;
+               &lt;xsd1:alwaysSendMappedLocalSubjectId&gt;false&lt;/xsd1:alwaysSendMappedLocalSubjectId&gt; &#xd;
+            &lt;/xsd1:claimConfig&gt; &#xd;
+            &lt;xsd1:description&gt;appDesc&lt;/xsd1:description&gt; &#xd;
+            &lt;xsd1:inboundAuthenticationConfig&gt; &#xd;
+                        &lt;xsd1:inboundAuthenticationRequestConfigs&gt; &#xd;
+                  &lt;xsd1:inboundAuthKey&gt;${consumerKeyPrefix}${sp_count_id}&lt;/xsd1:inboundAuthKey&gt; &#xd;
+                  &lt;xsd1:inboundAuthType&gt;oauth2&lt;/xsd1:inboundAuthType&gt; &#xd;
+                  &lt;xsd1:properties&gt; &#xd;
+                     &lt;xsd1:confidential&gt;false&lt;/xsd1:confidential&gt; &#xd;
+                     &lt;xsd1:defaultValue xsd:nil=&quot;true&quot;/&gt; &#xd;
+                     &lt;xsd1:description xsd:nil=&quot;true&quot;/&gt; &#xd;
+                     &lt;xsd1:displayName xsd:nil=&quot;true&quot;/&gt; &#xd;
+                     &lt;xsd1:name&gt;oauthConsumerSecret&lt;/xsd1:name&gt; &#xd;
+                     &lt;xsd1:required&gt;true&lt;/xsd1:required&gt; &#xd;
+                     &lt;xsd1:type xsd:nil=&quot;true&quot;/&gt; &#xd;
+                     &lt;xsd1:value&gt;${consumerSecretPrefix}${sp_count_id}&lt;/xsd1:value&gt; &#xd;
+                  &lt;/xsd1:properties&gt; &#xd;
+               &lt;/xsd1:inboundAuthenticationRequestConfigs&gt; &#xd;
+            &lt;/xsd1:inboundAuthenticationConfig&gt; &#xd;
+            &lt;xsd1:inboundProvisioningConfig&gt; &#xd;
+               &lt;xsd1:provisioningEnabled&gt;false&lt;/xsd1:provisioningEnabled&gt; &#xd;
+               &lt;xsd1:provisioningUserStore&gt;PRIMARY&lt;/xsd1:provisioningUserStore&gt; &#xd;
+            &lt;/xsd1:inboundProvisioningConfig&gt; &#xd;
             &lt;xsd1:localAndOutBoundAuthenticationConfig&gt;&#xd;
-               &lt;xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt;false&lt;/xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt;&#xd;
-               &lt;xsd1:authenticationStepForAttributes xsd:nil=&quot;true&quot; /&gt;&#xd;
-               &lt;xsd1:authenticationStepForSubject xsd:nil=&quot;true&quot; /&gt;&#xd;
-               &lt;xsd1:authenticationType&gt;default&lt;/xsd1:authenticationType&gt;&#xd;
-               &lt;xsd1:subjectClaimUri xsd:nil=&quot;true&quot; /&gt;&#xd;
-            &lt;/xsd1:localAndOutBoundAuthenticationConfig&gt;&#xd;
-            &lt;xsd1:outboundProvisioningConfig&gt;&#xd;
-               &lt;xsd1:provisionByRoleList xsd:nil=&quot;true&quot; /&gt;&#xd;
-            &lt;/xsd1:outboundProvisioningConfig&gt;&#xd;
-            &lt;xsd1:permissionAndRoleConfig&gt;&#xd;
-               &lt;xsd1:idpRoles&gt;myapp1&lt;/xsd1:idpRoles&gt;&#xd;
-            &lt;/xsd1:permissionAndRoleConfig&gt;&#xd;
-            &lt;xsd1:requestPathAuthenticatorConfigs&gt;&#xd;
+			&lt;xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt;false&lt;/xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt; &#xd;
+               &lt;xsd1:authenticationStepForAttributes xsd:nil=&quot;true&quot;/&gt; &#xd;
+               &lt;xsd1:authenticationStepForSubject xsd:nil=&quot;true&quot;/&gt; &#xd;
+               &lt;xsd1:authenticationType&gt;default&lt;/xsd1:authenticationType&gt; &#xd;
+            &lt;/xsd1:localAndOutBoundAuthenticationConfig&gt; &#xd;
+            &lt;xsd1:outboundProvisioningConfig&gt; &#xd;
+               &lt;xsd1:provisionByRoleList xsd:nil=&quot;true&quot;/&gt; &#xd;
+            &lt;/xsd1:outboundProvisioningConfig&gt; &#xd;
+            &lt;xsd1:permissionAndRoleConfig&gt; &#xd;
+             &lt;xsd1:idpRoles&gt;myapp1&lt;/xsd1:idpRoles&gt; &#xd;
+            &lt;/xsd1:permissionAndRoleConfig&gt; &#xd;
+            &lt;xsd1:requestPathAuthenticatorConfigs&gt;              &#xd;
                &lt;xsd1:displayName&gt;?&lt;/xsd1:displayName&gt;&#xd;
                &lt;xsd1:enabled&gt;true&lt;/xsd1:enabled&gt;&#xd;
-               &lt;xsd1:name&gt;BasicAuthRequestPathAuthenticator&lt;/xsd1:name&gt;&#xd;
+               &lt;xsd1:name&gt;BasicAuthRequestPathAuthenticator&lt;/xsd1:name&gt;               &#xd;
                &lt;xsd1:valid&gt;true&lt;/xsd1:valid&gt;&#xd;
-            &lt;/xsd1:requestPathAuthenticatorConfigs&gt;&#xd;
-            &lt;xsd1:saasApp&gt;false&lt;/xsd1:saasApp&gt;&#xd;
+            &lt;/xsd1:requestPathAuthenticatorConfigs&gt;           &#xd;
+            &lt;xsd1:saasApp&gt;false&lt;/xsd1:saasApp&gt; &#xd;
          &lt;/xsd:serviceProvider&gt;&#xd;
       &lt;/xsd:updateApplication&gt;&#xd;
    &lt;/soapenv:Body&gt;&#xd;
@@ -494,16 +481,6 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="TestPlan.comments"> &lt;ax2164:inboundAuthenticationConfig xsi:type=&quot;ax2164:InboundAuthenticationConfig&quot;&gt;
-               &lt;ax2164:inboundAuthenticationRequestConfigs xsi:type=&quot;ax2164:InboundAuthenticationRequestConfig&quot;&gt;
-                  &lt;ax2164:friendlyName xsi:nil=&quot;true&quot;/&gt;
-                  &lt;ax2164:inboundAuthKey&gt;travelocity.com&lt;/ax2164:inboundAuthKey&gt;
-                  &lt;ax2164:inboundAuthType&gt;samlsso&lt;/ax2164:inboundAuthType&gt;
-                  &lt;ax2164:inboundConfigType&gt;standardAPP&lt;/ax2164:inboundConfigType&gt;
-                  &lt;ax2164:properties xsi:type=&quot;ax2164:Property&quot;&gt;             &lt;/ax2164:properties&gt;
-               &lt;/ax2164:inboundAuthenticationRequestConfigs&gt;
-            &lt;/ax2164:inboundAuthenticationConfig&gt;
-          </stringProp>
         </HTTPSamplerProxy>
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
@@ -518,10 +495,6 @@
           <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">SOAPAction</stringProp>
                 <stringProp name="Header.value">urn:updateApplication</stringProp>

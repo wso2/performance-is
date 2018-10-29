@@ -79,7 +79,7 @@ payload_type=ARRAY
 # Estimate flag
 estimate=false
 # Estimated processing time in between tests
-default_estimated_processing_time_in_between_tests=60
+default_estimated_processing_time_in_between_tests=220
 estimated_processing_time_in_between_tests=$default_estimated_processing_time_in_between_tests
 
 # Start time of the test
@@ -304,7 +304,7 @@ function run_test_data_scripts() {
     echo "Running test data setup scripts"
     echo "=========================================================================================="
 
-    declare -a scripts=("TestData-AddSuperTenantUsers.jmx" "TestData-AddOAuthApps.jmx")
+    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in ${scripts[@]}; do

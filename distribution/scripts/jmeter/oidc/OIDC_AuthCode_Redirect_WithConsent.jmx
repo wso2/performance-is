@@ -91,7 +91,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Authorization Code Redirect  With Consent" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Authorization Code Redirect With Consent" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -111,7 +111,7 @@
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
           <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">sp_count</stringProp>
+          <stringProp name="CounterConfig.name">sp_count_id</stringProp>
           <stringProp name="CounterConfig.format"></stringProp>
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
@@ -129,7 +129,7 @@
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;user_count_id&quot;));
+          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
 int y = x - (x/2)*2;
 if (y == 0) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
@@ -158,7 +158,7 @@ if (y == 0) {
             <collectionProp name="Arguments.arguments">
               <elementProp name="client_id" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${consumerKeyPrefix}${sp_count}</stringProp>
+                <stringProp name="Argument.value">${consumerKeyPrefix}${sp_count_id}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">client_id</stringProp>
@@ -166,7 +166,7 @@ if (y == 0) {
               </elementProp>
               <elementProp name="redirect_uri" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${callback_url_prefix}${sp_count}</stringProp>
+                <stringProp name="Argument.value">${callback_url_prefix}${sp_count_id}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">redirect_uri</stringProp>
@@ -385,6 +385,16 @@ ${password}</stringProp>
             <stringProp name="Assertion.custom_message">Test failed - get auth code</stringProp>
           </ResponseAssertion>
           <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - code" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="94834672">code=</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test failed - get code</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="OAuthorization Code Extractor" enabled="true">
             <stringProp name="RegexExtractor.useHeaders">true</stringProp>
             <stringProp name="RegexExtractor.refname">code</stringProp>
@@ -402,14 +412,14 @@ ${password}</stringProp>
             <collectionProp name="Arguments.arguments">
               <elementProp name="client_secret" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${consumerSecretPrefix}${sp_count}</stringProp>
+                <stringProp name="Argument.value">${consumerSecretPrefix}${sp_count_id}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">client_secret</stringProp>
               </elementProp>
               <elementProp name="redirect_uri" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${callback_url_prefix}${sp_count}</stringProp>
+                <stringProp name="Argument.value">${callback_url_prefix}${sp_count_id}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">redirect_uri</stringProp>
@@ -430,7 +440,7 @@ ${password}</stringProp>
               </elementProp>
               <elementProp name="client_id" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${consumerKeyPrefix}${sp_count}</stringProp>
+                <stringProp name="Argument.value">${consumerKeyPrefix}${sp_count_id}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">client_id</stringProp>
@@ -517,42 +527,6 @@ ${password}</stringProp>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
-      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <sentBytes>true</sentBytes>
-            <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
-            <connectTime>true</connectTime>
-          </value>
-        </objProp>
-        <stringProp name="filename">/home/ubuntu/scripts/results/400_12_9_code_oidc.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

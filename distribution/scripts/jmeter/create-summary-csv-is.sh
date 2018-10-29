@@ -20,8 +20,6 @@
 script_dir=$(dirname "$0")
 # Application Name to be used in column headers
 application_name=""
-# Prefix of files
-file_prefix=""
 # Results directory
 default_results_dir="${script_dir}/results"
 results_dir="$default_results_dir"
@@ -41,7 +39,7 @@ is_2_file_prefix=wso2is2
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -n <application_name> [-p <file_prefix>] [-g <gcviewer_jar_path>] [-d <results_dir>]"
+    echo "$0 -n <application_name> [-g <gcviewer_jar_path>] [-d <results_dir>]"
     echo "   [-j <jmeter_servers>] [-w] [-i] [-h]"
     echo ""
     echo "-n: Name of the application to be used in column headers."
@@ -59,9 +57,6 @@ while getopts "n:p:g:d:j:wih" opts; do
     case $opts in
     n)
         application_name=${OPTARG}
-        ;;
-    p)
-        file_prefix=${OPTARG}
         ;;
     g)
         gcviewer_jar_path=${OPTARG}
@@ -92,11 +87,6 @@ done
 # Validate options
 if [[ -z $application_name ]]; then
     echo "Please specify the application name."
-    exit 1
-fi
-
-if [[ -z $file_prefix ]]; then
-    echo "Please specify the prefix of the files."
     exit 1
 fi
 

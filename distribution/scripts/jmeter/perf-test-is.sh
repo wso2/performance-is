@@ -75,9 +75,6 @@ declare -a include_scenario_names
 # Scenario names to exclude
 declare -a exclude_scenario_names
 
-# JMeter SSH hosts array depending on the number of servers. For example, jmeter1 and jmeter2 for two servers.
-declare -a jmeter_ssh_hosts
-
 payload_type=ARRAY
 # Estimate flag
 estimate=false
@@ -307,14 +304,19 @@ function run_test_data_scripts() {
     echo "Running test data setup scripts"
     echo "=========================================================================================="
 
+    declare -a scripts=("TestData-AddSuperTenantUsers.jmx" "TestData-AddOAuthApps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
-    script_file="$setup_dir/TestData-AddSuperTenantUsers.jmx"
 
-    command="jmeter -Jconcurrency=10 -Jhost=$lb_host -Jport=443 -JloopCount=100 -n -t $script_file -l log.jtl"
-    echo $command
-    echo ""
-    $command
-    echo ""
+    for script in ${scripts[@]}; do
+
+        script_file="$setup_dir/$script"
+
+        command="jmeter -Jhost=$lb_host -Jport=443 -n -t $script_file"
+        echo $command
+        echo ""
+        $command
+        echo ""
+    done
 }
 
 function initiailize_test() {
@@ -398,7 +400,7 @@ function test_scenarios() {
             local jmx_file=${scenario[jmx]}
             for users in ${concurrent_users[@]}; do
                 if [ "$estimate" = true ]; then
-                    record_scenario_duration $scenario_name $(($test_duration + $estimated_processing_time_in_between_tests))
+                    record_scenario_duration $scenario_name $(($test_duration * 60 + $estimated_processing_time_in_between_tests))
                     continue
                 fi
                 local start_time=$(date +%s)

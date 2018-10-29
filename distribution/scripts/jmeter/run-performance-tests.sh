@@ -36,6 +36,16 @@ declare -A test_scenario0=(
     [jmx]="authenticate/AuthenticateSuperTenantUser.jmx"
     [skip]=false
 )
+declare -A test_scenario1=(
+    [name]="oauth_auth_code_redirect_with_consent"
+    [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
+    [skip]=false
+)
+declare -A test_scenario2=(
+    [name]="oauth_implicit_redirect_with_consent"
+    [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
+    [skip]=false
+)
 
 function before_execute_test_scenario() {
 

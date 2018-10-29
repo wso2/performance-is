@@ -11,27 +11,6 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="noOfThreads" elementType="Argument">
-            <stringProp name="Argument.name">noOfThreads</stringProp>
-            <stringProp name="Argument.value">${__P(concurrency,10)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="noOfUsers" elementType="Argument">
-            <stringProp name="Argument.name">noOfUsers</stringProp>
-            <stringProp name="Argument.value">${__P(userCount,1000)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="loopCount" elementType="Argument">
-            <stringProp name="Argument.name">loopCount</stringProp>
-            <stringProp name="Argument.value">${__P(loopCount,100)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
-      </Arguments>
-      <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Server Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="is_host" elementType="Argument">
@@ -54,7 +33,7 @@
         <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
       </Arguments>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
@@ -75,6 +54,32 @@
         <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
       </Arguments>
       <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="noOfThreads" elementType="Argument">
+            <stringProp name="Argument.name">noOfThreads</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfUsers" elementType="Argument">
+            <stringProp name="Argument.name">noOfUsers</stringProp>
+            <stringProp name="Argument.value">${__P(userCount,1000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loopCount" elementType="Argument">
+            <stringProp name="Argument.name">loopCount</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="rampUpPeriod" elementType="Argument">
+            <stringProp name="Argument.name">rampUpPeriod</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
+      </Arguments>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Role" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -85,7 +90,7 @@
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1439374326000</longProp>
         <longProp name="ThreadGroup.end_time">1439374326000</longProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration">3600</stringProp>
         <stringProp name="ThreadGroup.delay">10</stringProp>
       </ThreadGroup>
@@ -176,7 +181,7 @@
           <stringProp name="LoopController.loops">${loopCount}</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__P(rampUpPeriod,10)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
         <longProp name="ThreadGroup.start_time">1439374326000</longProp>
         <longProp name="ThreadGroup.end_time">1439374326000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>

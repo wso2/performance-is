@@ -22,20 +22,22 @@
 wso2_is_1_ip=""
 wso2_is_2_ip=""
 lb_host=""
+rds_host=""
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host>"
+    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host>"
     echo ""
     echo "-w: The private IP of WSO2 IS node 1."
     echo "-i: The private IP of WSO2 IS node 2."
     echo "-l: The private hostname of Load balancer instance."
+    echo "-r: The private hostname of RDS instance."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "w:i:l:h" opts; do
+while getopts "w:i:l:r:h" opts; do
     case $opts in
     w)
         wso2_is_1_ip=${OPTARG}
@@ -45,6 +47,9 @@ while getopts "w:i:l:h" opts; do
         ;;
     l)
         lb_host=${OPTARG}
+        ;;
+    r)
+        rds_host=${OPTARG}
         ;;
     h)
         usage
@@ -72,12 +77,19 @@ if [[ -z $lb_host ]]; then
     exit 1
 fi
 
+if [[ -z $rds_host ]]; then
+    echo "Please provide the private hostname of the RDS instance."
+    exit 1
+fi
+
 function get_ssh_hostname() {
-    ssh -G $1 | awk '/^hostname / { print $2 }'
+    sudo -u ubuntu ssh -G $1 | awk '/^hostname / { print $2 }'
 }
 
 apt-get -y update
 apt-get -y install git
+apt-get install -y mysql-client
+apt-get install -y realpath
 
 # Only required when Ubuntu 14 is used.
 echo ""
@@ -118,16 +130,17 @@ echo "============================================"
 cd /home/ubuntu
 mkdir workspace
 cd workspace
+# todo change repo url
 git clone https://github.com/vihanga-liyanage/performance-is
 cd performance-is
 # todo remove checkout command.
-git checkout test-automation-3
+git checkout test-automation-4
 mvn clean install
 
 echo ""
 echo "Extracting is performance distribution..."
 echo "============================================"
-tar -C ../ -xvzf distribution/target/is-performance-distribution-*.tar.gz
+tar -C ../ -xzf distribution/target/is-performance-distribution-*.tar.gz
 
 echo ""
 echo "Running JMeter setup script..."
@@ -136,23 +149,31 @@ cd /home/ubuntu
 workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
             -i /home/ubuntu \
             -c /home/ubuntu \
+            -f /home/ubuntu/apache-jmeter-*.tgz \
             -a wso2is1 -n $wso2_is_1_ip \
             -a wso2is2 -n $wso2_is_2_ip \
-            -a loadbalancer -n $lb_host
+            -a loadbalancer -n $lb_host \
+            -a rds -n $rds_host
+sudo chown -R ubuntu:ubuntu workspace
+sudo chown -R ubuntu:ubuntu apache-jmeter-*
+sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 
 echo ""
 echo "Setting up IS instances..."
 echo "============================================"
 wso2is_1_host_alias=wso2is1
 wso2is_2_host_alias=wso2is2
-wso2is_1_host=$(get_ssh_hostname $wso2is_1_host_alias)
-wso2is_2_host=$(get_ssh_hostname $wso2is_2_host_alias)
-scp workspace/setup/setup-common.sh $wso2is_1_host:/home/ubuntu/
-scp workspace/sar/install-sar.sh $wso2is_1_host:/home/ubuntu/
-scp workspace/is/restart-is.sh $wso2is_1_host:/home/ubuntu/
-ssh $wso2is_1_host mkdir sar setup; mv install-sar.sh sar; mv setup-common.sh setup; ./setup/setup-common.sh -p openjdk-8-jdk -p zip -p jq -p bc
 
-scp workspace/setup/setup-common.sh $wso2is_2_host:/home/ubuntu/
-scp workspace/sar/install-sar.sh $wso2is_2_host:/home/ubuntu/
-scp workspace/is/restart-is.sh $wso2is_2_host:/home/ubuntu/
-ssh $wso2is_2_host mkdir sar setup; mv install-sar.sh sar; mv setup-common.sh setup; ./setup/setup-common.sh -p openjdk-8-jdk -p zip -p jq -p bc
+sudo -u ubuntu ssh $wso2is_1_host_alias mkdir sar setup
+sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_1_host_alias:/home/ubuntu/setup/
+sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_1_host_alias:/home/ubuntu/sar/
+sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_1_host_alias:/home/ubuntu/
+sudo -u ubuntu ssh $wso2is_1_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
+sudo -u ubuntu ssh $wso2is_1_host_alias sudo apt-get install -y realpath
+
+sudo -u ubuntu ssh $wso2is_2_host_alias mkdir sar setup
+sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_2_host_alias:/home/ubuntu/setup/
+sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_2_host_alias:/home/ubuntu/sar/
+sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_2_host_alias:/home/ubuntu/
+sudo -u ubuntu ssh $wso2is_2_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
+sudo -u ubuntu ssh $wso2is_2_host_alias sudo apt-get install -y realpath

@@ -214,32 +214,32 @@ function measure_time() {
 }
 
 function write_server_metrics() {
-    local server=$1
+    local ssh_host=$1
     echo ""
-    echo "Collecting server metrics for $server."
-    local ssh_host=$2
+    echo "Collecting server metrics for $ssh_host_alias."
+    local ssh_host_alias=$2
     local pgrep_pattern=$3
     local command_prefix=""
     export LC_TIME=C
-    if [[ ! -z $ssh_host ]]; then
-        command_prefix="ssh -o SendEnv=LC_TIME $ssh_host"
+    if [[ ! -z $ssh_host_alias ]]; then
+        command_prefix="ssh -o SendEnv=LC_TIME $ssh_host_alias"
     fi
-    $command_prefix ss -s >${report_location}/${server}_ss.txt
-    $command_prefix uptime >${report_location}/${server}_uptime.txt
-    $command_prefix sar -q >${report_location}/${server}_loadavg.txt
-    $command_prefix sar -A >${report_location}/${server}_sar.txt
-    $command_prefix top -bn 1 >${report_location}/${server}_top.txt
+    $command_prefix ss -s >${report_location}/${ssh_host}_ss.txt
+    $command_prefix uptime >${report_location}/${ssh_host}_uptime.txt
+    $command_prefix sar -q >${report_location}/${ssh_host}_loadavg.txt
+    $command_prefix sar -A >${report_location}/${ssh_host}_sar.txt
+    $command_prefix top -bn 1 >${report_location}/${ssh_host}_top.txt
     if [[ ! -z $pgrep_pattern ]]; then
-        $command_prefix ps u -p \`pgrep -f $pgrep_pattern\` >${report_location}/${server}_ps.txt
+        $command_prefix ps u -p \`pgrep -f $pgrep_pattern\` >${report_location}/${ssh_host_alias}_ps.txt
     fi
 }
 
 function download_file() {
-    local server=$1
+    local server_ssh_alias=$1
     local remote_file=$2
     local local_file_name=$3
-    echo "Downloading $remote_file from $server to $local_file_name"
-    if scp -qp $server:$remote_file ${report_location}/$local_file_name; then
+    echo "Downloading $remote_file from $server_ssh_alias to $local_file_name"
+    if scp -qp $server_ssh_alias:$remote_file ${report_location}/$local_file_name; then
         echo "File transfer succeeded."
     else
         echo "WARN: File transfer failed!"
@@ -304,10 +304,12 @@ function run_test_data_scripts() {
     echo "Running test data setup scripts"
     echo "=========================================================================================="
 
-    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants_And_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in ${scripts[@]}; do
+
+        before_execute_test_scenario
 
         script_file="$setup_dir/$script"
 
@@ -362,7 +364,7 @@ function initiailize_test() {
         mkdir results
         cp $0 results
 
-        # run_test_data_scripts
+        run_test_data_scripts
     fi
 }
 
@@ -386,7 +388,7 @@ function test_scenarios() {
     fi
 
     if [ ${#concurrent_users[@]} -eq 0 ]; then
-        concurrent_users+=($default_concurrent_users)
+        concurrent_users=($default_concurrent_users)
     fi
     # todo double check about the heap size
     for heap in ${heap_sizes_array[@]}; do

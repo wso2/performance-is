@@ -30,7 +30,8 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-default_db_class=db.t2.micro
+#todo double check the class
+default_db_class=db.m4.large
 db_class="$default_db_class"
 default_key_name="if-perf-test"
 key_name="$default_key_name"
@@ -53,6 +54,7 @@ key_file=""
 is_installer_url=""
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
+jmeter_setup=""
 
 function usage() {
     echo ""
@@ -61,7 +63,7 @@ function usage() {
     echo "   -a <aws_access_key> -s <aws_access_secret>"
     echo "   [-n <key_name>] [-e <db_engine>] [-v <db_engine_version>]"
     echo "   [-c <db_class>] [-u <db_username>] [-p <db_password>]"
-    echo "   [-s <db_allocated_storage>] [-J <jdk>]"
+    echo "   [-s <db_allocated_storage>] [-j <jmeter_setup_path>] [-J <jdk>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-s <wso2_env_is_alb_scheme>] [-m <lb_scheme>]"
     echo "   [-w <minimum_stack_creation_wait_time>]"
@@ -78,6 +80,7 @@ function usage() {
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
     echo "-S: The database allocated storage. Default: $default_db_allocated_storage GB."
+    echo "-j: The path to JMeter setup."
     echo "-J: Preferred JDK version. Default: $default_jdk."
     echo "-i: The instance type used for IS nodes. Default: $default_instance_type."
     echo "-b: The instance type used for Bastion node. Default: $default_instance_type."
@@ -88,7 +91,7 @@ function usage() {
     echo ""
 }
 
-while getopts "k:r:a:s:n:e:v:c:u:p:S:J:i:b:m:w:h" opts; do
+while getopts "k:r:a:s:n:e:v:c:u:p:S:j:J:i:b:m:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -122,6 +125,9 @@ while getopts "k:r:a:s:n:e:v:c:u:p:S:J:i:b:m:w:h" opts; do
         ;;
     S)
         db_allocated_storage=${OPTARG}
+        ;;
+    j)
+        jmeter_setup=${OPTARG}
         ;;
     J)
         jdk=${OPTARG}
@@ -209,6 +215,11 @@ fi
 
 if [[ -z $db_allocated_storage ]]; then
     echo "Please provide allocated space for the database."
+    exit 1
+fi
+
+if [[ -z $jmeter_setup ]]; then
+    echo "Please provide the path to JMeter setup."
     exit 1
 fi
 
@@ -394,14 +405,24 @@ echo "Getting Load Balancer Private IP..."
 lb_host="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`WSO2ISHostName`].OutputValue' --output text)"
 echo "Load Balancer Private IP: $lb_host"
 
-copy_bastion_setup_command_1="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_bastion_setup_command_2="scp -i $key_file -o StrictHostKeyChecking=no $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
 echo ""
-echo "Copying Bastion Node setup script: $copy_bastion_setup_command_1"
-$copy_bastion_setup_command_1
-$copy_bastion_setup_command_2
+echo "Getting RDS Hostname..."
+rds_host="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`DatabaseHost`].OutputValue' --output text)"
+echo "RDS Hostname: $rds_host"
 
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -l $lb_host"
+copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_key_file_command="scp -i $key_file -o StrictHostKeyChecking=no $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
+copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+echo ""
+echo "Copying files to Bastion node..."
+echo $copy_bastion_setup_command
+$copy_bastion_setup_command
+echo $copy_key_file_command
+$copy_key_file_command
+echo $copy_jmeter_setup_command
+$copy_jmeter_setup_command
+
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -l $lb_host -r $rds_host"
 echo ""
 echo "Running Bastion Node setup script: $setup_bastion_node_command"
 # Handle any error and let the script continue.
@@ -413,7 +434,7 @@ echo ""
 echo "Running performance tests: $run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."
 
-scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir
+scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/
 
 if [[ ! -f $results_dir/results.zip ]]; then
     echo ""
@@ -426,8 +447,11 @@ echo "Creating summary.csv..."
 cd $results_dir
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-.$results_dir/jmeter/create-summary-csv.sh -d results -n IS -p ballerina -j 2 -g gcviewer.jar
+$results_dir/jmeter/create-summary-csv-is.sh -d results -n IS -p ballerina -j 2 -g gcviewer.jar
 
 echo ""
 echo "Converting summary results to markdown format..."
-.$results_dir/jmeter/csv-to-markdown-converter.py summary.csv summary.md
+$results_dir/jmeter/csv-to-markdown-converter.py summary.csv summary.md
+
+echo ""
+echo "Done."

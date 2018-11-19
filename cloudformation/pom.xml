@@ -46,6 +46,7 @@
                         <configuration>
                             <url>https://raw.githubusercontent.com/vihanga-liyanage/cloudformation-is/is-5.7.0/cloudformation-templates/pattern-2/pattern-2-with-puppet-cloudformation.template.yml</url>
                             <outputFileName>cf-template.yml</outputFileName>
+                            <skipCache>true</skipCache>
                             <!-- default target location, just to demonstrate the parameter -->
                             <!--<outputDirectory>${project.build.directory}</outputDirectory>-->
                         </configuration>

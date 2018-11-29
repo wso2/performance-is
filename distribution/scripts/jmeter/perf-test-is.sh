@@ -99,14 +99,14 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 [-c <concurrent_users>] [-m <heap_sizes>] [-d <test_duration>] [-w <warm_up_time>]"
-    echo "   [-i <include_scenario_name>]"
-    echo "   [-e <include_scenario_name>] [-t] [-p <estimated_processing_time_in_between_tests>] [-h]"
+    echo "   [-j <jmeter_client_heap_size>] [-i <include_scenario_name>] [-e <exclude_scenario_name>]"
+    echo "   [-t] [-p <estimated_processing_time_in_between_tests>] [-h]"
     echo ""
     echo "-c: Concurrency levels to test. You can give multiple options to specify multiple levels. Default \"$default_concurrent_users\"."
     echo "-m: Application heap memory sizes. You can give multiple options to specify multiple heap memory sizes. Default \"$default_heap_sizes\"."
     echo "-d: Test Duration in minutes. Default $default_test_duration m."
     echo "-w: Warm-up time in minutes. Default $default_warm_up_time m."
-    echo "-k: Heap Size of JMeter Client. Default $default_jmeter_client_heap_size."
+    echo "-j: Heap Size of JMeter Client. Default $default_jmeter_client_heap_size."
     echo "-i: Scenario name to to be included. You can give multiple options to filter scenarios."
     echo "-e: Scenario name to to be excluded. You can give multiple options to filter scenarios."
     echo "-t: Estimate time without executing tests."
@@ -115,7 +115,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:n:j:k:l:i:e:tp:h" opts; do
+while getopts "c:m:d:w:j:i:e:tp:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -129,7 +129,7 @@ while getopts "c:m:d:w:n:j:k:l:i:e:tp:h" opts; do
     w)
         warm_up_time=${OPTARG}
         ;;
-    k)
+    j)
         jmeter_client_heap_size=${OPTARG}
         ;;
     i)
@@ -304,7 +304,8 @@ function run_test_data_scripts() {
     echo "Running test data setup scripts"
     echo "=========================================================================================="
 
-    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants_And_Tenant_Users.jmx")
+    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+#    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in ${scripts[@]}; do

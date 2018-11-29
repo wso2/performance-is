@@ -36,11 +36,11 @@ declare -A test_scenario0=(
     [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
     [skip]=false
 )
-declare -A test_scenario1=(
-    [name]="authenticate_tenant_users"
-    [jmx]="authenticate/Authenticate_Tenant_User.jmx"
-    [skip]=false
-)
+#declare -A test_scenario1=(
+#    [name]="authenticate_tenant_users"
+#    [jmx]="authenticate/Authenticate_Tenant_User.jmx"
+#    [skip]=false
+#)
 declare -A test_scenario2=(
     [name]="oauth_auth_code_redirect_with_consent"
     [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
@@ -81,21 +81,21 @@ declare -A test_scenario9=(
     [jmx]="oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx"
     [skip]=false
 )
-declare -A test_scenario10=(
-    [name]="saml2_sso_redirect_binding"
-    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
-    [skip]=false
-)
-declare -A test_scenario11=(
-    [name]="saml2_sso_request_path_authentication"
-    [jmx]="saml/SAML2_SSO_Request_Path_Authentication.jmx"
-    [skip]=false
-)
+#declare -A test_scenario10=(
+#    [name]="saml2_sso_redirect_binding"
+#    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+#    [skip]=false
+#)
+#declare -A test_scenario11=(
+#    [name]="saml2_sso_request_path_authentication"
+#    [jmx]="saml/SAML2_SSO_Request_Path_Authentication.jmx"
+#    [skip]=false
+#)
 
 function before_execute_test_scenario() {
 
-    ssh $wso2is_1_host_alias "sudo -u wso2user ./restart-is.sh"
-    ssh $wso2is_2_host_alias "sudo -u wso2user ./restart-is.sh"
+    ssh $wso2is_1_host_alias "sudo ./restart-is.sh"
+    ssh $wso2is_2_host_alias "sudo ./restart-is.sh"
     jmeter_params+=("port=443")
 
     echo "Cleaning databases..."
@@ -106,15 +106,16 @@ function before_execute_test_scenario() {
 function after_execute_test_scenario() {
 
 #    todo check on ballerina.*/bre
+    is_home="/usr/lib/wso2/wso2is/*/wso2is-*"
     write_server_metrics $wso2is_1_host_alias $wso2is_1_host_alias ballerina.*/bre
-    download_file "$wso2is_1_host_alias" /mnt/wso2is-*/repository/logs/wso2carbon.log "$wso2is_1_host_alias.log"
-    download_file "$wso2is_1_host_alias" /mnt/wso2is-*/repository/logs/gc.log "$wso2is_1_host_alias-gc.log"
-    download_file "$wso2is_1_host_alias" /mnt/wso2is-*/repository/logs/heap-dump.hprof "$wso2is_1_host_alias-heap-dump.hprof"
+    download_file "$wso2is_1_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_1_host_alias.log"
+    download_file "$wso2is_1_host_alias" $is_home/repository/logs/gc.log "$wso2is_1_host_alias-gc.log"
+    download_file "$wso2is_1_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_1_host_alias-heap-dump.hprof"
 
     write_server_metrics $wso2is_2_host_alias $wso2is_2_host_alias ballerina.*/bre
-    download_file "$wso2is_2_host_alias" /mnt/wso2is-*/repository/logs/wso2carbon.log "$wso2is_2_host_alias.log"
-    download_file "$wso2is_2_host_alias" /mnt/wso2is-*/repository/logs/gc.log "$wso2is_2_host_alias-gc.log"
-    download_file "$wso2is_2_host_alias" /mnt/wso2is-*/repository/logs/heap-dump.hprof "$wso2is_2_host_alias-heap-dump.hprof"
+    download_file "$wso2is_2_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_2_host_alias.log"
+    download_file "$wso2is_2_host_alias" $is_home/repository/logs/gc.log "$wso2is_2_host_alias-gc.log"
+    download_file "$wso2is_2_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_2_host_alias-heap-dump.hprof"
 }
 
 test_scenarios

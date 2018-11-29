@@ -133,87 +133,6 @@
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add Tenant" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://services.mgt.tenant.carbon.wso2.org&quot; xmlns:xsd=&quot;http://beans.common.stratos.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;ser:addTenant&gt;&#xd;
-         &lt;!--Optional:--&gt;&#xd;
-         &lt;ser:tenantInfoBean&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:active&gt;true&lt;/xsd:active&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:admin&gt;${tenantAdminUsername}&lt;/xsd:admin&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:adminPassword&gt;${tenantAdminPassword}&lt;/xsd:adminPassword&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:email&gt;${tenantDomainNamePrefix}${tenantNo}@wso2.com&lt;/xsd:email&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:firstname&gt;${tenantDomainNamePrefix}${tenantNo}FN&lt;/xsd:firstname&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:lastname&gt;${tenantDomainNamePrefix}${tenantNo}LN&lt;/xsd:lastname&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:tenantDomain&gt;${tenantDomainNamePrefix}${tenantNo}.com&lt;/xsd:tenantDomain&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:tenantId&gt;0&lt;/xsd:tenantId&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd:usagePlan&gt;Demo&lt;/xsd:usagePlan&gt;&#xd;
-         &lt;/ser:tenantInfoBean&gt;&#xd;
-      &lt;/ser:addTenant&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/services/TenantMgtAdminService.TenantMgtAdminServiceHttpsSoap11Endpoint/</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">SOAPAction</stringProp>
-                <stringProp name="Header.value">urn:addTenant</stringProp>
-              </elementProp>
-              <elementProp name="Content-Type" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">text/xml</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1606201635">HTTP/1.1 200 OK</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-          </ResponseAssertion>
-          <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-            <stringProp name="ConstantTimer.delay">5000</stringProp>
-          </ConstantTimer>
-          <hashTree/>
-        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login to Ceated Tenant" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -410,7 +329,7 @@
           </HTTPSamplerProxy>
           <hashTree>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">2000</stringProp>
+              <stringProp name="ConstantTimer.delay">1000</stringProp>
             </ConstantTimer>
             <hashTree/>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">

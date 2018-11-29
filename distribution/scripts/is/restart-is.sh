@@ -17,7 +17,7 @@
 # Restart Identity Server
 # ----------------------------------------------------------------------------
 
-default_carbon_home=$(realpath /mnt/wso2is-*)
+default_carbon_home=$(realpath /usr/lib/wso2/wso2is/*/wso2is-*/)
 carbon_home=$default_carbon_home
 default_waiting_time=100
 waiting_time=$default_waiting_time
@@ -81,7 +81,7 @@ echo "Killing All Carbon Servers..."
 killall java
 
 echo "Enabling GC Logs..."
-export JAVA_OPTS="-XX:+UnlockCommercialFeatures -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:${carbon_home}/repository/logs/gc.log"
+export JAVA_OPTS="-XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:${carbon_home}/repository/logs/gc.log"
 JAVA_OPTS+=" -Xms${heap_size} -Xmx${heap_size}"
 JAVA_OPTS+=" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${carbon_home}/repository/logs/heap-dump.hprof""
 echo "JAVA_OPTS: $JAVA_OPTS"

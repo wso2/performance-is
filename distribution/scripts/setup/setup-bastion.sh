@@ -89,7 +89,6 @@ function get_ssh_hostname() {
 apt-get -y update
 apt-get -y install git
 apt-get install -y mysql-client
-apt-get install -y realpath
 
 # Only required when Ubuntu 14 is used.
 echo ""
@@ -134,7 +133,7 @@ cd workspace
 git clone https://github.com/vihanga-liyanage/performance-is
 cd performance-is
 # todo remove checkout command.
-git checkout test-automation-4
+git checkout is-5.7.0
 mvn clean install
 
 echo ""
@@ -169,11 +168,9 @@ sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_1_host_alias:/home/ub
 sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_1_host_alias:/home/ubuntu/sar/
 sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_1_host_alias:/home/ubuntu/
 sudo -u ubuntu ssh $wso2is_1_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
-sudo -u ubuntu ssh $wso2is_1_host_alias sudo apt-get install -y realpath
 
 sudo -u ubuntu ssh $wso2is_2_host_alias mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_2_host_alias:/home/ubuntu/setup/
 sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_2_host_alias:/home/ubuntu/sar/
 sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_2_host_alias:/home/ubuntu/
 sudo -u ubuntu ssh $wso2is_2_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
-sudo -u ubuntu ssh $wso2is_2_host_alias sudo apt-get install -y realpath

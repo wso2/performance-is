@@ -20,29 +20,21 @@
 # ----------------------------------------------------------------------------
 
 # Cloud Formation parameters.
-default_jdk="ORACLE_JDK8"
-jdk="$default_jdk"
-default_db_engine="mysql"
-db_engine="$default_db_engine"
-default_db_engine_version="5.6.35"
-db_engine_version="$default_db_engine_version"
+stack_name="is-5-7-test-stack"
+default_certificate_name="is-perf-cert"
+certificate_name="$default_certificate_name"
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-#todo double check the class
-default_db_class=db.m4.large
-db_class="$default_db_class"
-default_key_name="if-perf-test"
+default_wum_username="wso2pmtuser@wso2.com"
+wum_username="$default_wum_username"
+default_wum_password="wyeDzg5#4CgE"
+wum_password="$default_wum_password"
+default_key_name="is-perf-test"
 key_name="$default_key_name"
-default_db_allocated_storage=20
-db_allocated_storage="$default_db_allocated_storage"
-default_instance_type=c5.large
+default_instance_type=m4.large
 wso2_is_instance_type="$default_instance_type"
-bastion_instance_type="$default_instance_type"
-default_wso2_env_is_alb_scheme="internal"
-wso2_env_is_alb_scheme="$default_wso2_env_is_alb_scheme"
-alb_certificate_arn=""
 aws_access_key=""
 aws_access_secret=""
 
@@ -59,45 +51,33 @@ jmeter_setup=""
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -k <key_file> -r <alb_certificate_arn>"
-    echo "   -a <aws_access_key> -s <aws_access_secret>"
-    echo "   [-n <key_name>] [-e <db_engine>] [-v <db_engine_version>]"
-    echo "   [-c <db_class>] [-u <db_username>] [-p <db_password>]"
-    echo "   [-s <db_allocated_storage>] [-j <jmeter_setup_path>] [-J <jdk>]"
-    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
-    echo "   [-s <wso2_env_is_alb_scheme>] [-m <lb_scheme>]"
-    echo "   [-w <minimum_stack_creation_wait_time>]"
+    echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret> -j <jmeter_setup_path>"
+    echo "   [-n <key_name>] [-u <db_username>] [-p <db_password>] [-i <wso2_is_instance_type>]"
+    echo "   [-d <wum_username>] [-e <wum_password>]"
+    echo "   [-c <certificate_name>] [-w <minimum_stack_creation_wait_time>]"
     echo "   [-h] -- [run_performance_tests_options]"
     echo ""
     echo "-k: The Amazon EC2 Key File."
-    echo "-r: The ARN value of the load balancer certificate."
     echo "-a: The AWS access key."
     echo "-s: The AWS access secret."
+    echo "-j: The path to JMeter setup."
     echo "-n: The Amazon EC2 Key Name. Default: $default_key_name."
-    echo "-e: The database engine. Default: $default_db_engine."
-    echo "-v: The database engine version. Default: $default_db_engine_version."
-    echo "-c: The database instance class. Default: $default_db_class."
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-S: The database allocated storage. Default: $default_db_allocated_storage GB."
-    echo "-j: The path to JMeter setup."
-    echo "-J: Preferred JDK version. Default: $default_jdk."
     echo "-i: The instance type used for IS nodes. Default: $default_instance_type."
-    echo "-b: The instance type used for Bastion node. Default: $default_instance_type."
-    echo "-m: Scheme for the AWS Load Balancer. Default: $default_wso2_env_is_alb_scheme."
+    echo "-d: The WUM username. Default: $default_wum_username."
+    echo "-e: The WUM password. Default: ***********."
+    echo "-c: The name of the IAM certificate. Default: $default_certificate_name."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:r:a:s:n:e:v:c:u:p:S:j:J:i:b:m:w:h" opts; do
+while getopts "k:a:s:n:u:p:j:i:d:e:c:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
-        ;;
-    r)
-        alb_certificate_arn=${OPTARG}
         ;;
     a)
         aws_access_key=${OPTARG}
@@ -108,38 +88,26 @@ while getopts "k:r:a:s:n:e:v:c:u:p:S:j:J:i:b:m:w:h" opts; do
     n)
         key_name=${OPTARG}
         ;;
-    e)
-        db_engine=${OPTARG}
-        ;;
-    v)
-        db_engine_version=${OPTARG}
-        ;;
-    c)
-        db_class=${OPTARG}
-        ;;
     u)
         db_username=${OPTARG}
         ;;
     p)
         db_password=${OPTARG}
         ;;
-    S)
-        db_allocated_storage=${OPTARG}
-        ;;
     j)
         jmeter_setup=${OPTARG}
-        ;;
-    J)
-        jdk=${OPTARG}
         ;;
     i)
         wso2_is_instance_type=${OPTARG}
         ;;
-    b)
-        bastion_instance_type=${OPTARG}
+    d)
+        wum_username=${OPTARG}
         ;;
-    m)
-        wso2_env_is_alb_scheme=${OPTARG}
+    e)
+        wum_password=${OPTARG}
+        ;;
+    c)
+        certificate_name=${OPTARG}
         ;;
     w)
         minimum_stack_creation_wait_time=${OPTARG}
@@ -173,11 +141,6 @@ if [[ -z $key_name ]]; then
     exit 1
 fi
 
-if [[ -z $alb_certificate_arn ]]; then
-    echo "Please provide the ARN value of the load balancer certificate."
-    exit 1
-fi
-
 if [[ -z $aws_access_key ]]; then
     echo "Please provide the AWS access Key."
     exit 1
@@ -185,21 +148,6 @@ fi
 
 if [[ -z $aws_access_secret ]]; then
     echo "Please provide the AWS access secret."
-    exit 1
-fi
-
-if [[ -z $db_engine ]]; then
-    echo "Please provide the database engine."
-    exit 1
-fi
-
-if [[ -z $db_engine_version ]]; then
-    echo "Please provide the database engine version."
-    exit 1
-fi
-
-if [[ -z $db_class ]]; then
-    echo "Please provide the database class."
     exit 1
 fi
 
@@ -213,18 +161,13 @@ if [[ -z $db_password ]]; then
     exit 1
 fi
 
-if [[ -z $db_allocated_storage ]]; then
-    echo "Please provide allocated space for the database."
-    exit 1
-fi
-
 if [[ -z $jmeter_setup ]]; then
     echo "Please provide the path to JMeter setup."
     exit 1
 fi
 
-if [[ -z $jdk ]]; then
-    echo "Please provide the preferred JDK."
+if [[ -z $certificate_name ]]; then
+    echo "Please provide the name of the IAM certificate."
     exit 1
 fi
 
@@ -233,13 +176,13 @@ if [[ -z $wso2_is_instance_type ]]; then
     exit 1
 fi
 
-if [[ -z $bastion_instance_type ]]; then
-    echo "Please provide the AWS instance type for bastion nodes."
+if [[ -z $wum_username ]]; then
+    echo "Please provide the WUM username."
     exit 1
 fi
 
-if [[ -z $wso2_env_is_alb_scheme ]]; then
-    echo "Please provide the scheme for the load balancer."
+if [[ -z $wum_password ]]; then
+    echo "Please provide the WUM password."
     exit 1
 fi
 
@@ -304,7 +247,7 @@ estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performa
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.
-$estimate_command
+#$estimate_command
 
 temp_dir=$(mktemp -d)
 
@@ -317,31 +260,33 @@ cd $script_dir
 
 echo ""
 echo "Validating stack..."
-aws cloudformation validate-template --template-body file://target/cf-template.yml
+#aws cloudformation validate-template --template-body file://target/cf-template.yml
 
 stack_create_start_time=$(date +%s)
-create_stack_command="aws cloudformation create-stack --stack-name is-test-stack \
+create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
     --template-body file://target/cf-template.yml --parameters \
-    ParameterKey=JDK,ParameterValue=$jdk \
-    ParameterKey=DBEngine,ParameterValue=$db_engine \
-    ParameterKey=DBEngineVersion,ParameterValue=$db_engine_version \
-    ParameterKey=DBUsername,ParameterValue=$db_username \
-    ParameterKey=DBPassword,ParameterValue=$db_password \
-    ParameterKey=DBClass,ParameterValue=$db_class \
-    ParameterKey=EC2KeyPair,ParameterValue=$key_name \
-    ParameterKey=ALBCertificateARN,ParameterValue=$alb_certificate_arn \
-    ParameterKey=WSO2ISInstanceType,ParameterValue=$wso2_is_instance_type \
-    ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
-    ParameterKey=AWSAccessKeyId,ParameterValue=$aws_access_key \
-    ParameterKey=AWSAccessKeySecret,ParameterValue=$aws_access_secret \
-    ParameterKey=WSO2EnvISALBScheme,ParameterValue=$wso2_env_is_alb_scheme \
+        ParameterKey=AWSAccessKeyId,ParameterValue=$aws_access_key \
+        ParameterKey=AWSAccessKeySecret,ParameterValue=$aws_access_secret \
+        ParameterKey=CertificateName,ParameterValue=$certificate_name \
+        ParameterKey=KeyPairName,ParameterValue=$key_name \
+        ParameterKey=DBUsername,ParameterValue=$db_username \
+        ParameterKey=DBPassword,ParameterValue=$db_password \
+        ParameterKey=WUMUsername,ParameterValue=$wum_username \
+        ParameterKey=WUMPassword,ParameterValue=$wum_password \
+        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
+        ParameterKey=BastionInstanceType,ParameterValue=$wso2_is_instance_type \
+        ParameterKey=WSO2ISLoadBalancerScheme,ParameterValue=internal \
     --capabilities CAPABILITY_IAM"
 
+#    ParameterKey=BastionInstanceType,ParameterValue=$wso2_is_instance_type \
+#    ParameterKey=WSO2ISLoadBalancerScheme,ParameterValue=internal \
+#    ParameterKey=ElasticSearchEndpoint,ParameterValue=endpoint \
 echo ""
 echo "Creating stack..."
 echo "$create_stack_command"
-stack_id="$($create_stack_command)"
-stack_id=$(echo $stack_id|jq -r .StackId)
+#stack_id="$($create_stack_command)"
+#stack_id=$(echo $stack_id|jq -r .StackId)
+stack_id="arn:aws:cloudformation:us-east-1:610968236798:stack/is-5-7-test-stack-2/9fae2e00-f873-11e8-83f9-0abba895ce2c"
 
 function exit_handler() {
     # Get stack events
@@ -365,8 +310,15 @@ function exit_handler() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time $script_start_time))"
 }
 
+function get_is_instance_ip() {
+
+    wso2is1_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id $1 | jq -r '.StackResources[].PhysicalResourceId')"
+    wso2is1_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is1_auto_scaling_grp | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+    aws ec2 describe-instances --instance-ids $wso2is1_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress'
+}
+
 # Delete the stack in case of an error.
-trap exit_handler EXIT
+#trap exit_handler EXIT
 
 echo ""
 echo "Created stack: $stack_id"
@@ -387,27 +339,29 @@ printf "Stack creation time: %s\n" "$(format_time $(measure_time $stack_create_s
 
 echo ""
 echo "Getting Bastion Node Public IP..."
-bastion_node_ip="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`BastionEIP`].OutputValue' --output text)"
+bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2BastionInstance | jq -r '.StackResources[].PhysicalResourceId')"
+bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
 echo ""
 echo "Getting WSO2 IS Node 1 Private IP..."
-wso2_is_1_ip="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`WSO2IS1PrivateIP`].OutputValue' --output text)"
+wso2_is_1_ip="$(get_is_instance_ip WSO2ISNode1AutoScalingGroup)"
 echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
 echo ""
 echo "Getting WSO2 IS Node 2 Private IP..."
-wso2_is_2_ip="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`WSO2IS2PrivateIP`].OutputValue' --output text)"
+wso2_is_2_ip="$(get_is_instance_ip WSO2ISNode2AutoScalingGroup)"
 echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
 
 echo ""
 echo "Getting Load Balancer Private IP..."
-lb_host="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`WSO2ISHostName`].OutputValue' --output text)"
-echo "Load Balancer Private IP: $lb_host"
+lb_host="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`MgtConsoleUrl`].OutputValue' --output text | cut -d'/' -f 3)"
+echo "Load Balancer hostname: $lb_host"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_host="$(aws cloudformation describe-stacks --stack-name $stack_id --query 'Stacks[0].Outputs[?OutputKey==`DatabaseHost`].OutputValue' --output text)"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
 copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
@@ -428,7 +382,7 @@ echo "Running Bastion Node setup script: $setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh -l $lb_host ${run_performance_tests_options[@]}"
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo ""
 echo "Running performance tests: $run_remote_tests"

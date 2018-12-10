@@ -33,8 +33,10 @@ default_wum_password="wyeDzg5#4CgE"
 wum_password="$default_wum_password"
 default_key_name="is-perf-test"
 key_name="$default_key_name"
-default_instance_type=m4.large
-wso2_is_instance_type="$default_instance_type"
+default_is_instance_type=c5.large
+wso2_is_instance_type="$default_is_instance_type"
+default_bastion_instance_type=m4.large
+bastion_instance_type="$default_bastion_instance_type"
 aws_access_key=""
 aws_access_secret=""
 
@@ -53,7 +55,7 @@ function usage() {
     echo "Usage: "
     echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret> -j <jmeter_setup_path>"
     echo "   [-n <key_name>] [-u <db_username>] [-p <db_password>] [-i <wso2_is_instance_type>]"
-    echo "   [-d <wum_username>] [-e <wum_password>]"
+    echo "   [-b <bastion_instance_type>] [-d <wum_username>] [-e <wum_password>]"
     echo "   [-c <certificate_name>] [-w <minimum_stack_creation_wait_time>]"
     echo "   [-h] -- [run_performance_tests_options]"
     echo ""
@@ -64,7 +66,8 @@ function usage() {
     echo "-n: The Amazon EC2 Key Name. Default: $default_key_name."
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-i: The instance type used for IS nodes. Default: $default_instance_type."
+    echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
+    echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-d: The WUM username. Default: $default_wum_username."
     echo "-e: The WUM password. Default: ***********."
     echo "-c: The name of the IAM certificate. Default: $default_certificate_name."
@@ -74,7 +77,7 @@ function usage() {
     echo ""
 }
 
-while getopts "k:a:s:n:u:p:j:i:d:e:c:w:h" opts; do
+while getopts "k:a:s:n:u:p:j:i:b:d:e:c:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -99,6 +102,9 @@ while getopts "k:a:s:n:u:p:j:i:d:e:c:w:h" opts; do
         ;;
     i)
         wso2_is_instance_type=${OPTARG}
+        ;;
+    b)
+        bastion_instance_type=${OPTARG}
         ;;
     d)
         wum_username=${OPTARG}
@@ -176,6 +182,11 @@ if [[ -z $wso2_is_instance_type ]]; then
     exit 1
 fi
 
+if [[ -z $bastion_instance_type ]]; then
+    echo "Please provide the AWS instance type for the bastion node."
+    exit 1
+fi
+
 if [[ -z $wum_username ]]; then
     echo "Please provide the WUM username."
     exit 1
@@ -247,7 +258,7 @@ estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performa
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.
-#$estimate_command
+$estimate_command
 
 temp_dir=$(mktemp -d)
 
@@ -260,7 +271,16 @@ cd $script_dir
 
 echo ""
 echo "Validating stack..."
-#aws cloudformation validate-template --template-body file://target/cf-template.yml
+aws cloudformation validate-template --template-body file://target/cf-template.yml
+
+# Save metadata
+test_parameters_json='.'
+test_parameters_json+=' | .["is_nodes_ec2_instance_type"]=$is_nodes_ec2_instance_type'
+test_parameters_json+=' | .["bastion_node_ec2_instance_type"]=$bastion_node_ec2_instance_type'
+jq -n \
+    --arg is_nodes_ec2_instance_type "$wso2_is_instance_type" \
+    --arg bastion_node_ec2_instance_type "$bastion_instance_type" \
+    "$test_parameters_json" > $results_dir/cf-test-metadata.json
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
@@ -274,19 +294,15 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=WUMUsername,ParameterValue=$wum_username \
         ParameterKey=WUMPassword,ParameterValue=$wum_password \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
-        ParameterKey=BastionInstanceType,ParameterValue=$wso2_is_instance_type \
+        ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
         ParameterKey=WSO2ISLoadBalancerScheme,ParameterValue=internal \
     --capabilities CAPABILITY_IAM"
 
-#    ParameterKey=BastionInstanceType,ParameterValue=$wso2_is_instance_type \
-#    ParameterKey=WSO2ISLoadBalancerScheme,ParameterValue=internal \
-#    ParameterKey=ElasticSearchEndpoint,ParameterValue=endpoint \
 echo ""
 echo "Creating stack..."
 echo "$create_stack_command"
-#stack_id="$($create_stack_command)"
-#stack_id=$(echo $stack_id|jq -r .StackId)
-stack_id="arn:aws:cloudformation:us-east-1:610968236798:stack/is-5-7-test-stack-2/9fae2e00-f873-11e8-83f9-0abba895ce2c"
+stack_id="$($create_stack_command)"
+stack_id=$(echo $stack_id|jq -r .StackId)
 
 function exit_handler() {
     # Get stack events
@@ -318,7 +334,7 @@ function get_is_instance_ip() {
 }
 
 # Delete the stack in case of an error.
-#trap exit_handler EXIT
+trap exit_handler EXIT
 
 echo ""
 echo "Created stack: $stack_id"
@@ -336,6 +352,17 @@ echo ""
 echo "Polling till the stack creation completes..."
 aws cloudformation wait stack-create-complete --stack-name $stack_id
 printf "Stack creation time: %s\n" "$(format_time $(measure_time $stack_create_start_time))"
+
+echo ""
+echo "Applying tuning parameters to the RDS instance..."
+aws rds modify-db-instance --db-instance-identifier wso2isdbinstance --db-parameter-group-name wso2is-db-param-grp
+aws rds reboot-db-instance --db-instance-identifier wso2isdbinstance
+echo ""
+echo "Waiting till the RDS restarts with tuning params..."
+start_time=$(date +%s)
+aws rds wait db-instance-available --db-instance-identifier wso2isdbinstance
+end_time=$(date +%s)
+echo "RDS restarted. Time spent: $(echo "$end_time - $start_time" | bc) seconds."
 
 echo ""
 echo "Getting Bastion Node Public IP..."
@@ -360,7 +387,7 @@ echo "Load Balancer hostname: $lb_host"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISDBInstance | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
@@ -401,11 +428,13 @@ echo "Creating summary.csv..."
 cd $results_dir
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-$results_dir/jmeter/create-summary-csv-is.sh -d results -n IS -p ballerina -j 2 -g gcviewer.jar
+$results_dir/jmeter/create-summary-csv-is.sh -d results -n IS -j 2 -g gcviewer.jar
 
-echo ""
-echo "Converting summary results to markdown format..."
-$results_dir/jmeter/csv-to-markdown-converter.py summary.csv summary.md
+echo "Creating summary results markdown file..."
+./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
+    "Scenario Name" "Concurrent Users" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
+    "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
+    "IS Server 1 GC Throughput (%)" "IS Server 2 GC Throughput (%)"
 
 echo ""
 echo "Done."

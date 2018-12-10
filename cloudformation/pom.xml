@@ -44,12 +44,9 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <!--<url>https://raw.githubusercontent.com/wso2/aws-is/master/scalable-is/scalable-is.yaml</url>-->
                             <url>https://raw.githubusercontent.com/vihanga-liyanage/aws-is/master/scalable-is/scalable-is.yaml</url>
                             <outputFileName>cf-template.yml</outputFileName>
                             <skipCache>true</skipCache>
-                            <!-- default target location, just to demonstrate the parameter -->
-                            <!--<outputDirectory>${project.build.directory}</outputDirectory>-->
                         </configuration>
                     </execution>
                 </executions>

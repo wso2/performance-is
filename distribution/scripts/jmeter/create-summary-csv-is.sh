@@ -43,7 +43,6 @@ function usage() {
     echo "   [-j <jmeter_servers>] [-w] [-i] [-h]"
     echo ""
     echo "-n: Name of the application to be used in column headers."
-    echo " p: Prefix of the files to get metrics (Load Average, GC, etc)."
     echo "-g: Path of GCViewer Jar file, which will be used to analyze GC logs."
     echo "-d: Results directory. Default $default_results_dir."
     echo "-j: Number of JMeter servers. If n=1, only client was used. If n > 1, remote JMeter servers were used. Default $default_jmeter_servers."
@@ -53,7 +52,7 @@ function usage() {
     echo ""
 }
 
-while getopts "n:p:g:d:j:wih" opts; do
+while getopts "n:g:d:j:wih" opts; do
     case $opts in
     n)
         application_name=${OPTARG}
@@ -105,13 +104,17 @@ if [[ -z $jmeter_servers ]]; then
     exit 1
 fi
 
-function get_gc_headers() {
-    echo -ne ",$1 GC Throughput (%),$1 Footprint (M),$1 Average of Footprint After Full GC (M)"
-    echo -ne ",$1 Standard Deviation of Footprint After Full GC (M)"
+function add_gc_headers() {
+    headers+=("$1 GC Throughput (%)")
+    headers+=("$1 Memory Footprint (M)")
+    headers+=("Average of $1 Memory Footprint After Full GC (M)")
+    headers+=("Standard Deviation of $1 Memory Footprint After Full GC (M)")
 }
 
-function get_loadavg_headers() {
-    echo -ne ",$1 Load Average - Last 1 minute,$1 Load Average - Last 5 minutes,$1 Load Average - Last 15 minutes"
+function add_loadavg_headers() {
+    headers+=("$1 Load Average - Last 1 minute")
+    headers+=("$1 Load Average - Last 5 minutes")
+    headers+=("$1 Load Average - Last 15 minutes")
 }
 
 # Output file name
@@ -122,25 +125,61 @@ if [[ -f $filename ]]; then
     exit 1
 fi
 
-# Create file and save headers
-echo -n "Scenario Name","Heap Size","Concurrent Users", >$filename
-echo -n "# Samples","Error Count","Error %","Average (ms)","Standard Deviation (ms)","Min (ms)","Max (ms)", >>$filename
-echo -n "75th Percentile (ms)","90th Percentile (ms)","95th Percentile (ms)","98th Percentile (ms)", >>$filename
-echo -n "99th Percentile (ms)","99.9th Percentile (ms)","Throughput (Requests/sec)", >>$filename
-echo -n "Received (KB/sec)","Sent (KB/sec)" >>$filename
-#echo -n $(get_gc_headers "${application_name}") >>$filename
-echo -n $(get_gc_headers "IS Server 1") >>$filename
-echo -n $(get_gc_headers "IS Server 2") >>$filename
-if [ "$include_all" = true ]; then
-    echo -n $(get_gc_headers "JMeter Server") >>$filename
+declare -A scenario_display_names
+
+# Check test_metadata.json file
+if [[ -f ${results_dir}/test_metadata.json ]]; then
+    while IFS='=' read -r key value; do
+        scenario_display_names["$key"]="$value"
+    done < <(jq -r '.test_scenarios[] | "\(.name)=\(.display_name)"' ${results_dir}/test_metadata.json)
+else
+    echo "WARNING: Could not find test metadata."
 fi
-#echo -n $(get_loadavg_headers "${application_name}") >>$filename
-echo -n $(get_loadavg_headers "IS Server 1") >>$filename
-echo -n $(get_loadavg_headers "IS Server 2") >>$filename
+
+declare -ag headers
+headers+=("Scenario Name")
+headers+=("Heap Size")
+headers+=("Concurrent Users")
+headers+=("# Samples")
+headers+=("Error Count")
+headers+=("Error %")
+headers+=("Throughput (Requests/sec)")
+headers+=("Average Response Time (ms)")
+headers+=("Standard Deviation of Response Time (ms)")
+headers+=("Minimum Response Time (ms)")
+headers+=("Maximum Response Time (ms) (ms)")
+headers+=("75th Percentile of Response Time (ms)")
+headers+=("90th Percentile of Response Time (ms)")
+headers+=("95th Percentile of Response Time (ms)")
+headers+=("98th Percentile of Response Time (ms)")
+headers+=("99th Percentile of Response Time (ms)")
+headers+=("99.9th Percentile of Response Time (ms)")
+headers+=("Received (KB/sec)")
+headers+=("Sent (KB/sec)")
+
+add_gc_headers "IS Server 1"
+add_gc_headers "IS Server 2"
+
 if [ "$include_all" = true ]; then
-    echo -n $(get_loadavg_headers "JMeter Server") >>$filename
+    add_gc_headers "JMeter Server"
 fi
-echo -ne "\r\n" >>$filename
+
+add_loadavg_headers "IS Server 1"
+add_loadavg_headers "IS Server 2"
+
+if [ "$include_all" = true ]; then
+    add_loadavg_headers "JMeter Server"
+fi
+
+header_row=""
+for ((i = 0; i < ${#headers[@]}; i++)); do
+    if [ $i -gt 0 ]; then
+        header_row+=","
+    fi
+    header_row+="${headers[$i]}"
+done
+
+echo -ne "${header_row}\r\n" >$filename
 
 function write_column() {
     local data_file="$1"
@@ -153,33 +192,34 @@ function get_value_from_gc_summary() {
     echo $(grep -m 1 $2\; $1 | sed -r 's/.*\;(.*)\;.*/\1/' | sed 's/,//g')
 }
 
-function write_gc_summary_details() {
-    echo "writing gc summary details for $1"
+function add_gc_summary_details() {
     local gc_log_file="${current_dir}/$1-gc.log"
     if [[ -f $gc_log_file ]]; then
         local gc_summary_file="/tmp/gc.txt"
         echo "Reading $gc_log_file"
         java -Xms128m -Xmx128m -jar $gcviewer_jar_path $gc_log_file $gc_summary_file -t SUMMARY &>/dev/null
-        echo -n ",$(get_value_from_gc_summary $gc_summary_file throughput)" >>$filename
-        echo -n ",$(get_value_from_gc_summary $gc_summary_file footprint)" >>$filename
-        echo -n ",$(get_value_from_gc_summary $gc_summary_file avgfootprintAfterFullGC)" >>$filename
-        echo -n ",$(get_value_from_gc_summary $gc_summary_file avgfootprintAfterFullGCσ)" >>$filename
+        columns+=("$(get_value_from_gc_summary $gc_summary_file throughput)")
+        columns+=("$(get_value_from_gc_summary $gc_summary_file footprint)")
+        columns+=("$(get_value_from_gc_summary $gc_summary_file avgfootprintAfterFullGC)")
+        columns+=("$(get_value_from_gc_summary $gc_summary_file avgfootprintAfterFullGCσ)")
     else
-        echo -n ",N/A,N/A,N/A,N/A" >>$filename
+        echo "WARNING: File missing! $gc_log_file"
+        columns+=("N/A" "N/A" "N/A" "N/A")
     fi
 }
 
-function write_loadavg_details() {
+function add_loadavg_details() {
     local loadavg_file="${current_dir}/$1_loadavg.txt"
     if [[ -f $loadavg_file ]]; then
         echo "Reading $loadavg_file"
         local loadavg_values=$(tail -2 $loadavg_file | head -1)
         declare -a loadavg_array=($loadavg_values)
-        echo -n ",${loadavg_array[3]}" >>$filename
-        echo -n ",${loadavg_array[4]}" >>$filename
-        echo -n ",${loadavg_array[5]}" >>$filename
+        columns+=("${loadavg_array[3]}")
+        columns+=("${loadavg_array[4]}")
+        columns+=("${loadavg_array[5]}")
     else
-        echo -n ",N/A,N/A,N/A" >>$filename
+        echo "WARNING: File missing! $loadavg_file"
+        columns+=("N/A" "N/A" "N/A")
     fi
 }
 
@@ -207,37 +247,53 @@ for scenario_dir in $(find ${results_dir} -maxdepth 1 -type d | sort -V); do
             heap_size=$(echo $heap_size_dir | sed -nE 's/.*.\/([0-9]+[a-zA-Z])_heap.*/\1/p')
             concurrent_users=$(echo $concurrency_dir | sed -nE 's/.*\/([0-9]+)_users.*/\1/p')
 
-            echo -n "$scenario_name,$heap_size,$concurrent_users" >>$filename
-            write_column "${data_file}" "samples"
-            write_column "${data_file}" "errors"
-            write_column "${data_file}" "errorPercentage"
-            write_column "${data_file}" "mean"
-            write_column "${data_file}" "stddev"
-            write_column "${data_file}" "min"
-            write_column "${data_file}" "max"
-            write_column "${data_file}" "p75"
-            write_column "${data_file}" "p90"
-            write_column "${data_file}" "p95"
-            write_column "${data_file}" "p98"
-            write_column "${data_file}" "p99"
-            write_column "${data_file}" "p999"
-            write_column "${data_file}" "throughput"
-            write_column "${data_file}" "receivedKBytesRate"
-            write_column "${data_file}" "sentKBytesRate"
+            declare -A summary_results
+            while IFS="=" read -r key value; do
+                summary_results[$key]="$value"
+            done < <(jq -r "to_entries|map(\"\(.key)=\(.value)\")|.[]" $data_file)
 
-            write_gc_summary_details $is_1_file_prefix
-            write_gc_summary_details $is_2_file_prefix
+            declare -ag columns=()
+            columns+=("${scenario_display_names[$scenario_name]=$scenario_name}")
+            columns+=("$heap_size")
+            columns+=("$concurrent_users")
+            columns+=("${summary_results[samples]}")
+            columns+=("${summary_results[errors]}")
+            columns+=("${summary_results[errorPercentage]}")
+            columns+=("${summary_results[throughput]}")
+            columns+=("${summary_results[mean]}")
+            columns+=("${summary_results[stddev]}")
+            columns+=("${summary_results[min]}")
+            columns+=("${summary_results[max]}")
+            columns+=("${summary_results[p75]}")
+            columns+=("${summary_results[p90]}")
+            columns+=("${summary_results[p95]}")
+            columns+=("${summary_results[p98]}")
+            columns+=("${summary_results[p99]}")
+            columns+=("${summary_results[p999]}")
+            columns+=("${summary_results[receivedKBytesRate]}")
+            columns+=("${summary_results[sentKBytesRate]}")
+
+            add_gc_summary_details $is_1_file_prefix
+            add_gc_summary_details $is_2_file_prefix
             if [ "$include_all" = true ]; then
-                write_gc_summary_details jmeter
+                add_gc_summary_details jmeter
             fi
 
-            write_loadavg_details $is_1_file_prefix
-            write_loadavg_details $is_2_file_prefix
+            add_loadavg_details $is_1_file_prefix
+            add_loadavg_details $is_2_file_prefix
             if [ "$include_all" = true ]; then
-                write_loadavg_details jmeter
+                add_loadavg_details jmeter
             fi
 
-            echo -ne "\r\n" >>$filename
+            row=""
+            for ((i = 0; i < ${#columns[@]}; i++)); do
+                if [ $i -gt 0 ]; then
+                    row+=","
+                fi
+                row+="${columns[$i]}"
+            done
+
+            echo -ne "${row}\r\n" >>$filename
         done
     done
 done

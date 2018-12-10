@@ -55,10 +55,8 @@
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
 default_concurrent_users="50 100 150 300 500"
-declare -a concurrent_users
 # Application heap Sizes
-default_heap_sizes="2g"
-declare -a heap_sizes
+default_heap_sizes="2G"
 
 # Test Duration in minutes
 default_test_duration=15
@@ -67,7 +65,7 @@ test_duration=$default_test_duration
 default_warm_up_time=5
 warm_up_time=$default_warm_up_time
 # Heap size of JMeter Client
-default_jmeter_client_heap_size=2g
+default_jmeter_client_heap_size=2G
 jmeter_client_heap_size=$default_jmeter_client_heap_size
 
 # Scenario names to include
@@ -157,6 +155,7 @@ done
 
 # Validate options
 number_regex='^[0-9]+$'
+heap_regex='^[0-9]+[MG]$'
 
 if [[ -z $test_duration ]]; then
     echo "Please provide the test duration."
@@ -183,12 +182,38 @@ if [[ $(($warm_up_time)) -ge $test_duration ]]; then
     exit 1
 fi
 
-heap_regex='^[0-9]+[mg]$'
-
 if ! [[ $jmeter_client_heap_size =~ $heap_regex ]]; then
     echo "Please specify a valid heap for JMeter Client."
     exit 1
 fi
+
+declare -ag heap_sizes_array
+if [ ${#heap_sizes[@]} -eq 0 ]; then
+    heap_sizes_array+=($default_heap_sizes)
+else
+    heap_sizes_array+=("${heap_sizes[@]}")
+fi
+
+declare -ag concurrent_users_array
+if [ ${#concurrent_users[@]} -eq 0 ]; then
+    concurrent_users_array+=($default_concurrent_users)
+else
+    concurrent_users_array+=("${concurrent_users[@]}")
+fi
+
+for heap in ${heap_sizes_array[@]}; do
+    if ! [[ $heap =~ $heap_regex ]]; then
+        echo "Please specify a valid heap size for the application."
+        exit 1
+    fi
+done
+
+for users in ${concurrent_users_array[@]}; do
+    if ! [[ $users =~ $number_regex ]]; then
+        echo "Please specify a valid number for concurrent users."
+        exit 1
+    fi
+done
 
 function format_time() {
     # Duration in seconds
@@ -310,7 +335,7 @@ function run_test_data_scripts() {
 
     for script in ${scripts[@]}; do
 
-        before_execute_test_scenario
+        # before_execute_test_scenario
 
         script_file="$setup_dir/$script"
 
@@ -340,6 +365,37 @@ function initiailize_test() {
             done
         done
     fi
+
+    echo ""
+    echo "Saving test metadata..."
+    declare -n scenario
+    local all_scenarios=""
+    for scenario in ${!test_scenario@}; do
+        local skip=${scenario[skip]}
+        if [ $skip = true ]; then
+            continue
+        fi
+        all_scenarios+=$(jq -n \
+        --arg name "${scenario[name]}" \
+        --arg display_name "${scenario[display_name]}" \
+        --arg description "${scenario[description]}" \
+        '. | .["name"]=$name | .["display_name"]=$display_name | .["description"]=$description')
+    done
+
+    local test_parameters_json='.'
+    test_parameters_json+=' | .["test_duration"]=$test_duration'
+    test_parameters_json+=' | .["warmup_time"]=$warmup_time'
+    test_parameters_json+=' | .["jmeter_client_heap_size"]=$jmeter_client_heap_size'
+    test_parameters_json+=' | .["test_scenarios"]=$test_scenarios'
+    test_parameters_json+=' | .["heap_sizes"]=$heap_sizes | .["concurrent_users"]=$concurrent_users'
+    jq -n \
+        --arg test_duration "$test_duration" \
+        --arg warmup_time "$warm_up_time" \
+        --arg jmeter_client_heap_size "$jmeter_client_heap_size" \
+        --argjson test_scenarios "$(echo "$all_scenarios" | jq -s '.')" \
+        --argjson heap_sizes "$(printf '%s\n' "${heap_sizes_array[@]}" | jq -nR '[inputs]')" \
+        --argjson concurrent_users "$(printf '%s\n' "${concurrent_users_array[@]}" | jq -nR '[inputs]')" \
+        "$test_parameters_json" > test-metadata.json
 
     if [ "$estimate" = false ]; then
         jmeter_dir=""
@@ -381,17 +437,6 @@ trap exit_handler EXIT
 
 function test_scenarios() {
     initiailize_test
-    declare -a heap_sizes_array
-    if [ ${#heap_sizes[@]} -eq 0 ]; then
-        heap_sizes_array+=($default_heap_sizes)
-    else
-        heap_sizes_array+=("${heap_sizes[@]}")
-    fi
-
-    if [ ${#concurrent_users[@]} -eq 0 ]; then
-        concurrent_users=($default_concurrent_users)
-    fi
-    # todo double check about the heap size
     for heap in ${heap_sizes_array[@]}; do
         declare -ng scenario
         for scenario in ${!test_scenario@}; do
@@ -401,7 +446,7 @@ function test_scenarios() {
             fi
             local scenario_name=${scenario[name]}
             local jmx_file=${scenario[jmx]}
-            for users in ${concurrent_users[@]}; do
+            for users in ${concurrent_users_array[@]}; do
                 if [ "$estimate" = true ]; then
                     record_scenario_duration $scenario_name $(($test_duration * 60 + $estimated_processing_time_in_between_tests))
                     continue

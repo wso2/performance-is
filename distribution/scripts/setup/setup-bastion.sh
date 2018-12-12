@@ -129,6 +129,13 @@ echo "============================================"
 cd /home/ubuntu
 mkdir workspace
 cd workspace
+
+# todo remove after a proper release
+git clone https://github.com/chrishantha/performance-common
+cd performance-common
+mvn clean install
+cd ../
+
 # todo change repo url
 git clone https://github.com/vihanga-liyanage/performance-is
 cd performance-is

@@ -20,64 +20,61 @@
 # ----------------------------------------------------------------------------
 
 # Cloud Formation parameters.
-stack_name="is-5-7-test-stack"
-default_certificate_name="is-perf-cert"
-certificate_name="$default_certificate_name"
+stack_name="is-performance-test-stack"
+
+key_file=""
+aws_access_key=""
+aws_access_secret=""
+certificate_name=""
+jmeter_setup=""
+wum_username=""
+wum_password=""
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-default_wum_username="wso2pmtuser@wso2.com"
-wum_username="$default_wum_username"
-default_wum_password="wyeDzg5#4CgE"
-wum_password="$default_wum_password"
-default_key_name="is-perf-test"
-key_name="$default_key_name"
 default_is_instance_type=c5.large
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=m4.large
 bastion_instance_type="$default_bastion_instance_type"
-aws_access_key=""
-aws_access_secret=""
 
 script_start_time=$(date +%s)
 script_dir=$(dirname "$0")
 results_dir="$PWD/results-$(date +%Y%m%d%H%M%S)"
 is_performance_distribution=""
-key_file=""
 is_installer_url=""
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
-jmeter_setup=""
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret> -j <jmeter_setup_path>"
-    echo "   [-n <key_name>] [-u <db_username>] [-p <db_password>] [-i <wso2_is_instance_type>]"
-    echo "   [-b <bastion_instance_type>] [-d <wum_username>] [-e <wum_password>]"
-    echo "   [-c <certificate_name>] [-w <minimum_stack_creation_wait_time>]"
-    echo "   [-h] -- [run_performance_tests_options]"
+    echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
+    echo "   -c <certificate_name> -j <jmeter_setup_path>"
+    echo "   [-n <wum_username>] [-e <wum_password>]"
+    echo "   [-u <db_username>] [-p <db_password>]"
+    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
+    echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
+    echo "   -- [run_performance_tests_options]"
     echo ""
-    echo "-k: The Amazon EC2 Key File."
+    echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-a: The AWS access key."
     echo "-s: The AWS access secret."
     echo "-j: The path to JMeter setup."
-    echo "-n: The Amazon EC2 Key Name. Default: $default_key_name."
+    echo "-c: The name of the IAM certificate."
+    echo "-n: The WUM username."
+    echo "-e: The WUM password."
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
-    echo "-d: The WUM username. Default: $default_wum_username."
-    echo "-e: The WUM password. Default: ***********."
-    echo "-c: The name of the IAM certificate. Default: $default_certificate_name."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
-    echo "    Default: $default_minimum_stack_creation_wait_time."
+    echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:a:s:n:u:p:j:i:b:d:e:c:w:h" opts; do
+while getopts "k:a:s:c:j:n:e:u:p:i:b:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -88,8 +85,17 @@ while getopts "k:a:s:n:u:p:j:i:b:d:e:c:w:h" opts; do
     s)
         aws_access_secret=${OPTARG}
         ;;
+    c)
+        certificate_name=${OPTARG}
+        ;;
+    j)
+        jmeter_setup=${OPTARG}
+        ;;
     n)
-        key_name=${OPTARG}
+        wum_username=${OPTARG}
+        ;;
+    e)
+        wum_password=${OPTARG}
         ;;
     u)
         db_username=${OPTARG}
@@ -97,23 +103,11 @@ while getopts "k:a:s:n:u:p:j:i:b:d:e:c:w:h" opts; do
     p)
         db_password=${OPTARG}
         ;;
-    j)
-        jmeter_setup=${OPTARG}
-        ;;
     i)
         wso2_is_instance_type=${OPTARG}
         ;;
     b)
         bastion_instance_type=${OPTARG}
-        ;;
-    d)
-        wum_username=${OPTARG}
-        ;;
-    e)
-        wum_password=${OPTARG}
-        ;;
-    c)
-        certificate_name=${OPTARG}
         ;;
     w)
         minimum_stack_creation_wait_time=${OPTARG}
@@ -139,11 +133,6 @@ fi
 
 if [[ ${key_file: -4} != ".pem" ]]; then
     echo "AWS EC2 Key file must have .pem extension"
-    exit 1
-fi
-
-if [[ -z $key_name ]]; then
-    echo "Please provide the EC2 Key Pair."
     exit 1
 fi
 
@@ -202,12 +191,8 @@ if ! [[ $minimum_stack_creation_wait_time =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
-key_filename=$(basename "$key_file")
-
-if [[ "${key_filename%.*}" != "$key_name" ]]; then
-    echo "Key file must match with the EC2 Key Pair. i.e. $key_filename should be equal to $key_name.pem."
-    exit 1
-fi
+key_filename=$(basename $key_file)
+key_name=${key_filename%.*}
 
 function check_command() {
     if ! command -v $1 >/dev/null 2>&1; then
@@ -428,13 +413,13 @@ echo "Creating summary.csv..."
 cd $results_dir
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-$results_dir/jmeter/create-summary-csv-is.sh -d results -n IS -j 2 -g gcviewer.jar
+$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-    "Scenario Name" "Concurrent Users" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
+    "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
     "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
-    "IS Server 1 GC Throughput (%)" "IS Server 2 GC Throughput (%)"
+    "WSO2 Identity Server 1 GC Throughput (%)" "WSO2 Identity Server 2 GC Throughput (%)"
 
 echo ""
 echo "Done."

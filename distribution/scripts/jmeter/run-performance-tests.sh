@@ -118,8 +118,8 @@ declare -A test_scenario9=(
 
 function before_execute_test_scenario() {
 
-    ssh $wso2is_1_host_alias "sudo ./restart-is.sh"
-    ssh $wso2is_2_host_alias "sudo ./restart-is.sh"
+    ssh $wso2is_1_host_alias "sudo ./restart-is.sh -m $heap"
+    ssh $wso2is_2_host_alias "sudo ./restart-is.sh -m $heap"
     jmeter_params+=("port=443")
 
     echo "Cleaning databases..."
@@ -129,16 +129,15 @@ function before_execute_test_scenario() {
 
 function after_execute_test_scenario() {
 
-#    todo check on ballerina.*/bre
     is_home="/usr/lib/wso2/wso2is/*/wso2is-*"
-    write_server_metrics $wso2is_1_host_alias $wso2is_1_host_alias ballerina.*/bre
+    write_server_metrics $wso2is_1_host_alias $wso2is_1_host_alias
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_1_host_alias.log"
-    download_file "$wso2is_1_host_alias" $is_home/repository/logs/gc.log "$wso2is_1_host_alias-gc.log"
+    download_file "$wso2is_1_host_alias" $is_home/repository/logs/gc.log $wso2is_1_host_alias"_gc.log"
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_1_host_alias-heap-dump.hprof"
 
-    write_server_metrics $wso2is_2_host_alias $wso2is_2_host_alias ballerina.*/bre
+    write_server_metrics $wso2is_2_host_alias $wso2is_2_host_alias
     download_file "$wso2is_2_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_2_host_alias.log"
-    download_file "$wso2is_2_host_alias" $is_home/repository/logs/gc.log "$wso2is_2_host_alias-gc.log"
+    download_file "$wso2is_2_host_alias" $is_home/repository/logs/gc.log $wso2is_2_host_alias"_gc.log"
     download_file "$wso2is_2_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_2_host_alias-heap-dump.hprof"
 }
 

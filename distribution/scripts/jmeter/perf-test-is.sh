@@ -293,6 +293,7 @@ function record_scenario_duration() {
 }
 
 function print_durations() {
+
     local time_header=""
     if [ "$estimate" = true ]; then
         time_header="Estimated"
@@ -328,17 +329,12 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-
     declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in ${scripts[@]}; do
-
-        # before_execute_test_scenario
-
         script_file="$setup_dir/$script"
-
         command="jmeter -Jhost=$lb_host -Jport=443 -n -t $script_file"
         echo $command
         echo ""
@@ -348,6 +344,7 @@ function run_test_data_scripts() {
 }
 
 function initiailize_test() {
+
     # Filter scenarios
     if [[ ${#include_scenario_names[@]} -gt 0 ]] || [[ ${#exclude_scenario_names[@]} -gt 0 ]]; then
         declare -n scenario
@@ -420,12 +417,14 @@ function initiailize_test() {
 
         mkdir results
         cp $0 results
+        mv test-metadata.json results/
 
         run_test_data_scripts
     fi
 }
 
 function exit_handler() {
+
     if [[ "$estimate" == false ]] && [[ -d results ]]; then
         echo "Zipping results directory..."
         zip -9qr results.zip results/
@@ -436,6 +435,7 @@ function exit_handler() {
 trap exit_handler EXIT
 
 function test_scenarios() {
+
     initiailize_test
     for heap in ${heap_sizes_array[@]}; do
         declare -ng scenario
@@ -469,7 +469,7 @@ function test_scenarios() {
 
                 before_execute_test_scenario
 
-                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter-gc.log $JMETER_JVM_ARGS"
+                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
 
                 local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
                 for param in ${jmeter_params[@]}; do

@@ -280,6 +280,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=WUMPassword,ParameterValue=$wum_password \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
+        ParameterKey=JDK,ParameterValue=ORACLE_JDK8 \
         ParameterKey=WSO2ISLoadBalancerScheme,ParameterValue=internal \
     --capabilities CAPABILITY_IAM"
 
@@ -346,6 +347,8 @@ echo ""
 echo "Waiting till the RDS restarts with tuning params..."
 start_time=$(date +%s)
 aws rds wait db-instance-available --db-instance-identifier wso2isdbinstance
+aws rds reboot-db-instance --db-instance-identifier wso2isdbinstance
+aws rds wait db-instance-available --db-instance-identifier wso2isdbinstance
 end_time=$(date +%s)
 echo "RDS restarted. Time spent: $(echo "$end_time - $start_time" | bc) seconds."
 
@@ -354,6 +357,12 @@ echo "Getting Bastion Node Public IP..."
 bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2BastionInstance | jq -r '.StackResources[].PhysicalResourceId')"
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
+
+echo ""
+echo "Getting Puppet Master Private IP..."
+puppet_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id PuppetMaster | jq -r '.StackResources[].PhysicalResourceId')"
+puppet_master_ip="$(aws ec2 describe-instances --instance-ids $puppet_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+echo "Puppet Master Private IP: $puppet_master_ip"
 
 echo ""
 echo "Getting WSO2 IS Node 1 Private IP..."
@@ -388,7 +397,7 @@ $copy_key_file_command
 echo $copy_jmeter_setup_command
 $copy_jmeter_setup_command
 
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -l $lb_host -r $rds_host"
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -l $lb_host -r $rds_host -p $puppet_master_ip"
 echo ""
 echo "Running Bastion Node setup script: $setup_bastion_node_command"
 # Handle any error and let the script continue.

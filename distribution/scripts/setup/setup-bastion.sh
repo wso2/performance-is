@@ -23,21 +23,23 @@ wso2_is_1_ip=""
 wso2_is_2_ip=""
 lb_host=""
 rds_host=""
+puppet_ip=""
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host>"
+    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host> [-p <puppet_ip>]"
     echo ""
     echo "-w: The private IP of WSO2 IS node 1."
     echo "-i: The private IP of WSO2 IS node 2."
     echo "-l: The private hostname of Load balancer instance."
     echo "-r: The private hostname of RDS instance."
+    echo "-p: The private IP of Puppet Master."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "w:i:l:r:h" opts; do
+while getopts "w:i:l:r:p:h" opts; do
     case $opts in
     w)
         wso2_is_1_ip=${OPTARG}
@@ -50,6 +52,9 @@ while getopts "w:i:l:r:h" opts; do
         ;;
     r)
         rds_host=${OPTARG}
+        ;;
+    p)
+        puppet_ip=${OPTARG}
         ;;
     h)
         usage
@@ -89,19 +94,6 @@ function get_ssh_hostname() {
 apt-get -y update
 apt-get -y install git
 apt-get install -y mysql-client
-
-# Only required when Ubuntu 14 is used.
-echo ""
-echo "Upgrading ssh to version 7.4"
-echo "============================================"
-apt install -y build-essential libssl-dev zlib1g-dev
-wget "https://fastly.cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-7.4p1.tar.gz"
-tar xfz openssh-7.4p1.tar.gz
-cd openssh-7.4p1
-./configure
-make
-make install
-service ssh restart
 
 echo ""
 echo "Installing maven 3.5"
@@ -181,3 +173,17 @@ sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_2_host_alias:/home/ub
 sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_2_host_alias:/home/ubuntu/sar/
 sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_2_host_alias:/home/ubuntu/
 sudo -u ubuntu ssh $wso2is_2_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
+
+if [ ! -z "$puppet_ip" -a "$puppet_ip"!="" ]; then
+    echo ""
+    echo "Applying tuning params to puppet master..."
+    echo "============================================"
+    scp -i private_key.pem -o StrictHostKeyChecking=no workspace/setup/setup-puppet.sh ubuntu@$puppet_ip:/home/ubuntu/
+    ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@$puppet_ip ./setup-puppet.sh
+
+    echo ""
+    echo "Applying tuning params to puppet agents..."
+    echo "============================================"
+    sudo -u ubuntu ssh -t $wso2is_1_host_alias "sudo su; export FACTER_profile=is570; puppet agent -vt"
+    sudo -u ubuntu ssh -t $wso2is_2_host_alias "sudo su; export FACTER_profile=is570; puppet agent -vt"
+fi

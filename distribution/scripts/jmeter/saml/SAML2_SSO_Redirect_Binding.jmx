@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="SAML2 SSO Redirect Binding" enabled="true">
+      <stringProp name="TestPlan.comments">This is a Jmeter test to the SAML 2.0 SSO functionality.</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Server Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="is_host" elementType="Argument">
+            <stringProp name="Argument.name">is_host</stringProp>
+            <stringProp name="Argument.value">${__P(host,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="is_port" elementType="Argument">
+            <stringProp name="Argument.name">is_port</stringProp>
+            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">Get SAML assertion from 1000 SAML SPs iteratively, via authenticating with 1000 users randomly.</stringProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="usernamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">usernamePrefix</stringProp>
+            <stringProp name="Argument.value">is57user_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="password" elementType="Argument">
+            <stringProp name="Argument.name">password</stringProp>
+            <stringProp name="Argument.value">password</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="travelocityAppNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">travelocityAppNamePrefix</stringProp>
+            <stringProp name="Argument.value">travelocityApp</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="issuerPrefix" elementType="Argument">
+            <stringProp name="Argument.name">issuerPrefix</stringProp>
+            <stringProp name="Argument.value">travelocity</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="assertionConsumerUrlPrefix" elementType="Argument">
+            <stringProp name="Argument.name">assertionConsumerUrlPrefix</stringProp>
+            <stringProp name="Argument.value">http://localhost:8080/travelocity</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="assertionConsumerUrlSufix" elementType="Argument">
+            <stringProp name="Argument.name">assertionConsumerUrlSufix</stringProp>
+            <stringProp name="Argument.value">com/home.jsp</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="noOfThreads" elementType="Argument">
+            <stringProp name="Argument.name">noOfThreads</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfUsers" elementType="Argument">
+            <stringProp name="Argument.name">noOfUsers</stringProp>
+            <stringProp name="Argument.value">${__P(userCount,1000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="timeToRun" elementType="Argument">
+            <stringProp name="Argument.name">timeToRun</stringProp>
+            <stringProp name="Argument.value">${__P(time,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="rampUpPeriod" elementType="Argument">
+            <stringProp name="Argument.name">rampUpPeriod</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfSPs" elementType="Argument">
+            <stringProp name="Argument.name">noOfSPs</stringProp>
+            <stringProp name="Argument.value">${__P(spCount,1000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
+        <longProp name="ThreadGroup.start_time">1513058215000</longProp>
+        <longProp name="ThreadGroup.end_time">1513058215000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">spId</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random User Counter" enabled="true">
+          <stringProp name="variableName">user_count_id</stringProp>
+          <stringProp name="outputFormat"></stringProp>
+          <stringProp name="minimumValue">1</stringProp>
+          <stringProp name="maximumValue">${noOfUsers}</stringProp>
+          <stringProp name="randomSeed"></stringProp>
+          <boolProp name="perThread">false</boolProp>
+        </RandomVariableConfig>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setSAMLRequest()" enabled="true">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+
+String acs = vars.get(&quot;assertionConsumerUrlPrefix&quot;) + &quot;_&quot; + vars.get(&quot;spId&quot;) + &quot;.&quot; + vars.get(&quot;assertionConsumerUrlSufix&quot;);
+String issuer = vars.get(&quot;issuerPrefix&quot;) + &quot;_&quot; + vars.get(&quot;spId&quot;);
+String xml = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;&lt;samlp:AuthnRequest xmlns:samlp=\&quot;urn:oasis:names:tc:SAML:2.0:protocol\&quot; AssertionConsumerServiceURL=\&quot;&quot; + acs + &quot;\&quot; Destination=\&quot;https://localhost:9443/samlsso\&quot; ForceAuthn=\&quot;false\&quot; ID=\&quot;0\&quot; IsPassive=\&quot;false\&quot; IssueInstant=\&quot;2017-08-31T09:34:51.710Z\&quot; ProtocolBinding=\&quot;urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\&quot; Version=\&quot;2.0\&quot;&gt;&lt;samlp:Issuer xmlns:samlp=\&quot;urn:oasis:names:tc:SAML:2.0:assertion\&quot;&gt;&quot; + 
+issuer + &quot;&lt;/samlp:Issuer&gt;&lt;saml2p:NameIDPolicy xmlns:saml2p=\&quot;urn:oasis:names:tc:SAML:2.0:protocol\&quot; AllowCreate=\&quot;true\&quot; Format=\&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\&quot; SPNameQualifier=\&quot;Issuer\&quot;/&gt;&lt;saml2p:RequestedAuthnContext xmlns:saml2p=\&quot;urn:oasis:names:tc:SAML:2.0:protocol\&quot; Comparison=\&quot;exact\&quot;&gt;&lt;saml:AuthnContextClassRef xmlns:saml=\&quot;urn:oasis:names:tc:SAML:2.0:assertion\&quot;&gt;urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport&lt;/saml:AuthnContextClassRef&gt;&lt;/saml2p:RequestedAuthnContext&gt;&lt;/samlp:AuthnRequest&gt;&quot;;
+
+ByteArrayOutputStream os = new ByteArrayOutputStream();
+Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(os, deflater);
+deflaterOutputStream.write(xml.getBytes(&quot;UTF-8&quot;));
+deflaterOutputStream.close();
+os.close();
+String base64 = Base64.getEncoder().encodeToString(os.toByteArray());
+String out = URLEncoder.encode(base64, &quot;UTF-8&quot;);
+vars.put(&quot;newSAML&quot;, out);
+</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()" enabled="true">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;spId&quot;));
+int y = x - (x/2)*2;
+if (y == 0) {
+	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else {
+	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+}
+</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+          <collectionProp name="CookieManager.cookies"/>
+          <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+        </CookieManager>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Initial SAML Request" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="SAMLRequest" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${newSAML}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">SAMLRequest</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/samlsso</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">Login request to log into the service provider</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 302 Found" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-161833916">HTTP/1.1 302 Found</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Initial SAML Request</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Sesion Data key Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">true</stringProp>
+            <stringProp name="RegexExtractor.refname">sessionDataKey</stringProp>
+            <stringProp name="RegexExtractor.regex">sessionDataKey=([a-z0-9-]+)\&amp;?</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">NF</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+            <stringProp name="TestPlan.comments">.*sessionDataKey=(.*?)&amp;
+sessionDataKey=([a-z0-9-]+)\&amp;?</stringProp>
+            <stringProp name="Sample.scope">all</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Identity Provider Login" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="sessionDataKey" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.name">sessionDataKey</stringProp>
+                <stringProp name="Argument.value">${sessionDataKey}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+              <elementProp name="username" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.name">username</stringProp>
+                <stringProp name="Argument.value">${usernamePrefix}${user_count_id}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+              <elementProp name="password" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.name">password</stringProp>
+                <stringProp name="Argument.value">${password}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/commonauth</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.image_parser">true</boolProp>
+          <boolProp name="HTTPSampler.concurrentDwn">true</boolProp>
+          <stringProp name="HTTPSampler.concurrentPool">2</stringProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">${usernamePrefix}${user_count_id}
+${password}
+</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200 OK" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-1606201635">HTTP/1.1 200 OK</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Identity Provider Login</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="SAML Response Present" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-1163693106">SAMLResponse</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Identity Provider Login</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">/home/ubuntu/scripts/results/AR-SAML-SSO-Login-300-6-16-2.jtl</stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

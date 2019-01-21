@@ -184,6 +184,16 @@ if [ ! -z "$puppet_ip" -a "$puppet_ip"!="" ]; then
     echo ""
     echo "Applying tuning params to puppet agents..."
     echo "============================================"
-    sudo -u ubuntu ssh -t $wso2is_1_host_alias "sudo su; export FACTER_profile=is570; puppet agent -vt"
-    sudo -u ubuntu ssh -t $wso2is_2_host_alias "sudo su; export FACTER_profile=is570; puppet agent -vt"
+    sudo -u ubuntu ssh -t $wso2is_1_host_alias << ENDSSH
+        sudo su
+        export FACTER_profile=is570
+        puppet agent -vt
+        exit
+ENDSSH
+    sudo -u ubuntu ssh -t $wso2is_2_host_alias << ENDSSH
+        sudo su
+        export FACTER_profile=is570
+        puppet agent -vt
+        exit
+ENDSSH
 fi

@@ -101,13 +101,13 @@ declare -A test_scenario9=(
     [jmx]="oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx"
     [skip]=false
 )
-#declare -A test_scenario10=(
-#    [name]="saml2_sso_redirect_binding"
-#    [display_name]="SAML2 SSO Redirect Binding"
-#    [description]="Obtain a SAML 2 assertion response using redirect binding."
-#    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
-#    [skip]=false
-#)
+declare -A test_scenario10=(
+    [name]="saml2_sso_redirect_binding"
+    [display_name]="SAML2 SSO Redirect Binding"
+    [description]="Obtain a SAML 2 assertion response using redirect binding."
+    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+    [skip]=false
+)
 #declare -A test_scenario11=(
 #    [name]="saml2_sso_request_path_authentication"
 #    [display_name]="SAML2 SSO Request Path Authentication"

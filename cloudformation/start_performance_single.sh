@@ -241,7 +241,6 @@ echo $home
 # temp_dir=$(mktemp -d)
 
 
-
 # Get absolute paths
 key_file=$(grealpath $key_file) 
 

@@ -49,11 +49,6 @@ while getopts "d:l:h" opts; do
     esac
 done
 
-# if [[ -z $is_server ]]; then
-#     echo "Please provide the path to IS server."
-#     exit 1
-# fi
-
 if [[ -z $db_instance_ip ]]; then
     echo "Please provide the db instance ip address."
     exit 1
@@ -66,10 +61,17 @@ echo ""
 echo "changing server name"
 mv wso2is-* wso2is
 
+sudo chown -R ubuntu:ubuntu wso2is
+
+echo "changing permission for mysql connector"
+
+chmod 644 mysql-connector-java-5.1.47.jar
+
+
 carbon_home=$(realpath ~/wso2is)
 
 #add mysql connector
-cp setup/mysql-connector-java-8.0.11.jar $carbon_home/repository/components/lib/mysql-connector-java-8.0.11.jar
+cp mysql-connector-java-5.1.47.jar $carbon_home/repository/components/lib/mysql-connector-java-5.1.47.jar
 
 cp setup/master-datasources.xml $carbon_home/repository/conf/datasources/master-datasources.xml
 
@@ -91,7 +93,7 @@ sed -i 's/<maxActive>50</<maxActive>300</' $carbon_home/repository/conf/datasour
 sed -i 's/maxThreads="250"/maxThreads="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/acceptCount="200"/acceptCount="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/<EnableSSOConsentManagement>true</<EnableSSOConsentManagement>false</' $carbon_home/repository/conf/identity/identity.xml
-# sed -i '' '/<clustering class="org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent"/{N;s/enable="true"/enable="false"/}' $carbon_home/repository/conf/axis2/axis2.xml
+# sed -i '/<clustering class="org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent"/{N;s/enable="true"/enable="false"/}' $carbon_home/repository/conf/axis2/axis2.xml
 
 #change mysql url
 sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|<url>jdbc:mysql://$db_instance_ip|g" $carbon_home/repository/conf/datasources/master-datasources.xml
@@ -101,7 +103,12 @@ sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazona
 echo "creating tables in RDS"
 mysql -h $db_instance_ip -u wso2carbon -pwso2carbon < createDB.sql
 
+
 echo "starting wso2 is server"
 ./wso2is/bin/wso2server.sh start
+
+
+echo "waiting 100s for is server to up and running "
+sleep 100s
 
 

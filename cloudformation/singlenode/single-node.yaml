@@ -1,4 +1,4 @@
-# Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  WSO2 Identity Server deployment with Clustering for 5.3
+  WSO2 Identity Server deployment with single node environment
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -329,6 +329,10 @@ Resources:
             - apt-get update
             - apt-get install -y oracle-java8-installer
             - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - source /etc/environment
+            - exit
   
   WSO2ISNode1LaunchConfiguration2:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
@@ -362,10 +366,13 @@ Resources:
             - apt-get update
             - apt-get install -y oracle-java8-installer
             - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - source /etc/environment
+            - exit
            
     DependsOn:
       - WSO2ISSecurityGroup
-      # - WSO2ISLoadBalancer
       - WSO2ISVPC2InternetGatewayAttachment
       - WSO2ISDBInstance2
   WSO2ISNode1AutoScalingGroup:
@@ -375,8 +382,6 @@ Resources:
       DesiredCapacity: 1
       MinSize: 1
       MaxSize: 1
-      # LoadBalancerNames:
-      #   - !Ref WSO2ISLoadBalancer
       VPCZoneIdentifier:
         - !Ref WSO2ISPrivateSubnet12
       Tags:
@@ -433,11 +438,6 @@ Parameters:
   DBEngine:
     Type: String
     Default: MySQL_5.7
-    # AllowedValues:
-    #   - MySQL_5.7
-    #   - MySQL_5.6
-    #   - Oracle
-    #   - MSSQL
   DBPassword:
     Type: String
     MinLength: 8

@@ -55,11 +55,12 @@
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
 default_concurrent_users="50 100 150 300 500"
+# default_concurrent_users="200 400"
 # Application heap Sizes
 default_heap_sizes="2G"
 
 # Test Duration in minutes
-default_test_duration=15
+default_test_duration=7
 test_duration=$default_test_duration
 # Warm-up time in minutes
 default_warm_up_time=5
@@ -335,7 +336,7 @@ function run_test_data_scripts() {
 
     for script in ${scripts[@]}; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=443 -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=9443 -n -t $script_file"
         echo $command
         echo ""
         $command

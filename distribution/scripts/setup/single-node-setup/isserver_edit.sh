@@ -67,7 +67,6 @@ echo "changing permission for mysql connector"
 
 chmod 644 mysql-connector-java-5.1.47.jar
 
-
 carbon_home=$(realpath ~/wso2is)
 
 #add mysql connector
@@ -76,7 +75,6 @@ cp mysql-connector-java-5.1.47.jar $carbon_home/repository/components/lib/mysql-
 cp setup/master-datasources.xml $carbon_home/repository/conf/datasources/master-datasources.xml
 
 cp setup/user-mgt.xml $carbon_home/repository/conf/user-mgt.xml
-
 
 #apply basic parameter changes
 sed -i 's$<dataSource>jdbc/WSO2CarbonDB$<dataSource>jdbc/WSO2_REG_DB$g' $carbon_home/repository/conf/registry.xml || echo "erro 1"
@@ -99,16 +97,11 @@ sed -i 's/<EnableSSOConsentManagement>true</<EnableSSOConsentManagement>false</'
 sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|<url>jdbc:mysql://$db_instance_ip|g" $carbon_home/repository/conf/datasources/master-datasources.xml
 
 #creating databases in RDS
-
 echo "creating tables in RDS"
 mysql -h $db_instance_ip -u wso2carbon -pwso2carbon < createDB.sql
-
 
 echo "starting wso2 is server"
 ./wso2is/bin/wso2server.sh start
 
-
 echo "waiting 100s for is server to up and running "
 sleep 100s
-
-

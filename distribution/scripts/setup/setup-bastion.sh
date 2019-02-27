@@ -26,7 +26,7 @@ rds_host=""
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_1_ip>  -l <lb_host> -r <rds_host>"
+    echo "$0 -w <wso2_is_1_ip> -l <lb_host> -r <rds_host>"
     echo ""
     echo "-w: The private IP of WSO2 IS node 1."
     echo "-l: The private hostname of Load balancer instance."
@@ -107,6 +107,7 @@ sudo chown -R ubuntu:ubuntu jmeter.log
 echo ""
 echo "Setting up IS instances..."
 echo "============================================"
+
 wso2is_1_host_alias=wso2is1
 
 sudo -u ubuntu ssh $wso2is_1_host_alias mkdir sar setup

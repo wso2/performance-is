@@ -21,7 +21,7 @@ You can run IS Performance Tests from the source using the following instruction
 ### Prerequisites
 
 * [Maven 3.5.0 or later](https://maven.apache.org/download.cgi)
-* [AWS CLI](https://aws.amazon.com/cli/) - Please make sure to [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and set the output format to `text`.
+* [AWS CLI](https://aws.amazon.com/cli/) - Please make sure to [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and set the output format to `json`.
 * [Apache JMeter 3.3](https://jmeter.apache.org/) Setup tarball.
 * wso2 is server zip file
 
@@ -33,16 +33,16 @@ You can run IS Performance Tests from the source using the following instruction
 git clone https://github.com/wso2/performance-is
 ```
 2. Checkout to single-node-performance branch
-
-3. make sure performance-is/distribution/scripts/is/clean-database.sql has relevant databases to the provide wso2 is version
-
-4. Build the artifacts using Maven.
 ```
 cd performance-is
+git checkout single-node-performance
+```
+3. Build the artifacts using Maven.
+```
 mvn clean install
 ```
 
-5. Change directory to `cloudformation/` and run the `init-performance-tests.sh` script. Following is the basic command.
+4. Change directory to `cloudformation/` and run the `init-performance-tests.sh` script. Following is the basic command.
 ```
 ./start_performance_single.sh -k is-perf-test.pem -a ******* -s ******* -c is-perf-cert -n wso2IS.zip -j apache-jmeter-4.0.tgz -- -d 10 -w 2
 ```
@@ -86,4 +86,4 @@ See usage:
 6. SSH into the bastion node and execute the copied [setup-bastion.sh](distribution/scripts/setup) script, which will setup the additional components in the deployment.
 7. SSH into the bastion node and execute the [run-performance-test.sh](distribution/scripts/jmeter) script, which will run the test and collect the results.
 8. Download the test results from the bastion node.
-9. Create the `summary.csv` file and the `summary.md` file. 
+

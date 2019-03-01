@@ -335,7 +335,7 @@ function run_test_data_scripts() {
 
     for script in ${scripts[@]}; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=443 -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=9443 -n -t $script_file"
         echo $command
         echo ""
         $command

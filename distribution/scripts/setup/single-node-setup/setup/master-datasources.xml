@@ -74,7 +74,7 @@
                         <url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/UM_DB?useSSL=false</url>
                         <username>wso2carbon</username>
                         <password>wso2carbon</password>
-                        <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
+                        <driverClassName>com.mysql.jdbc.Driver</driverClassName>
                         <maxActive>300</maxActive>
                         <maxWait>60000</maxWait>
                         <minIdle>5</minIdle>
@@ -96,7 +96,7 @@
                         <url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/REG_DB?useSSL=false</url>
                         <username>wso2carbon</username>
                         <password>wso2carbon</password>
-                        <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
+                        <driverClassName>com.mysql.jdbc.Driver</driverClassName>
                         <maxActive>300</maxActive>
                         <maxWait>60000</maxWait>
                         <minIdle>5</minIdle>
@@ -118,7 +118,7 @@
                         <url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/IDENTITY_DB?useSSL=false</url>
                         <username>wso2carbon</username>
                         <password>wso2carbon</password>
-                        <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
+                        <driverClassName>com.mysql.jdbc.Driver</driverClassName>
                         <maxActive>300</maxActive>
                         <maxWait>60000</maxWait>
                         <minIdle>5</minIdle>

@@ -230,19 +230,20 @@ tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C $results_
 
 home="$results_dir/setup/single-node-setup"
 
+
 echo $home
 
-# estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
-# echo ""
-# echo "Estimating time for performance tests: $estimate_command"
-# # Estimating this script will also validate the options. It's important to validate options before creating the stack.
-# $estimate_command
+estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
+echo ""
+echo "Estimating time for performance tests: $estimate_command"
+# Estimating this script will also validate the options. It's important to validate options before creating the stack.
+$estimate_command
 
-# temp_dir=$(mktemp -d)
+temp_dir=$(mktemp -d)
 
 
 # Get absolute paths
-key_file=$(grealpath $key_file) 
+key_file=$(realpath $key_file) 
 
 echo "your key is"
 echo $key_file
@@ -283,7 +284,6 @@ echo "Creating stack..."
 echo "$create_stack_command"
 stack_id="$($create_stack_command)"
 stack_id=$(echo $stack_id|jq -r .StackId)
-# stack_id="arn:aws:cloudformation:us-east-1:610968236798:stack/is-performance-test-stack-single-node/786da520-359d-11e9-99be-0e94a1882570"
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
@@ -320,9 +320,10 @@ copy_is_server_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup
 copy_is_master_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/setup_is.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
 copy_db_create_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/createDB.sql ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-5.1.47.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
 
 echo ""
-# echo "Copying Is server setup files..."
+echo "Copying Is server setup files..."
 echo $copy_isserver_edit_command
 $copy_isserver_edit_command
 echo $copy_isserver_setups_command
@@ -335,6 +336,8 @@ echo $copy_key_file_command
 $copy_key_file_command
 echo $copy_db_create_command
 $copy_db_create_command
+echo copy_connector_command
+$copy_connector_command
 
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_1_ip -r $rds_host"
 
@@ -342,4 +345,46 @@ echo ""
 echo "Running IS node setup script: $setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup is node through bastion failed."
+
+copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distribution/target/is-performance-distribution-*.tar.gz ubuntu@$bastion_node_ip:/home/ubuntu"
+
+echo ""
+echo "Copying files to Bastion node..."
+echo $copy_bastion_setup_command
+$copy_bastion_setup_command
+echo $copy_jmeter_setup_command
+$copy_jmeter_setup_command
+echo $copy_repo_setup_command
+$copy_repo_setup_command
+
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip  -l $wso2_is_1_ip -r $rds_host"
+echo ""
+echo "Running Bastion Node setup script: $setup_bastion_node_command"
+# Handle any error and let the script continue.
+$setup_bastion_node_command || echo "Remote ssh command failed."
+
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh"
+run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
+echo ""
+echo "Running performance tests: $run_remote_tests"
+$run_remote_tests || echo "Remote test ssh command failed."
+
+download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
+echo "Running command: $download"
+$download || echo "Remote download failed"
+
+if [[ ! -f $results_dir/results.zip ]]; then
+    echo ""
+    echo "Failed to download the results.zip"
+    exit 500
+fi
+
+echo ""
+echo "Creating unzipping results..."
+cd $results_dir
+unzip -q results.zip
+echo ""
+echo "Done."
 

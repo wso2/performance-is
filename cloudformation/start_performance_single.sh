@@ -371,7 +371,6 @@ echo ""
 echo "Running performance tests: $run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."
 
-
 download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
 echo "Running command: $download"
 $download || echo "Remote download failed"
@@ -383,18 +382,9 @@ if [[ ! -f $results_dir/results.zip ]]; then
 fi
 
 echo ""
-echo "Creating summary.csv..."
+echo "Creating unzipping results..."
 cd $results_dir
-# unzip -q results.zip
-# wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-# $results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
-
-# echo "Creating summary results markdown file..."
-# ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-#     "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
-#     "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
-#     "WSO2 Identity Server 1 GC Throughput (%)" "WSO2 Identity Server 2 GC Throughput (%)"
-
+unzip -q results.zip
 echo ""
 echo "Done."
 

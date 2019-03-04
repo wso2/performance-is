@@ -230,7 +230,6 @@ tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C $results_
 
 home="$results_dir/setup/single-node-setup"
 
-
 echo $home
 
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
@@ -247,7 +246,6 @@ key_file=$(realpath $key_file)
 
 echo "your key is"
 echo $key_file
-
 
 ln -s $key_file $temp_dir/$key_filename
 

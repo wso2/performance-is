@@ -23,7 +23,7 @@ You can run IS Performance Tests from the source using the following instruction
 * [Maven 3.5.0 or later](https://maven.apache.org/download.cgi)
 * [AWS CLI](https://aws.amazon.com/cli/) - Please make sure to [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and set the output format to `json`.
 * [Apache JMeter 3.3](https://jmeter.apache.org/) Setup tarball.
-* wso2 is server zip file
+* WSO2 IS server zip file
 
 ### Steps to run performance tests.
 
@@ -42,7 +42,7 @@ git checkout single-node-performance
 mvn clean install
 ```
 
-4. Change directory to `cloudformation/` and run the `init-performance-tests.sh` script. Following is the basic command.
+4. Change directory to `cloudformation/` and run the `start_performance_single.sh` script. Following is the basic command.
 ```
 ./start_performance_single.sh -k is-perf-test.pem -a ******* -s ******* -c is-perf-cert -n wso2IS.zip -j apache-jmeter-4.0.tgz -- -d 10 -w 2
 ```
@@ -50,10 +50,10 @@ mvn clean install
 See usage:
 
 ```
-./init-performance-tests.sh -k <key_file> 
+./start_performance_single.sh -k <key_file> 
    -a <aws_access_key> -s <aws_access_secret>
    -c <certificate_name> -j <jmeter_setup_path>
-   [-n <is_setup_path>]
+   [-n <IS_zip_file_path>]
    [-u <db_username>] [-p <db_password>]
    [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]
    [-w <minimum_stack_creation_wait_time>] [-h]

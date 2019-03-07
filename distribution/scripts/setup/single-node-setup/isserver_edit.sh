@@ -18,23 +18,18 @@
 # edit is server script.
 # ----------------------------------------------------------------------------
 
-
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -d <wso2is_path>"
+    echo "$0 -l <RDS_IP>"
     echo ""
-    # echo "-d: The path to wso2is server"
     echo "-l: The ip address of RDS"
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "d:l:h" opts; do
+while getopts "l:h" opts; do
     case $opts in
-    # d)
-    #     is_server+=("${OPTARG}")
-    #     ;;
     l)
         db_instance_ip+=("${OPTARG}")
         ;;
@@ -69,39 +64,41 @@ chmod 644 mysql-connector-java-5.1.47.jar
 
 carbon_home=$(realpath ~/wso2is)
 
-#add mysql connector
+echo ""
+echo "Adding mysql connector to the pack..."
+echo "============================================"
 cp mysql-connector-java-5.1.47.jar $carbon_home/repository/components/lib/mysql-connector-java-5.1.47.jar
 
+echo ""
+echo "Adding conf files to the pack..."
+echo "============================================"
 cp setup/master-datasources.xml $carbon_home/repository/conf/datasources/master-datasources.xml
-
 cp setup/user-mgt.xml $carbon_home/repository/conf/user-mgt.xml
 
-#apply basic parameter changes
+echo ""
+echo "Applying basic parameter changes..."
+echo "============================================"
 sed -i 's$<dataSource>jdbc/WSO2CarbonDB$<dataSource>jdbc/WSO2_REG_DB$g' $carbon_home/repository/conf/registry.xml || echo "erro 1"
-#sed -i 's$<dataSource>jdbc/WSO2_REG_DB$<dataSource>jdbc/REG_DB$g' $carbon_home/repository/conf/registry.xml || echo "erro 1"
-sed -i 's$<Name>jdbc/WSO2CarbonDB$<Name>jdbc/WSO2_IDENTITY_DB$g' $carbon_home/repository/conf/identity/identity.xml || echo "erro 2" 
-#sed -i 's$<Name>jdbc/WSO2_IDENTITY_DB$<Name>jdbc/IDENTITY_DB$g' $carbon_home/repository/conf/identity/identity.xml || echo "erro 2"
+sed -i 's$<Name>jdbc/WSO2CarbonDB$<Name>jdbc/WSO2_IDENTITY_DB$g' $carbon_home/repository/conf/identity/identity.xml || echo "erro 2"
 sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' $carbon_home/bin/wso2server.sh || echo "erro 3"
-#sed -i 's$<Property name="dataSource">jdbc/WSO2_USER_DB$<Property name="dataSource">jdbc/UM_DB$g' $carbon_home/repository/conf/user-mgt.xml || echo "erro 4"
+sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|<url>jdbc:mysql://$db_instance_ip|g" $carbon_home/repository/conf/datasources/master-datasources.xml
 
-#apply tuning parameters
-
+echo ""
+echo "Applying tuning parameters..."
+echo "============================================"
 sed -i 's/CaseInsensitiveUsername">true/CaseInsensitiveUsername">false/' $carbon_home/repository/conf/user-mgt.xml
 sed -i 's/<maxActive>50</<maxActive>300</' $carbon_home/repository/conf/datasources/master-datasources.xml
 sed -i 's/maxThreads="250"/maxThreads="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/acceptCount="200"/acceptCount="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/<EnableSSOConsentManagement>true</<EnableSSOConsentManagement>false</' $carbon_home/repository/conf/identity/identity.xml
-# sed -i '/<clustering class="org.wso2.carbon.core.clustering.hazelcast.HazelcastClusteringAgent"/{N;s/enable="true"/enable="false"/}' $carbon_home/repository/conf/axis2/axis2.xml
 
-#change mysql url
-sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|<url>jdbc:mysql://$db_instance_ip|g" $carbon_home/repository/conf/datasources/master-datasources.xml
-
-#creating databases in RDS
-echo "creating tables in RDS"
+echo ""
+echo "Creating databases in RDS..."
+echo "============================================"
 mysql -h $db_instance_ip -u wso2carbon -pwso2carbon < createDB.sql
 
-echo "starting wso2 is server"
+echo ""
+echo "Starting WSO2 IS server..."
+echo "============================================"
 ./wso2is/bin/wso2server.sh start
-
-echo "waiting 100s for is server to up and running "
 sleep 100s

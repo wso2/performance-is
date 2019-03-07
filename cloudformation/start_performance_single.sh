@@ -220,6 +220,28 @@ function measure_time() {
     echo "$duration"
 }
 
+function exit_handler() {
+    # Get stack events
+    local stack_events_json=$results_dir/stack-events.json
+    echo ""
+    echo "Saving stack events to $stack_events_json"
+    aws cloudformation describe-stack-events --stack-name $stack_id --no-paginate --output json >$stack_events_json
+    # Check whether there are any failed events
+    cat $stack_events_json | jq '.StackEvents | .[] | select ( .ResourceStatus == "CREATE_FAILED" )'
+
+    local stack_delete_start_time=$(date +%s)
+    echo ""
+    echo "Deleting the stack: $stack_id"
+    aws cloudformation delete-stack --stack-name $stack_id
+
+    echo ""
+    echo "Polling till the stack deletion completes..."
+    aws cloudformation wait stack-delete-complete --stack-name $stack_id
+    printf "Stack deletion time: %s\n" "$(format_time $(measure_time $stack_delete_start_time))"
+
+    printf "Script execution time: %s\n" "$(format_time $(measure_time $script_start_time))"
+}
+
 mkdir $results_dir
 echo ""
 echo "Results will be downloaded to $results_dir"
@@ -282,6 +304,12 @@ echo "Creating stack..."
 echo "$create_stack_command"
 stack_id="$($create_stack_command)"
 stack_id=$(echo $stack_id|jq -r .StackId)
+
+# Delete the stack in case of an error.
+trap exit_handler EXIT
+
+echo ""
+echo "Created stack: $stack_id"
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."

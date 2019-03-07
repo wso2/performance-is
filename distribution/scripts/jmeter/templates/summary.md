@@ -28,8 +28,7 @@ The following are the test parameters.
 | Scenario Name | The name of the test scenario. | Refer to the above table. |
 | Heap Size | The amount of memory allocated to the application | {{ parameters.heap_sizes|join(', ') }} |
 | Concurrent Users | The number of users accessing the application at the same time. | {{ parameters.concurrent_users|join(', ') }} |
-
-Single [**{{ parameters.is_nodes_ec2_instance_type }}** Amazon EC2 instance](https://aws.amazon.com/ec2/instance-types/) was used to run the WSO2 Identity Server.
+| IS Instance Type | The AWS instance type used to run the Identity Server. | [**{{ parameters.is_nodes_ec2_instance_type }}**](https://aws.amazon.com/ec2/instance-types/) |
 
 The following are the measurements collected from each performance test conducted for a given combination of
 test parameters.

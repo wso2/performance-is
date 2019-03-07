@@ -50,7 +50,7 @@ function usage() {
     echo "Usage: "
     echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
     echo "   -c <certificate_name> -j <jmeter_setup_path>"
-    echo "   [-n <is_setup_path>]"
+    echo "   [-n <IS_zip_file_path>]"
     echo "   [-u <db_username>] [-p <db_password>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
@@ -230,7 +230,6 @@ tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C $results_
 
 home="$results_dir/setup/single-node-setup"
 
-
 echo $home
 
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
@@ -247,7 +246,6 @@ key_file=$(realpath $key_file)
 
 echo "your key is"
 echo $key_file
-
 
 ln -s $key_file $temp_dir/$key_filename
 

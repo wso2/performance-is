@@ -26,7 +26,6 @@
 
     <modules>
         <module>distribution</module>
-        <module>cloudformation</module>
     </modules>
 
     <name>IS - Artifacts for IS Performance Tests</name>

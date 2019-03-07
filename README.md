@@ -79,10 +79,10 @@ See usage:
 2. Run the CloudFormation template and creat the deployment, wait till the stack creation completes.
 3. Extract the following using the AWS CLI.
    * Bastion node public IP. (Used as the JMeter client)
-   * Private IP of WSO2 IS instance.
+   * Private IP of the WSO2 IS instance.
    * RDS instance hostname.
 4. Setup the wso2 IS server in the instance and create the databases
-5. Copy `setup-bastion.sh`, key file and the JMeter setup to bastion node.
+5. Copy `setup-bastion.sh`, key file, is-performance-distribution-*.tar and the JMeter setup to bastion node.
 6. SSH into the bastion node and execute the copied [setup-bastion.sh](distribution/scripts/setup) script, which will setup the additional components in the deployment.
 7. SSH into the bastion node and execute the [run-performance-test.sh](distribution/scripts/jmeter) script, which will run the test and collect the results.
 8. Download the test results from the bastion node.

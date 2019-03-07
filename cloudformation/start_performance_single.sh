@@ -362,7 +362,7 @@ echo "Running Bastion Node setup script: $setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh"
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo ""
 echo "Running performance tests: $run_remote_tests"
@@ -379,8 +379,17 @@ if [[ ! -f $results_dir/results.zip ]]; then
 fi
 
 echo ""
-echo "Creating unzipping results..."
+echo "Creating summary.csv..."
 cd $results_dir
 unzip -q results.zip
+wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
+$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+
+echo "Creating summary results markdown file..."
+./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
+    "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
+    "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
+    "WSO2 Identity Server GC Throughput (%)"
+
 echo ""
 echo "Done."

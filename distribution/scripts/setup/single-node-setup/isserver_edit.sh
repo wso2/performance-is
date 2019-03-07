@@ -50,7 +50,7 @@ if [[ -z $db_instance_ip ]]; then
 fi
 
 echo "unzipping is server"
-unzip wso2is.zip
+unzip -q wso2is.zip
 
 echo ""
 echo "changing server name"

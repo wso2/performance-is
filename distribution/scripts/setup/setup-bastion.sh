@@ -19,16 +19,17 @@
 # Setup the bastion node to be used as the JMeter client.
 # ----------------------------------------------------------------------------
 
-wso2_is_1_ip=""
+wso2_is_ip=""
 lb_host=""
 rds_host=""
+wso2is_host_alias=wso2is
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_1_ip> -l <lb_host> -r <rds_host>"
+    echo "$0 -w <wso2_is_ip> -l <lb_host> -r <rds_host>"
     echo ""
-    echo "-w: The private IP of WSO2 IS node 1."
+    echo "-w: The private IP of WSO2 IS node."
     echo "-l: The private hostname of Load balancer instance."
     echo "-r: The private hostname of RDS instance."
     echo "-h: Display this help and exit."
@@ -38,7 +39,7 @@ function usage() {
 while getopts "w:l:r:p:h" opts; do
     case $opts in
     w)
-        wso2_is_1_ip=${OPTARG}
+        wso2_is_ip=${OPTARG}
         ;;
     l)
         lb_host=${OPTARG}
@@ -57,8 +58,8 @@ while getopts "w:l:r:p:h" opts; do
     esac
 done
 
-if [[ -z $wso2_is_1_ip ]]; then
-    echo "Please provide the private IP of WSO2 IS node 1."
+if [[ -z $wso2_is_ip ]]; then
+    echo "Please provide the private IP of WSO2 IS node."
     exit 1
 fi
 
@@ -96,8 +97,8 @@ workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
             -i /home/ubuntu \
             -c /home/ubuntu \
             -f /home/ubuntu/apache-jmeter-*.tgz \
-            -a wso2is1 -n $wso2_is_1_ip \
-            -a loadbalancer -n $wso2_is_1_ip\
+            -a $wso2is_host_alias -n $wso2_is_ip \
+            -a loadbalancer -n $wso2_is_ip\
             -a rds -n $rds_host
 sudo chown -R ubuntu:ubuntu workspace
 sudo chown -R ubuntu:ubuntu apache-jmeter-*
@@ -108,11 +109,9 @@ echo ""
 echo "Setting up IS instances..."
 echo "============================================"
 
-wso2is_1_host_alias=wso2is1
 
-sudo -u ubuntu ssh $wso2is_1_host_alias mkdir sar setup
-sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_1_host_alias:/home/ubuntu/setup/
-sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_1_host_alias:/home/ubuntu/sar/
-sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_1_host_alias:/home/ubuntu/
-sudo -u ubuntu ssh $wso2is_1_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
-
+sudo -u ubuntu ssh $wso2is_host_alias mkdir sar setup
+sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_host_alias:/home/ubuntu/setup/
+sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_host_alias:/home/ubuntu/sar/
+sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_host_alias:/home/ubuntu/
+sudo -u ubuntu ssh $wso2is_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc

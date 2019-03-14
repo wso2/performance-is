@@ -32,6 +32,7 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
+db_instance_type=db.m4.xlarge
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
@@ -296,6 +297,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
+        ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
     --capabilities CAPABILITY_IAM"
 

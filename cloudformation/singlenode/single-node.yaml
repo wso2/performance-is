@@ -37,6 +37,8 @@ Metadata:
           - DBUsername
           - DBPassword
           - DBEngine
+          - DBInstanceType
+          - DBAllocationStorage
       - Label:
           default: Other Configuration
         Parameters:
@@ -60,6 +62,10 @@ Metadata:
         default: Instance Type
       DBEngine:
         default: DB Engine
+      DBAllocationStorage:
+        default: Allocation Storage
+      DBInstanceType:
+        default: DB Instance Type
       JDKVersion:
         default: JDK Version
       OSType:
@@ -191,8 +197,8 @@ Resources:
     Properties:
       VPCSecurityGroups:
         - !Ref WSO2ISDBInstance2SecurityGroup2
-      DBInstanceClass: db.t2.medium
-      AllocatedStorage: 20
+      DBInstanceClass: !Ref DBInstanceType
+      AllocatedStorage: !Ref DBAllocationStorage
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISDBInstance2
       DBName: WSO2_IS_DB_2
@@ -442,6 +448,24 @@ Parameters:
     Type: String
     MinLength: 8
     NoEcho: true
+  DBInstanceType:
+    Type: String
+    Default: db.m4.xlarge
+    AllowedValues:
+      - db.t2.medium
+      - db.t2.large
+      - db.t2.xlarge
+      - db.t2.2xlarge
+      - db.m3.medium
+      - db.m3.large
+      - db.m3.xlarge
+      - db.m3.2xlarge
+      - db.m4.large
+      - db.m4.xlarge
+  DBAllocationStorage:
+    Description: Provide storage size in Gigabytes
+    Type: Number
+    Default: 20
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

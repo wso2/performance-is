@@ -24,6 +24,7 @@ You can run IS Performance Tests from the source using the following instruction
 * [AWS CLI](https://aws.amazon.com/cli/) - Please make sure to [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) and set the output format to `json`.
 * [Apache JMeter 3.3](https://jmeter.apache.org/) Setup tarball.
 * WSO2 IS server zip file
+* Python and [Jinja2](http://jinja.pocoo.org/docs/2.10/)
 
 ### Steps to run performance tests.
 

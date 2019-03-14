@@ -131,7 +131,7 @@
     <properties>
         <project.scm.id>ballerina-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <performance.common.version>0.2.1-SNAPSHOT</performance.common.version>
+        <performance.common.version>0.3.0</performance.common.version>
         <apache.rat.plugin.version>0.11</apache.rat.plugin.version>
     </properties>
 

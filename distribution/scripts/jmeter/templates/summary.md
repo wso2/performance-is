@@ -9,8 +9,8 @@ During each release, we execute various automated performance test scenarios and
 {%- endfor %}
 
 Our test client is [Apache JMeter](https://jmeter.apache.org/index.html). We test each scenario for a fixed duration of
-time. We split the test results into warmup and measurement parts and use the measurement part to compute the
-performance metrics.
+time and split the test results into warm-up and measurement parts and use the measurement part to compute the
+performance metrics. For this particular instance, the duration of each test is **{{ parameters.test_duration }} minutes** and the warm-up period is **{{ parameters.warmup_time }} minutes**.
 
 We run the performance tests under different numbers of concurrent users and heap sizes to gain a better understanding on how the server reacts to different loads.
 
@@ -28,12 +28,7 @@ The following are the test parameters.
 | Scenario Name | The name of the test scenario. | Refer to the above table. |
 | Heap Size | The amount of memory allocated to the application | {{ parameters.heap_sizes|join(', ') }} |
 | Concurrent Users | The number of users accessing the application at the same time. | {{ parameters.concurrent_users|join(', ') }} |
-    
-
-The duration of each test is **{{ parameters.test_duration }} minutes**. The warm-up period is **{{ parameters.warmup_time }} minutes**.
-The measurement results are collected after the warm-up period.
-
-Two [**{{ parameters.is_nodes_ec2_instance_type }}** Amazon EC2 instance](https://aws.amazon.com/ec2/instance-types/)s were used to install WSO2 Identity Server.
+| IS Instance Type | The AWS instance type used to run the Identity Server. | [**{{ parameters.is_nodes_ec2_instance_type }}**](https://aws.amazon.com/ec2/instance-types/) |
 
 The following are the measurements collected from each performance test conducted for a given combination of
 test parameters.
@@ -42,7 +37,7 @@ test parameters.
 | --- | --- |
 | Error % | Percentage of requests with errors |
 | Average Response Time (ms) | The average response time of a set of results |
-| Standard Deviation of Response Time (ms) | The “Standard Deviation” of the response time. |
+| Standard Deviation of Response Time (ms) | The Standard Deviation of the response time. |
 | 99th Percentile of Response Time (ms) | 99% of the requests took no more than this time. The remaining samples took at least as long as this |
 | Throughput (Requests/sec) | The throughput measured in requests per second. |
 | Average Memory Footprint After Full GC (M) | The average memory consumed by the application after a full garbage collection event. |

@@ -19,7 +19,6 @@
 # Setup is scripts.
 # ----------------------------------------------------------------------------
 
-
 function usage() {
     echo ""
     echo "Usage: "
@@ -60,18 +59,18 @@ if [[ -z $db_instance_ip ]]; then
     exit 1
 fi
 
-copy_isserver_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/isserver_edit.sh ubuntu@$wso2_is_ip:/home/ubuntu/"
-copy_isserver_setups_command="scp -r -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup ubuntu@$wso2_is_ip:/home/ubuntu/"
+copy_is_server_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/isserver_edit.sh ubuntu@$wso2_is_ip:/home/ubuntu/"
+copy_is_server_setups_command="scp -r -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_is_server_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/wso2is.zip ubuntu@$wso2_is_ip:/home/ubuntu/wso2is.zip"
 copy_db_create_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" createDB.sql ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_mysql_connector="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-java-5.1.47.jar ubuntu@$wso2_is_ip:/home/ubuntu/"
 
 echo ""
 echo "Copying Is server setup files..."
-echo $copy_isserver_edit_command
-$copy_isserver_edit_command
-echo $copy_isserver_setups_command
-$copy_isserver_setups_command
+echo $copy_is_server_edit_command
+$copy_is_server_edit_command
+echo $copy_is_server_setups_command
+$copy_is_server_setups_command
 echo $copy_is_server_command
 $copy_is_server_command
 echo $copy_db_create_command
@@ -85,4 +84,3 @@ echo ""
 echo "Running IS node setup script: $setup_is_node_command"
 # Handle any error and let the script continue.
 $setup_is_node_command || echo "Remote ssh command to setup is node failed."
-

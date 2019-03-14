@@ -220,6 +220,28 @@ function measure_time() {
     echo "$duration"
 }
 
+function exit_handler() {
+    # Get stack events
+    local stack_events_json=$results_dir/stack-events.json
+    echo ""
+    echo "Saving stack events to $stack_events_json"
+    aws cloudformation describe-stack-events --stack-name $stack_id --no-paginate --output json >$stack_events_json
+    # Check whether there are any failed events
+    cat $stack_events_json | jq '.StackEvents | .[] | select ( .ResourceStatus == "CREATE_FAILED" )'
+
+    local stack_delete_start_time=$(date +%s)
+    echo ""
+    echo "Deleting the stack: $stack_id"
+    aws cloudformation delete-stack --stack-name $stack_id
+
+    echo ""
+    echo "Polling till the stack deletion completes..."
+    aws cloudformation wait stack-delete-complete --stack-name $stack_id
+    printf "Stack deletion time: %s\n" "$(format_time $(measure_time $stack_delete_start_time))"
+
+    printf "Script execution time: %s\n" "$(format_time $(measure_time $script_start_time))"
+}
+
 mkdir $results_dir
 echo ""
 echo "Results will be downloaded to $results_dir"
@@ -230,7 +252,8 @@ tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C $results_
 
 home="$results_dir/setup/single-node-setup"
 
-echo $home
+echo ""
+echo "Script home folder is: $home"
 
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
 echo ""
@@ -239,7 +262,6 @@ echo "Estimating time for performance tests: $estimate_command"
 $estimate_command
 
 temp_dir=$(mktemp -d)
-
 
 # Get absolute paths
 key_file=$(realpath $key_file) 
@@ -283,6 +305,12 @@ echo "$create_stack_command"
 stack_id="$($create_stack_command)"
 stack_id=$(echo $stack_id|jq -r .StackId)
 
+# Delete the stack in case of an error.
+trap exit_handler EXIT
+
+echo ""
+echo "Created stack: $stack_id"
+
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
 sleep ${minimum_stack_creation_wait_time}m
@@ -298,13 +326,12 @@ bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $st
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
-
 echo ""
 echo "Getting WSO2 IS Node Private IP..."
-wso2is1_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
-wso2is1_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is1_auto_scaling_grp | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-wso2_is_1_ip="$(aws ec2 describe-instances --instance-ids $wso2is1_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
-echo "WSO2 IS Node Private IP: $wso2_is_1_ip"
+wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is_auto_scaling_grp | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+wso2_is_ip="$(aws ec2 describe-instances --instance-ids $wso2is_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+echo "WSO2 IS Node Private IP: $wso2_is_ip"
 
 echo ""
 echo "Getting RDS Hostname..."
@@ -312,8 +339,8 @@ rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_
 rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
-copy_isserver_edit_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/isserver_edit.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_isserver_setups_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $home/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_is_server_edit_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/isserver_edit.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_is_server_setups_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $home/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_is_server_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
 copy_is_master_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/setup_is.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
@@ -321,11 +348,11 @@ copy_db_create_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/cre
 copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-5.1.47.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
 
 echo ""
-echo "Copying Is server setup files..."
-echo $copy_isserver_edit_command
-$copy_isserver_edit_command
-echo $copy_isserver_setups_command
-$copy_isserver_setups_command
+echo "Copying IS server setup files..."
+echo $copy_is_server_edit_command
+$copy_is_server_edit_command
+echo $copy_is_server_setups_command
+$copy_is_server_setups_command
 echo $copy_is_server_command
 $copy_is_server_command
 echo $copy_is_master_setup_command
@@ -337,12 +364,12 @@ $copy_db_create_command
 echo copy_connector_command
 $copy_connector_command
 
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_1_ip -r $rds_host"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_ip -r $rds_host"
 
 echo ""
 echo "Running IS node setup script: $setup_is_command"
 # Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup is node through bastion failed."
+$setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
 
 copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
@@ -357,13 +384,13 @@ $copy_jmeter_setup_command
 echo $copy_repo_setup_command
 $copy_repo_setup_command
 
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_1_ip  -l $wso2_is_1_ip -r $rds_host"
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
 echo ""
 echo "Running Bastion Node setup script: $setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh"
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo ""
 echo "Running performance tests: $run_remote_tests"
@@ -380,9 +407,17 @@ if [[ ! -f $results_dir/results.zip ]]; then
 fi
 
 echo ""
-echo "Creating unzipping results..."
+echo "Creating summary.csv..."
 cd $results_dir
 unzip -q results.zip
+wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
+$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+
+echo "Creating summary results markdown file..."
+./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
+    "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
+    "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
+    "WSO2 Identity Server GC Throughput (%)"
+
 echo ""
 echo "Done."
-

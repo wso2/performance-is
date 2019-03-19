@@ -42,13 +42,16 @@ git checkout single-node-performance
 ```
 mvn clean install
 ```
-
 4. Change directory to `cloudformation/` and run the `start_performance_single.sh` script. Following is the basic command.
 ```
 ./start_performance_single.sh -k is-perf-test.pem -a ******* -s ******* -c is-perf-cert -n wso2IS.zip -j apache-jmeter-4.0.tgz -- -d 10 -w 2
 ```
-
-See usage:
+5. Using nohup and printing timestamp in log file.
+```
+nohup ./start_performance_single.sh -k is-perf-test.pem -a ******* -s ******* -c is-perf-cert -n wso2IS.zip -j apache-jmeter-4.0.tgz -- -d 10 -w 2
+ | while IFS= read -r line; do echo "[$(date '+%F %T')] $line"; done >> perf.log &
+```
+### See usage:
 
 ```
 ./start_performance_single.sh -k <key_file> 

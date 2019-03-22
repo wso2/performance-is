@@ -129,7 +129,7 @@ function after_execute_test_scenario() {
 
     is_home="/home/ubuntu/wso2is"
     write_server_metrics $wso2is_host_alias $wso2is_host_alias
-    download_file "$wso2is_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_host_alias.log"
+    #download_file "$wso2is_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_host_alias.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/gc.log $wso2is_host_alias"_gc.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_host_alias-heap-dump.hprof"
     download_file "$wso2is_host_alias" $is_home/repository/logs/http_access_*.log "$wso2is_http_access_log"

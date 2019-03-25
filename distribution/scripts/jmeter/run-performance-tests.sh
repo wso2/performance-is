@@ -115,6 +115,16 @@ declare -A test_scenario10=(
 #    [skip]=false
 #)
 
+echo_timestamp(){
+  time=`date "+%Y-%m-%d__%H-%M-%S"`
+  echo " "
+  echo "*************************************************************"
+  echo " "
+  echo "$time"
+  echo " "
+  echo "*************************************************************"
+}
+
 function before_execute_test_scenario() {
 
     ssh $wso2is_host_alias "./restart-is.sh -m $heap"
@@ -123,16 +133,18 @@ function before_execute_test_scenario() {
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
     mysql -u $db_username -h $rds_host -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
+    echo_timestamp
 }
 
 function after_execute_test_scenario() {
 
+    echo_timestamp
     is_home="/home/ubuntu/wso2is"
     write_server_metrics $wso2is_host_alias $wso2is_host_alias
     download_file "$wso2is_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_host_alias.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/gc.log $wso2is_host_alias"_gc.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_host_alias-heap-dump.hprof"
-    download_file "$wso2is_host_alias" $is_home/repository/logs/http_access_*.log "$wso2is_http_access_log"
+    # download_file "$wso2is_host_alias" $is_home/repository/logs/http_access_*.log "$wso2is_http_access_log"
 }
 
 test_scenarios

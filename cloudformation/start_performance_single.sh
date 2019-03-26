@@ -363,7 +363,7 @@ echo $copy_key_file_command
 $copy_key_file_command
 echo $copy_db_create_command
 $copy_db_create_command
-echo copy_connector_command
+echo $copy_connector_command
 $copy_connector_command
 
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_ip -r $rds_host"

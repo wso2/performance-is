@@ -339,10 +339,12 @@ Resources:
             - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
             - source /etc/environment
             - exit
-  
+
   WSO2ISNode1LaunchConfiguration2:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
+      # Uncomment below to assign a public IP to the IS instance.
+      # AssociatePublicIpAddress: true
       ImageId: !FindInMap
         - WSO2ISAMIRegionMap
         - !Ref 'AWS::Region'
@@ -376,7 +378,7 @@ Resources:
             - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
             - source /etc/environment
             - exit
-           
+
     DependsOn:
       - WSO2ISSecurityGroup
       - WSO2ISVPC2InternetGatewayAttachment
@@ -389,6 +391,8 @@ Resources:
       MinSize: 1
       MaxSize: 1
       VPCZoneIdentifier:
+        # Use public subnet to assign a public IP to the IS instance.
+        # - !Ref WSO2ISPublicSubnet12
         - !Ref WSO2ISPrivateSubnet12
       Tags:
         - Key: Name
@@ -399,7 +403,7 @@ Resources:
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNode1LaunchConfiguration2
-  
+
 Outputs:
   InstanceID:
     Description: The Bastion ID

@@ -462,6 +462,8 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number

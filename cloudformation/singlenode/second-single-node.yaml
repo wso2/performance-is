@@ -1,0 +1,512 @@
+# Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  WSO2 Identity Server deployment with single node environment
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Cluster Configuration
+        Parameters:
+          - AWSAccessKeyId
+          - AWSAccessKeySecret
+          - KeyPairName
+          - WSO2InstanceType
+          - BastionInstanceType
+          - OSType
+      - Label:
+          default: Network Configuration
+        Parameters:
+          - CertificateName
+      - Label:
+          default: Database Credentials
+        Parameters:
+          - DBUsername
+          - DBPassword
+          - DBEngine
+          - DBInstanceType
+          - DBAllocationStorage
+      - Label:
+          default: Other Configuration
+        Parameters:
+          - JDK
+    ParameterLabels:
+      AWSAccessKeyId:
+        default: AWS Access Key ID
+      AWSAccessKeySecret:
+        default: AWS Access Secret Key
+      CertificateName:
+        default: SSL Certificate Name
+      KeyPairName:
+        default: Key Pair Name
+      DBUsername:
+        default: Username
+      DBPassword:
+        default: Password
+      JDK:
+        default: JDK Version
+      WSO2InstanceType:
+        default: Instance Type
+      DBEngine:
+        default: DB Engine
+      DBAllocationStorage:
+        default: Allocation Storage
+      DBInstanceType:
+        default: DB Instance Type
+      JDKVersion:
+        default: JDK Version
+      OSType:
+        default: OS Type
+      BastionInstanceType:
+        default: Bastion Instance Type
+Resources:
+  # networking configurations
+  WSO2ISVPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+  WSO2ISPublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      CidrBlock: 10.0.254.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+  WSO2ISPublicSubnet2:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        VpcId: !Ref WSO2ISVPC
+        CidrBlock: 10.0.252.0/24
+        AvailabilityZone: !Select
+          - '1'
+          - !GetAZs ''
+  WSO2ISPublicInternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+  WSO2ISPublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+  WSO2ISPublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      SubnetId: !Ref WSO2ISPublicSubnet1
+  WSO2ISPublicSubnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      SubnetId: !Ref WSO2ISPublicSubnet2
+  WSO2ISPublicRoute2:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      GatewayId: !Ref WSO2ISPublicInternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+    DependsOn: WSO2ISVPCInternetGatewayAttachment
+  WSO2ISVPCInternetGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      InternetGatewayId: !Ref WSO2ISPublicInternetGateway
+      VpcId: !Ref WSO2ISVPC
+  WSO2ISPrivateSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+  WSO2ISPrivateSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select
+        - '1'
+        - !GetAZs ''
+  WSO2ISPrivateSubnetRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+  WSO2ISPrivateRoute2:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref WSO2ISNATGateway
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
+  WSO2ISPrivateSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
+      SubnetId: !Ref WSO2ISPrivateSubnet1
+  WSO2ISPrivateSubnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
+      SubnetId: !Ref WSO2ISPrivateSubnet2
+  WSO2ISNATGateway:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt
+        - WSO2ISEIP
+        - AllocationId
+      SubnetId: !Ref WSO2ISPublicSubnet1
+  WSO2BastionEIPAssociation:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt WSO2BastionEIP.AllocationId
+      InstanceId: !Ref WSO2BastionInstance
+  WSO2ISEIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  WSO2BastionEIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  # database configurations
+  WSO2ISDBInstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      GroupDescription: DB Security Group2
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '3306'
+          ToPort: '3306'
+          CidrIp: 0.0.0.0/0
+  WSO2ISDBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    DeletionPolicy: Delete
+    Properties:
+      VPCSecurityGroups:
+        - !Ref WSO2ISDBInstanceSecurityGroup
+      DBInstanceClass: !Ref DBInstanceType
+      AllocatedStorage: !Ref DBAllocationStorage
+      BackupRetentionPeriod: '0'
+      DBInstanceIdentifier: WSO2ISDBInstance
+      DBName: WSO2_IS_DB
+      #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
+      #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
+      EngineVersion: 5.7.22
+      Engine: MySQL
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      MultiAZ: 'false'
+      StorageType: gp2
+      DBParameterGroupName: wso2is-db-param-grp
+      DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup
+  WSO2ISDBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: DB Subnet Group
+      SubnetIds:
+        - !Ref WSO2ISPrivateSubnet1
+        - !Ref WSO2ISPrivateSubnet2
+  # File system configurations
+  WSO2ISEFSSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      GroupDescription: EFS Security Group
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '2049'
+        ToPort: '2049'
+        CidrIp: 0.0.0.0/0
+  WSO2ISEFSFileSystem:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      PerformanceMode: generalPurpose
+  WSO2ISPrivateSubnet1EFSMountTarget:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet1
+      FileSystemId: !Ref WSO2ISEFSFileSystem
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroup
+  WSO2ISPrivateSubnet2EFSMountTarget:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet2
+      FileSystemId: !Ref WSO2ISEFSFileSystem
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroup
+  # Product configurations
+  BastionSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      GroupDescription: WSO2 Bastion node Security Group for 5.3
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+  WSO2ISSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPC
+      GroupDescription: WSO2 Identity Manager Security Group
+      GroupName: WSO2SecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8280'
+          ToPort: '8280'
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
+        - IpProtocol: tcp
+          FromPort: '9763'
+          ToPort: '9763'
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
+        - IpProtocol: tcp
+          FromPort: '9443'
+          ToPort: '9443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8243'
+          ToPort: '8243'
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
+        - IpProtocol: tcp
+          FromPort: '5672'
+          ToPort: '5672'
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
+        - IpProtocol: tcp
+          FromPort: '5701'
+          ToPort: '5701'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8140'
+          ToPort: '8140'
+          CidrIp: 0.0.0.0/0
+  WSO2BastionInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMap
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref BastionInstanceType
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: WSO2BastionInstancefor5.3
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref WSO2ISPublicSubnet1
+          GroupSet:
+            - !Ref BastionSecurityGroup
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - apt-get install -y mysql-client
+            - apt-get install -y unzip
+            - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+            - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+            - add-apt-repository -y ppa:webupd8team/java
+            - apt-get update
+            - apt-get install -y oracle-java8-installer
+            - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - source /etc/environment
+            - exit
+  
+  WSO2ISNode1LaunchConfiguration:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMap
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref WSO2InstanceType
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: '20'
+            VolumeType: gp2
+            DeleteOnTermination: 'true'
+      KeyName: !Ref KeyPairName
+      SecurityGroups:
+        - !Ref WSO2ISSecurityGroup
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - apt-get install -y mysql-client
+            - apt-get install -y unzip
+            - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+            - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+            - add-apt-repository -y ppa:webupd8team/java
+            - apt-get update
+            - apt-get install -y oracle-java8-installer
+            - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - source /etc/environment
+            - exit
+           
+    DependsOn:
+      - WSO2ISSecurityGroup
+      - WSO2ISVPCInternetGatewayAttachment
+      - WSO2ISDBInstance
+  WSO2ISNode1AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2ISNode1LaunchConfiguration
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      VPCZoneIdentifier:
+        - !Ref WSO2ISPrivateSubnet1
+      Tags:
+        - Key: Name
+          Value: WSO2ISInstance1
+          PropagateAtLaunch: 'true'
+        - Key: cluster
+          Value: is
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2ISNode1LaunchConfiguration
+  
+Outputs:
+  InstanceID:
+    Description: The Bastion ID
+    Value: !Ref WSO2BastionInstance
+
+Parameters:
+  AWSAccessKeyId:
+    Type: String
+  AWSAccessKeySecret:
+    Type: String
+  KeyPairName:
+    Description: >-
+      The private key used to log in to instances through SSH
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  CertificateName:
+    Description: A valid SSL certificate used for HTTPS
+    Type: String
+    MinLength: 1
+  WSO2InstanceType:
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - t2.micro
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - c4.large
+      - c4.xlarge
+      - c5.large
+      - c5.xlarge
+    ConstraintDescription: Must be a valid EC2 instance type
+  DBUsername:
+    Type: String
+    MinLength: 4
+    AllowedPattern: '[A-Za-z0-9\-]+'
+  DBEngine:
+    Type: String
+    Default: MySQL_5.7
+  DBPassword:
+    Type: String
+    MinLength: 8
+    NoEcho: true
+  DBInstanceType:
+    Type: String
+    Default: db.m4.xlarge
+    AllowedValues:
+      - db.t2.medium
+      - db.t2.large
+      - db.t2.xlarge
+      - db.t2.2xlarge
+      - db.m3.medium
+      - db.m3.large
+      - db.m3.xlarge
+      - db.m3.2xlarge
+      - db.m4.large
+      - db.m4.xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
+  DBAllocationStorage:
+    Description: Provide storage size in Gigabytes
+    Type: Number
+    Default: 20
+  JDKVersion:
+    Type: String
+    Default: Oracle_JDK_8
+    AllowedValues:
+      - Open_JDK_8
+      - Oracle_JDK_8
+  OSType:
+    Type: String
+    Default: Ubuntu_18.04
+    AllowedValues:
+      - Ubuntu_18.04
+      - CentOS_7
+  BastionInstanceType:
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - t2.micro
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - c4.large
+      - c4.xlarge
+      - c5.large
+      - c5.xlarge
+    ConstraintDescription: Must be a valid EC2 instance type
+Mappings:
+  WSO2ISAMIRegionMap:
+    us-east-1:
+      AMI: ami-0b86cfbff176b7d3a
+    us-east-2:
+      AMI: ami-0125a7e5b2489477a
+    us-west-1:
+      AMI: ami-0e81aa4c57820bb57
+    us-west-2:
+      AMI: ami-03fa1f014b48fa6bd

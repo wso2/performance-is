@@ -94,6 +94,12 @@
             <stringProp name="Argument.value">${__P(apps,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="threadDelay" elementType="Argument">
+            <stringProp name="Argument.name">threadDelay</stringProp>
+            <stringProp name="Argument.value">${__P(threadDelay,0)}</stringProp>
+            <stringProp name="Argument.desc">milliseconds</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -404,6 +410,11 @@ ${password}</stringProp>
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Thread Delay" enabled="true">
+          <stringProp name="TestPlan.comments">Can be used to reduce the TPS. Ex: For long running tests.</stringProp>
+          <stringProp name="ConstantTimer.delay">${threadDelay}</stringProp>
+        </ConstantTimer>
+        <hashTree/>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>

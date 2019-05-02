@@ -88,6 +88,12 @@
             <stringProp name="Argument.value">${__P(spCount,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="constantTPS" elementType="Argument">
+            <stringProp name="Argument.name">constantTPS</stringProp>
+            <stringProp name="Argument.value">${__P(constantTPS,10000000)}</stringProp>
+            <stringProp name="Argument.desc">samples per minute.</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -495,6 +501,11 @@ ${password}</stringProp>
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput" enabled="true">
+          <intProp name="calcMode">1</intProp>
+          <stringProp name="throughput">${constantTPS}</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>

@@ -39,6 +39,7 @@ Metadata:
           - DBEngine
           - DBInstanceType
           - DBAllocationStorage
+          - DBIops
       - Label:
           default: Other Configuration
         Parameters:
@@ -64,6 +65,8 @@ Metadata:
         default: DB Engine
       DBAllocationStorage:
         default: Allocation Storage
+      DBIops:
+        default: Allocation IOPS
       DBInstanceType:
         default: DB Instance Type
       JDKVersion:
@@ -209,7 +212,8 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
-      StorageType: gp2
+      Iops: !Ref DBIops
+      StorageType: io1
       DBParameterGroupName: wso2is-db-param-grp
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup2
   WSO2ISDBSubnetGroup2:
@@ -466,10 +470,16 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
-    Default: 20
+    Default: 100
+  DBIops:
+    Description: Provide IOps size in numbers
+    Type: Number
+    Default: 1000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

@@ -88,6 +88,12 @@
             <stringProp name="Argument.value">${__P(spCount,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="constantTPS" elementType="Argument">
+            <stringProp name="Argument.name">constantTPS</stringProp>
+            <stringProp name="Argument.value">${__P(constantTPS,10000000)}</stringProp>
+            <stringProp name="Argument.desc">samples per minute.</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -135,11 +141,7 @@ if (y == 0) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else {
 	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
-}
-log.info(&quot;=================================&quot;);
-log.info(vars.get(&quot;usernamePrefix&quot;) + &quot;:&quot; + vars.get(&quot;user_count_id&quot;));
-log.info(&quot;=================================&quot;);
-</stringProp>
+}</stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
@@ -395,6 +397,11 @@ log.info(&quot;=================================&quot;);
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput" enabled="true">
+          <intProp name="calcMode">1</intProp>
+          <stringProp name="throughput">${constantTPS}</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>

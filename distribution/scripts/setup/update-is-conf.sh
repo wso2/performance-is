@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
 # ----------------------------------------------------------------------------
 # edit is server script.
 # ----------------------------------------------------------------------------
@@ -90,6 +91,13 @@ sudo tar -xzf jdk-*-linux-x64.tar.gz -C /usr/lib/jvm
 sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/java8
 export JAVA_HOME=/usr/lib/jvm/java8
 export PATH=$PATH:$JAVA_HOME/bin
+sudo mkdir -p /etc/.java/.systemPrefs
+cd /etc/.java/.systemPrefs
+sudo touch .systemRootModFile
+sudo chmod 544 .systemRootModFile
+cd ..
+sudo chmod 777 .systemPrefs/
+cd ~
 java -version
 
 echo ""
@@ -127,6 +135,10 @@ sed -i 's/<maxActive>50</<maxActive>300</' $carbon_home/repository/conf/datasour
 sed -i 's/maxThreads="250"/maxThreads="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/acceptCount="200"/acceptCount="500"/' $carbon_home/repository/conf/tomcat/catalina-server.xml
 sed -i 's/<EnableSSOConsentManagement>true</<EnableSSOConsentManagement>false</' $carbon_home/repository/conf/identity/identity.xml
+
+# Setting required for long running tests.
+#sed -i 's/<CleanUpTimeout>20160</<CleanUpTimeout>240</' $carbon_home/repository/conf/identity/identity.xml
+#sed -i 's/<CleanUpPeriod>1440</<CleanUpPeriod>120</' $carbon_home/repository/conf/identity/identity.xml
 
 echo ""
 echo "Starting WSO2 IS server..."

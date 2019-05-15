@@ -89,13 +89,13 @@ function get_ssh_hostname() {
     sudo -u ubuntu ssh -G $1 | awk '/^hostname / { print $2 }'
 }
 
-echo ""
-echo "Temp steps..."
-echo "============================================"
-cd /home/ubuntu
-curl -o jdk-8u144-linux-x64.tar.gz https://doc-0k-bs-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/n1c1eu1624j4057vi7dvcebllg9apadk/1556258400000/03950632627167213933/*/1aLrt9rTeE9TeZdJK6TUuYe72jTAmvAPE?e=download
-wget https://github.com/wso2/product-is/releases/download/v5.8.0-beta3/wso2is-5.8.0-beta3.zip
-mv wso2is-*.zip wso2is.zip
+#echo ""
+#echo "Downloading IS Pack and Java..."
+#echo "============================================"
+#cd /home/ubuntu
+#curl -o jdk-8u144-linux-x64.tar.gz https://doc-0k-bs-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/n1c1eu1624j4057vi7dvcebllg9apadk/1556258400000/03950632627167213933/*/1aLrt9rTeE9TeZdJK6TUuYe72jTAmvAPE?e=download
+#wget https://github.com/wso2/product-is/releases/download/v5.8.0-beta3/wso2is-5.8.0-beta3.zip
+#mv wso2is-*.zip wso2is.zip
 
 echo ""
 echo "Setting up required files..."

@@ -72,7 +72,6 @@ copy_is_server_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=
 copy_is_server_resources_command="scp -r -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/workspace/setup/resources/ ubuntu@$wso2_is_1_ip:/home/ubuntu/"
 copy_is_server_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/wso2is.zip ubuntu@$wso2_is_1_ip:/home/ubuntu/wso2is.zip"
 copy_mysql_connector_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-java-*.jar ubuntu@$wso2_is_1_ip:/home/ubuntu/"
-copy_java_setup_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/jdk-*-linux-x64.tar.gz ubuntu@$wso2_is_1_ip:/home/ubuntu/"
 
 echo ""
 echo "Copying Is server setup files..."
@@ -84,8 +83,6 @@ echo $copy_is_server_command
 $copy_is_server_command
 echo $copy_mysql_connector_command
 $copy_mysql_connector_command
-echo $copy_java_setup_command
-$copy_java_setup_command
 
 setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip ./update-is-conf.sh -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
 

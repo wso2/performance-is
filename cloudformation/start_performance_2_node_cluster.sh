@@ -27,7 +27,6 @@ aws_access_secret=""
 certificate_name=""
 jmeter_setup=""
 is_setup=""
-java_setup="/home/vihanga/Downloads/Software/jdk-8u144-linux-x64.tar.gz"
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
@@ -375,7 +374,6 @@ if [[ -z $rds_host ]]; then
 fi
 
 copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
-copy_java_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" $java_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
 copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-*.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
 
@@ -383,8 +381,6 @@ echo ""
 echo "Copying IS server setup files..."
 echo $copy_is_pack_command
 $copy_is_pack_command
-echo $copy_java_setup_command
-$copy_java_setup_command
 echo $copy_key_file_command
 $copy_key_file_command
 echo $copy_connector_command

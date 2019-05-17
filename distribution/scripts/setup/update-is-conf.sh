@@ -84,23 +84,6 @@ chmod 644 mysql-connector-java-*.jar
 carbon_home=$(realpath ~/wso2is)
 
 echo ""
-echo "Setting up Java..."
-echo "============================================"
-sudo mkdir -p /usr/lib/jvm
-sudo tar -xzf jdk-*-linux-x64.tar.gz -C /usr/lib/jvm
-sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/java8
-export JAVA_HOME=/usr/lib/jvm/java8
-export PATH=$PATH:$JAVA_HOME/bin
-sudo mkdir -p /etc/.java/.systemPrefs
-cd /etc/.java/.systemPrefs
-sudo touch .systemRootModFile
-sudo chmod 544 .systemRootModFile
-cd ..
-sudo chmod 777 .systemPrefs/
-cd ~
-java -version
-
-echo ""
 echo "Adding mysql connector to the pack..."
 echo "============================================"
 cp mysql-connector-java-*.jar $carbon_home/repository/components/lib/

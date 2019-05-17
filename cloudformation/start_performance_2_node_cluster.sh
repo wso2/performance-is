@@ -38,9 +38,10 @@ default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
 script_start_time=$(date +%s)
-stack_name="is-performance-two-node-$script_start_time"
+timestamp=$(date +%Y-%m-%d-%H:%M:%S)
+stack_name="is-performance-two-node-$timestamp"
 script_dir=$(dirname "$0")
-results_dir="$PWD/results-$(date +%Y%m%d%H%M%S)"
+results_dir="$PWD/results-$timestamp"
 is_performance_distribution=""
 is_installer_url=""
 default_minimum_stack_creation_wait_time=10

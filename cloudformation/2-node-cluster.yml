@@ -366,7 +366,9 @@ Resources:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
           DeviceIndex: 0
-          SubnetId: !Ref WSO2ISPrivateSubnet1
+          # Uncomment public subnet to assign a public IP to the IS instance.
+          SubnetId: !Ref WSO2ISPublicSubnet1
+          # SubnetId: !Ref WSO2ISPrivateSubnet1
           GroupSet:
             - !Ref BastionSecurityGroup
       UserData: !Base64
@@ -456,7 +458,7 @@ Resources:
       MinSize: 1
       MaxSize: 1
       VPCZoneIdentifier:
-        # Use public subnet to assign a public IP to the IS instance.
+        # Uncomment public subnet to assign a public IP to the IS instance.
         # - !Ref WSO2ISPublicSubnet1
         - !Ref WSO2ISPrivateSubnet1
       Tags:

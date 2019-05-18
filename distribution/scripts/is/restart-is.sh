@@ -17,7 +17,7 @@
 # Restart Identity Server
 # ----------------------------------------------------------------------------
 
-default_carbon_home=$(realpath /usr/lib/wso2/wso2is/*/wso2is-*/)
+default_carbon_home=$(realpath ~/wso2is)
 carbon_home=$default_carbon_home
 default_waiting_time=100
 waiting_time=$default_waiting_time

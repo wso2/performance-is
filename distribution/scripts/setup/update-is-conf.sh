@@ -68,6 +68,14 @@ if [[ -z $wso2_is_2_ip ]]; then
     exit 1
 fi
 
+sudo mkdir -p /etc/.java/.systemPrefs
+cd /etc/.java/.systemPrefs
+sudo touch .systemRootModFile
+sudo chmod 544 .systemRootModFile
+cd ..
+sudo chmod 777 .systemPrefs/
+cd ~
+
 echo "unzipping is server"
 unzip -q wso2is.zip
 

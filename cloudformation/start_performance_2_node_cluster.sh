@@ -38,7 +38,7 @@ default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
 script_start_time=$(date +%s)
-timestamp=$(date +%Y-%m-%d-%H:%M:%S)
+timestamp=$(date +%Y-%m-%d-%H-%M-%S)
 stack_name="is-performance-two-node-$timestamp"
 script_dir=$(dirname "$0")
 results_dir="$PWD/results-$timestamp"
@@ -411,36 +411,44 @@ $setup_bastion_node_command || echo "Remote ssh command failed."
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
-create_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $rds_host -u wso2carbon \
-    -pwso2carbon < /home/ubuntu/workspace/setup/resources/createDB.sql"
+create_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $rds_host \
+    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createDB.sql"
 echo $create_db_command
-ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip "cd /home/ubuntu/ ; unzip -q wso2is.zip ; \
+    mv wso2is-* wso2is"
 $create_db_command
 
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./workspace/setup/setup-is.sh -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
 echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    ./workspace/setup/setup-is.sh -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
 echo $setup_is_command
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
 
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./workspace/setup/setup-is.sh -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
 echo ""
 echo "Running IS node 2 setup script..."
 echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    ./workspace/setup/setup-is.sh -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
 echo $setup_is_command
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
 
+echo ""
+echo "Running performance tests..."
+echo "============================================"
 run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
-echo ""
-echo "Running performance tests: $run_remote_tests"
+echo $run_remote_tests
 $run_remote_tests || echo "Remote test ssh command failed."
 
+ECHO ""
+echo "Downloading results..."
+echo "============================================"
 download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
-echo "Running command: $download"
+echo $download
 $download || echo "Remote download failed"
 
 if [[ ! -f $results_dir/results.zip ]]; then
@@ -451,16 +459,18 @@ fi
 
 echo ""
 echo "Creating summary.csv..."
+echo "============================================"
 cd $results_dir
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
+    -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
     "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
     "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
-    "WSO2 Identity Server GC Throughput (%)"
+    "WSO2 Identity Server 1 GC Throughput (%)" "WSO2 Identity Server GC 2 Throughput (%)"
 
 echo ""
 echo "Done."

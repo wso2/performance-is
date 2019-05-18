@@ -108,13 +108,13 @@ declare -A test_scenario10=(
     [jmx]="scim2/SCIM2_Get_User_By_ID.jmx"
     [skip]=false
 )
-declare -A test_scenario11=(
-    [name]="11-scim2_update_user_by_scim_id"
-    [display_name]="SCIM2 Update User"
-    [description]="Update user details by passing the SCIM ID."
-    [jmx]="scim2/SCIM2_Update_User_By_ID.jmx"
-    [skip]=false
-)
+#declare -A test_scenario11=(
+#    [name]="11-scim2_update_user_by_scim_id"
+#    [display_name]="SCIM2 Update User"
+#    [description]="Update user details by passing the SCIM ID."
+#    [jmx]="scim2/SCIM2_Update_User_By_ID.jmx"
+#    [skip]=false
+#)
 #declare -A test_scenario12=(
 #    [name]="12-scim2_add_user"
 #    [display_name]="SCIM2 Add User"
@@ -123,31 +123,19 @@ declare -A test_scenario11=(
 #    [skip]=false
 #)
 
-echo_timestamp(){
-  time=`date "+%Y-%m-%d__%H-%M-%S"`
-  echo " "
-  echo "*************************************************************"
-  echo " "
-  echo "$time"
-  echo " "
-  echo "*************************************************************"
-}
-
 function before_execute_test_scenario() {
 
     ssh $wso2is_1_host_alias "./restart-is.sh -m $heap"
     ssh $wso2is_2_host_alias "./restart-is.sh -m $heap"
-    jmeter_params+=("port=9443")
+    jmeter_params+=("port=443")
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
     mysql -u $db_username -h $rds_host -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
-    echo_timestamp
 }
 
 function after_execute_test_scenario() {
 
-    echo_timestamp
     is_home="/home/ubuntu/wso2is"
     write_server_metrics $wso2is_1_host_alias $wso2is_1_host_alias
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_1_host_alias.log"

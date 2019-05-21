@@ -333,14 +333,19 @@ Resources:
             - apt-get update
             - apt-get install -y mysql-client
             - apt-get install -y unzip
-            - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-            - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-            - add-apt-repository -y ppa:webupd8team/java
-            - apt-get update
-            - apt-get install -y oracle-java8-installer
-            - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - sudo mkdir /usr/lib/jvm
+            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            - sudo chmod a+x /usr/bin/java
+            - sudo chmod a+x /usr/bin/javac
+            - sudo chmod a+x /usr/bin/javaws
+            - export JAVA_HOME=/usr/lib/jvm/jdk
             - sudo su
-            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
             - source /etc/environment
             - exit
 
@@ -372,14 +377,19 @@ Resources:
             - apt-get update
             - apt-get install -y mysql-client
             - apt-get install -y unzip
-            - echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-            - echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-            - add-apt-repository -y ppa:webupd8team/java
-            - apt-get update
-            - apt-get install -y oracle-java8-installer
-            - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - sudo mkdir /usr/lib/jvm
+            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            - sudo chmod a+x /usr/bin/java
+            - sudo chmod a+x /usr/bin/javac
+            - sudo chmod a+x /usr/bin/javaws
+            - export JAVA_HOME=/usr/lib/jvm/jdk
             - sudo su
-            - echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >>/etc/environment
+            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
             - source /etc/environment
             - exit
 

@@ -31,7 +31,10 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-db_instance_type=db.m4.xlarge
+default_db_storage="100"
+db_storage=$default_db_storage
+default_db_instance_type=db.m4.xlarge
+db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
@@ -53,7 +56,7 @@ function usage() {
     echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
     echo "   -c <certificate_name> -j <jmeter_setup_path>"
     echo "   [-n <IS_zip_file_path>]"
-    echo "   [-u <db_username>] [-p <db_password>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-e <db_instance_type>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
@@ -65,6 +68,8 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
+    echo "-d: The database storage in GB. Default: $default_db_storage."
+    echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
@@ -73,7 +78,7 @@ function usage() {
     echo ""
 }
 
-while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "k:a:s:c:j:n:u:p:d:e:i:b:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -98,6 +103,12 @@ while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
         ;;
     p)
         db_password=${OPTARG}
+        ;;
+    d)
+        db_storage=${OPTARG}
+        ;;
+    e)
+        db_instance_type=${OPTARG}
         ;;
     i)
         wso2_is_instance_type=${OPTARG}
@@ -149,6 +160,16 @@ fi
 
 if [[ -z $db_password ]]; then
     echo "Please provide the database password."
+    exit 1
+fi
+
+if [[ -z $db_storage ]]; then
+    echo "Please provide the database storage size."
+    exit 1
+fi
+
+if [[ -z $db_instance_type ]]; then
+    echo "Please provide the database instance type."
     exit 1
 fi
 
@@ -295,8 +316,9 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
-        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
+        ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
     --capabilities CAPABILITY_IAM"
 
@@ -444,7 +466,7 @@ run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bast
 echo $run_remote_tests
 $run_remote_tests || echo "Remote test ssh command failed."
 
-ECHO ""
+echo ""
 echo "Downloading results..."
 echo "============================================"
 download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"

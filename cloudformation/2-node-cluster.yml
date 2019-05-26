@@ -14,7 +14,7 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  WSO2 Identity Server deployment with single node environment
+  WSO2 Identity Server 2-node cluster deployment.
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -37,6 +37,7 @@ Metadata:
           - DBEngine
           - DBInstanceType
           - DBAllocationStorage
+          - DBIops
       - Label:
           default: Other Configuration
         Parameters:
@@ -58,6 +59,8 @@ Metadata:
         default: DB Engine
       DBAllocationStorage:
         default: Allocation Storage
+      DBIops:
+        default: Allocation IOPS
       DBInstanceType:
         default: DB Instance Type
       JDKVersion:
@@ -203,7 +206,8 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
-      StorageType: gp2
+      Iops: !Ref DBIops
+      StorageType: io1
       DBParameterGroupName: wso2is-db-param-grp
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup
   WSO2ISDBSubnetGroup:
@@ -367,8 +371,8 @@ Resources:
           Description: Primary network interface
           DeviceIndex: 0
           # Uncomment public subnet to assign a public IP to the IS instance.
-          SubnetId: !Ref WSO2ISPublicSubnet1
-          # SubnetId: !Ref WSO2ISPrivateSubnet1
+          # SubnetId: !Ref WSO2ISPublicSubnet1
+          SubnetId: !Ref WSO2ISPrivateSubnet1
           GroupSet:
             - !Ref BastionSecurityGroup
       UserData: !Base64
@@ -532,7 +536,11 @@ Parameters:
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
-    Default: 20
+    Default: 100
+  DBIops:
+    Description: Provide IOps size in numbers
+    Type: Number
+    Default: 1000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

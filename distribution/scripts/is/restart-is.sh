@@ -17,35 +17,33 @@
 # Restart Identity Server
 # ----------------------------------------------------------------------------
 
-default_carbon_home=$(realpath ~/wso2is)
-carbon_home=$default_carbon_home
 default_waiting_time=100
 waiting_time=$default_waiting_time
-default_heap_size="2g"
-heap_size="$default_heap_size"
+cpus=""
+memory=""
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0  [-c <carbon_home>] [-w <waiting_time>]"
+    echo "$0 -c <cpus> -m <memory> [-w <waiting_time>]"
     echo ""
-    echo "-c: The Identity server path."
+    echo "-c: Number of CPU cores for the IS node"
+    echo "-m: Memory for the IS node (GB)"
     echo "-w: The waiting time in seconds until the server restart.."
-    echo "-m: The heap memory size of Ballerina VM. Default: $default_heap_size."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:w:m:h" opts; do
+while getopts "c:m:w:h" opts; do
     case $opts in
     c)
-        carbon_home=${OPTARG}
+        cpus=${OPTARG}
+        ;;
+    m)
+        memory=${OPTARG}
         ;;
     w)
         waiting_time=${OPTARG}
-        ;;
-    m)
-        heap_size=${OPTARG}
         ;;
     h)
         usage
@@ -58,8 +56,13 @@ while getopts "c:w:m:h" opts; do
     esac
 done
 
-if [ ! -d $carbon_home ]; then
-    echo "Please provide the Identity Server path."
+if [[ -z $cpus ]]; then
+    echo "Please provide the number of CPU cores for the IS node."
+    exit 1
+fi
+
+if [[ -z $memory ]]; then
+    echo "Please provide the memory for the IS node."
     exit 1
 fi
 
@@ -68,29 +71,21 @@ if [[ -z $waiting_time ]]; then
     exit 1
 fi
 
-if [[ -z $heap_size ]]; then
-    echo "Please provide the heap size for the Identity Server."
-    exit 1
-fi
+echo ""
+echo "Killing IS docker container..."
+sudo docker stop wso2is
+sudo docker rm wso2is
 
 echo ""
-echo "Cleaning up any previous log files..."
-rm -rf $carbon_home/repository/logs/*
+echo "Restarting IS docker container..."
+cmd="docker run --name=wso2is -d -p 9443:9443 -p 4000:4000 -p 9763:9763 --cpus=$cpus --memory=$memory wso2is:5.8.0"
+echo $cmd
+sudo $cmd
 
-echo "Killing All Carbon Servers..."
-killall java
-
-echo "Enabling GC Logs..."
-export JAVA_OPTS="-XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:${carbon_home}/repository/logs/gc.log"
-JAVA_OPTS+=" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${carbon_home}/repository/logs/heap-dump.hprof""
-export JVM_MEM_OPTS="-Xms${heap_size} -Xmx${heap_size}"
-echo "JAVA_OPTS: $JAVA_OPTS"
-echo "JVM_MEM_OPTS: $JVM_MEM_OPTS"
-
-echo "Restarting identity server..."
-sh $carbon_home/bin/wso2server.sh restart
-
+echo ""
 echo "Waiting $waiting_time seconds..."
 sleep $waiting_time
 
+echo ""
 echo "Finished starting identity server..."
+echo "======================================================"

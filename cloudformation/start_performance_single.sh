@@ -27,7 +27,6 @@ aws_access_key=""
 aws_access_secret=""
 certificate_name=""
 jmeter_setup=""
-is_setup=""
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
@@ -37,42 +36,49 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+default_is_image_link="https://is-performance-test.s3.amazonaws.com/is-docker-images/wso2is-5.8.0-singlenode-docker.tar"
+is_image_link=$default_is_image_link
+default_cpus=4
+cpus=$default_cpus
+default_memory=2g
+memory=$default_memory
+default_minimum_stack_creation_wait_time=10
+minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 script_start_time=$(date +%s)
 script_dir=$(dirname "$0")
 results_dir="$PWD/results-$(date +%Y%m%d%H%M%S)"
-is_performance_distribution=""
-is_installer_url=""
-default_minimum_stack_creation_wait_time=10
-minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
     echo "   -c <certificate_name> -j <jmeter_setup_path>"
-    echo "   [-n <IS_zip_file_path>]"
+    echo "   [-l <is_docker_image_link>]"
     echo "   [-u <db_username>] [-p <db_password>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
+    echo "   [-x <cpu_cores_for_IS>] [-m <memory_for_IS>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-a: The AWS access key."
     echo "-s: The AWS access secret."
     echo "-j: The path to JMeter setup."
+    echo "-l: IS docker image link. Default: $default_is_image_link"
     echo "-c: The name of the IAM certificate."
-    echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
+    echo "-x: The number of CPU cores that should be assigned to IS. Default: $default_cpus."
+    echo "-m: The memory that should be assigned to IS. Default: $default_memory."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "k:a:s:c:j:l:u:p:i:b:x:m:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -89,8 +95,8 @@ while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
     j)
         jmeter_setup=${OPTARG}
         ;;
-    n)
-        is_setup=${OPTARG}
+    l)
+        is_image_link=${OPTARG}
         ;;
     u)
         db_username=${OPTARG}
@@ -103,6 +109,12 @@ while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
         ;;
     b)
         bastion_instance_type=${OPTARG}
+        ;;
+    x)
+        cpus=${OPTARG}
+        ;;
+    m)
+        memory=${OPTARG}
         ;;
     w)
         minimum_stack_creation_wait_time=${OPTARG}
@@ -156,6 +168,11 @@ if [[ -z $jmeter_setup ]]; then
     exit 1
 fi
 
+if [[ -z $is_image_link ]]; then
+    echo "Please provide the link to the IS docker image."
+    exit 1
+fi
+
 if [[ -z $certificate_name ]]; then
     echo "Please provide the name of the IAM certificate."
     exit 1
@@ -171,8 +188,13 @@ if [[ -z $bastion_instance_type ]]; then
     exit 1
 fi
 
-if [[ -z $is_setup ]]; then
-    echo "Please provide is zip file path."
+if [[ -z $cpus ]]; then
+    echo "Please provide the number of CPU cores that should be assigned to IS."
+    exit 1
+fi
+
+if [[ -z $memory ]]; then
+    echo "Please provide the memory that should be assigned to IS."
     exit 1
 fi
 
@@ -341,65 +363,48 @@ rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_
 rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
-copy_is_server_edit_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/isserver_edit.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_is_server_setups_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $home/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_is_server_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
-copy_is_master_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/setup_is.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_db_create_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/createDB.sql ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-5.1.47.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
-
-echo ""
-echo "Copying IS server setup files..."
-echo $copy_is_server_edit_command
-$copy_is_server_edit_command
-echo $copy_is_server_setups_command
-$copy_is_server_setups_command
-echo $copy_is_server_command
-$copy_is_server_command
-echo $copy_is_master_setup_command
-$copy_is_master_setup_command
-echo $copy_key_file_command
-$copy_key_file_command
-echo $copy_db_create_command
-$copy_db_create_command
-echo $copy_connector_command
-$copy_connector_command
-
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_ip -r $rds_host"
-
-echo ""
-echo "Running IS node setup script: $setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
-
 copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distribution/target/is-performance-distribution-*.tar.gz ubuntu@$bastion_node_ip:/home/ubuntu"
+copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distribution/target/is-performance-distribution-*.tar.gz \
+    ubuntu@$bastion_node_ip:/home/ubuntu"
 
 echo ""
 echo "Copying files to Bastion node..."
-echo $copy_bastion_setup_command
-$copy_bastion_setup_command
+echo $copy_key_file_command
+$copy_key_file_command
+echo $copy_connector_command
+$copy_connector_command
 echo $copy_jmeter_setup_command
 $copy_jmeter_setup_command
+echo $copy_bastion_setup_command
+$copy_bastion_setup_command
 echo $copy_repo_setup_command
 $copy_repo_setup_command
 
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
 echo ""
-echo "Running Bastion Node setup script: $setup_bastion_node_command"
+echo "Running Bastion Node setup script..."
+echo "================================================================"
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    sudo ./setup-bastion.sh -w $wso2_is_ip -l $wso2_is_ip -r $rds_host -i $is_image_link -c $cpus -m $memory"
+echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
+echo ""
+echo "Running performance tests..."
+echo "================================================================"
 run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
-echo ""
-echo "Running performance tests: $run_remote_tests"
+echo "$run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."
 
+echo ""
+echo "Downloading results..."
+echo "================================================================"
 download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
-echo "Running command: $download"
+echo "$download"
 $download || echo "Remote download failed"
 
 if [[ ! -f $results_dir/results.zip ]]; then
@@ -410,10 +415,12 @@ fi
 
 echo ""
 echo "Creating summary.csv..."
+echo "================================================================"
 cd $results_dir
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c \
+    "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \

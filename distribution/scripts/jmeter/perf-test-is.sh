@@ -56,7 +56,10 @@
 # Concurrent users (these will by multiplied by the number of JMeter servers)
 default_concurrent_users="50 100 150 300 500"
 # Application heap Sizes
-default_heap_sizes="2G"
+default_heap_size="2G"
+
+default_cpus=4
+cpus=$default_cpus
 
 # Test Duration in minutes
 default_test_duration=15
@@ -98,10 +101,12 @@ function usage() {
     echo "Usage: "
     echo "$0 [-c <concurrent_users>] [-m <heap_sizes>] [-d <test_duration>] [-w <warm_up_time>]"
     echo "   [-j <jmeter_client_heap_size>] [-i <include_scenario_name>] [-e <exclude_scenario_name>]"
-    echo "   [-t] [-p <estimated_processing_time_in_between_tests>] [-h]"
+    echo "   [-x <cpu_cores_for_IS>] [-p <estimated_processing_time_in_between_tests>]"
+    echo "   [-t] [-h]"
     echo ""
     echo "-c: Concurrency levels to test. You can give multiple options to specify multiple levels. Default \"$default_concurrent_users\"."
-    echo "-m: Application heap memory sizes. You can give multiple options to specify multiple heap memory sizes. Default \"$default_heap_sizes\"."
+    echo "-x: The number of CPU cores that should be assigned to IS. Default: \"$default_cpus\"."
+    echo "-m: Application heap memory sizes. You can give multiple options to specify multiple heap memory sizes. Default \"$default_heap_size\"."
     echo "-d: Test Duration in minutes. Default $default_test_duration m."
     echo "-w: Warm-up time in minutes. Default $default_warm_up_time m."
     echo "-j: Heap Size of JMeter Client. Default $default_jmeter_client_heap_size."
@@ -113,10 +118,13 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:tp:h" opts; do
+while getopts "c:m:x:d:w:j:i:e:tp:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
+        ;;
+    x)
+        cpus=${OPTARG}
         ;;
     m)
         heap_sizes+=("${OPTARG}")
@@ -187,9 +195,14 @@ if ! [[ $jmeter_client_heap_size =~ $heap_regex ]]; then
     exit 1
 fi
 
+if [[ -z $cpus ]]; then
+    echo "Please provide the number of CPU cores that should be assigned to IS."
+    exit 1
+fi
+
 declare -ag heap_sizes_array
 if [ ${#heap_sizes[@]} -eq 0 ]; then
-    heap_sizes_array+=($default_heap_sizes)
+    heap_sizes_array+=($default_heap_size)
 else
     heap_sizes_array+=("${heap_sizes[@]}")
 fi
@@ -203,7 +216,7 @@ fi
 
 for heap in ${heap_sizes_array[@]}; do
     if ! [[ $heap =~ $heap_regex ]]; then
-        echo "Please specify a valid heap size for the application."
+        echo "Please specify a valid heap size for the application. Ex: 2G"
         exit 1
     fi
 done
@@ -324,7 +337,6 @@ function print_durations() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time $test_start_time))"
 }
 
-# todo double check
 function run_test_data_scripts() {
 
     echo "Running test data setup scripts"

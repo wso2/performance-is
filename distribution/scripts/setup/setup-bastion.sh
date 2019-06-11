@@ -20,32 +20,43 @@
 # ----------------------------------------------------------------------------
 
 wso2_is_ip=""
-lb_host=""
 rds_host=""
+is_image_link=""
+cpus=""
+memory=""
 wso2is_host_alias=wso2is
 
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_ip> -l <lb_host> -r <rds_host>"
+    echo "$0 -w <wso2_is_ip> -r <rds_host> -i <image_link> -c <cpus> -m <memory>"
     echo ""
     echo "-w: The private IP of WSO2 IS node."
     echo "-l: The private hostname of Load balancer instance."
     echo "-r: The private hostname of RDS instance."
+    echo "-i: IS docker image link"
+    echo "-c: Number of CPU cores for the IS node"
+    echo "-m: Memory for the IS node (GB)"
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "w:l:r:p:h" opts; do
+while getopts "w:l:r:c:m:i:h" opts; do
     case $opts in
     w)
         wso2_is_ip=${OPTARG}
         ;;
-    l)
-        lb_host=${OPTARG}
-        ;;
     r)
         rds_host=${OPTARG}
+        ;;
+    i)
+        is_image_link=${OPTARG}
+        ;;
+    c)
+        cpus=${OPTARG}
+        ;;
+    m)
+        memory=${OPTARG}
         ;;
     h)
         usage
@@ -63,13 +74,23 @@ if [[ -z $wso2_is_ip ]]; then
     exit 1
 fi
 
-if [[ -z $lb_host ]]; then
-    echo "Please provide the private hostname of Load balancer instance."
+if [[ -z $rds_host ]]; then
+    echo "Please provide the private hostname of the RDS instance."
     exit 1
 fi
 
-if [[ -z $rds_host ]]; then
-    echo "Please provide the private hostname of the RDS instance."
+if [[ -z $is_image_link ]]; then
+    echo "Please provide the link to the IS docker image."
+    exit 1
+fi
+
+if [[ -z $cpus ]]; then
+    echo "Please provide the number of CPU cores for the IS node."
+    exit 1
+fi
+
+if [[ -z $memory ]]; then
+    echo "Please provide the memory for the IS node."
     exit 1
 fi
 
@@ -108,10 +129,14 @@ sudo chown -R ubuntu:ubuntu jmeter.log
 echo ""
 echo "Setting up IS instances..."
 echo "============================================"
-
-
 sudo -u ubuntu ssh $wso2is_host_alias mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_host_alias:/home/ubuntu/setup/
 sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_host_alias:/home/ubuntu/sar/
 sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_host_alias:/home/ubuntu/
 sudo -u ubuntu ssh $wso2is_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
+
+# Running start-is.sh here as we cannot run it directly from the main script.
+sudo -u ubuntu scp workspace/setup/start-is.sh $wso2is_host_alias:/home/ubuntu/
+sudo -u ubuntu scp -r workspace/setup/resources $wso2is_host_alias:/home/ubuntu/
+sudo -u ubuntu scp workspace/setup/createDB.sql $wso2is_host_alias:/home/ubuntu/
+sudo -u ubuntu ssh $wso2is_host_alias sudo ./start-is.sh -r $rds_host -i $is_image_link -c $cpus -m $memory

@@ -38,9 +38,9 @@ default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 default_is_image_link="https://is-performance-test.s3.amazonaws.com/is-docker-images/wso2is-5.8.0-singlenode-docker.tar"
 is_image_link=$default_is_image_link
-default_cpus=4
+default_cpus=2
 cpus=$default_cpus
-default_memory=2g
+default_memory=2G
 memory=$default_memory
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -346,26 +346,34 @@ printf "Stack creation time: %s\n" "$(format_time $(measure_time $stack_create_s
 
 echo ""
 echo "Getting Bastion Node Public IP..."
-bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2BastionInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
-bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r '.Reservations[].Instances[].PublicIpAddress')"
+bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id \
+    --logical-resource-id WSO2BastionInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r \
+    '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
 echo ""
 echo "Getting WSO2 IS Node Private IP..."
-wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
-wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is_auto_scaling_grp | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-wso2_is_ip="$(aws ec2 describe-instances --instance-ids $wso2is_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id \
+    --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is_auto_scaling_grp | \
+    jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+wso2_is_ip="$(aws ec2 describe-instances --instance-ids $wso2is_instance | jq -r \
+    '.Reservations[].Instances[].PrivateIpAddress')"
 echo "WSO2 IS Node Private IP: $wso2_is_ip"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id \
+    WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-5.1.47.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-5.1.47.jar \
+    ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh \
+    ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distribution/target/is-performance-distribution-*.tar.gz \
     ubuntu@$bastion_node_ip:/home/ubuntu"
@@ -395,7 +403,7 @@ $setup_bastion_node_command || echo "Remote ssh command failed."
 echo ""
 echo "Running performance tests..."
 echo "================================================================"
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]} -x $cpus -m $memory"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo "$run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."

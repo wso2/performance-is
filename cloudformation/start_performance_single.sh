@@ -278,7 +278,7 @@ home="$results_dir/setup/single-node-setup"
 echo ""
 echo "Script home folder is: $home"
 
-estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
+estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]} -x $cpus -m $memory"
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.

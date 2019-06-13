@@ -100,27 +100,27 @@ declare -A test_scenario9=(
     [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
     [skip]=false
 )
-declare -A test_scenario10=(
-    [name]="10-scim2_get_user_by_scim_id"
-    [display_name]="SCIM2 Get User"
-    [description]="Get user details by passing the SCIM ID."
-    [jmx]="scim2/SCIM2_Get_User_By_ID.jmx"
-    [skip]=false
-)
-declare -A test_scenario11=(
-    [name]="11-scim2_update_user_by_scim_id"
-    [display_name]="SCIM2 Update User"
-    [description]="Update user details by passing the SCIM ID."
-    [jmx]="scim2/SCIM2_Update_User_By_ID.jmx"
-    [skip]=false
-)
-declare -A test_scenario12=(
-    [name]="12-scim2_add_user"
-    [display_name]="SCIM2 Add User"
-    [description]="Add user to the system with SCIM APIs."
-    [jmx]="scim2/SCIM2_Add_User.jmx"
-    [skip]=false
-)
+#declare -A test_scenario10=(
+#    [name]="10-scim2_get_user_by_scim_id"
+#    [display_name]="SCIM2 Get User"
+#    [description]="Get user details by passing the SCIM ID."
+#    [jmx]="scim2/SCIM2_Get_User_By_ID.jmx"
+#    [skip]=false
+#)
+#declare -A test_scenario11=(
+#    [name]="11-scim2_update_user_by_scim_id"
+#    [display_name]="SCIM2 Update User"
+#    [description]="Update user details by passing the SCIM ID."
+#    [jmx]="scim2/SCIM2_Update_User_By_ID.jmx"
+#    [skip]=false
+#)
+#declare -A test_scenario12=(
+#    [name]="12-scim2_add_user"
+#    [display_name]="SCIM2 Add User"
+#    [description]="Add user to the system with SCIM APIs."
+#    [jmx]="scim2/SCIM2_Add_User.jmx"
+#    [skip]=false
+#)
 
 echo_timestamp(){
   time=`date "+%Y-%m-%d__%H-%M-%S"`

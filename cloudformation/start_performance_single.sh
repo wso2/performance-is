@@ -20,7 +20,7 @@
 # ----------------------------------------------------------------------------
 
 # Cloud Formation parameters.
-stack_name="is-performance-test-stack-single-node"
+stack_name="is-performance-test-stack-single-node-docker"
 
 key_file=""
 aws_access_key=""

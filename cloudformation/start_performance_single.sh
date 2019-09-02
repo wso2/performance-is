@@ -181,7 +181,7 @@ if ! [[ $minimum_stack_creation_wait_time =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
-key_filename=$(basename $key_file)
+key_filename=$(basename "$key_file")
 key_name=${key_filename%.*}
 
 function check_command() {
@@ -206,11 +206,11 @@ function format_time() {
     if [[ $minutes -ge 60 ]]; then
         local hours=$(echo "$minutes/60" | bc)
         minutes=$(echo "$minutes-$hours*60" | bc)
-        printf "%d hour(s), %02d minute(s) and %02d second(s)\n" $hours $minutes $seconds
+        printf "%d hour(s), %02d minute(s) and %02d second(s)\n" "$hours" "$minutes" "$seconds"
     elif [[ $minutes -gt 0 ]]; then
-        printf "%d minute(s) and %02d second(s)\n" $minutes $seconds
+        printf "%d minute(s) and %02d second(s)\n" "$minutes" "$seconds"
     else
-        printf "%d second(s)\n" $seconds
+        printf "%d second(s)\n" "$seconds"
     fi
 }
 
@@ -226,30 +226,30 @@ function exit_handler() {
     local stack_events_json=$results_dir/stack-events.json
     echo ""
     echo "Saving stack events to $stack_events_json"
-    aws cloudformation describe-stack-events --stack-name $stack_id --no-paginate --output json >$stack_events_json
+    aws cloudformation describe-stack-events --stack-name "$stack_id" --no-paginate --output json >"$stack_events_json"
     # Check whether there are any failed events
-    cat $stack_events_json | jq '.StackEvents | .[] | select ( .ResourceStatus == "CREATE_FAILED" )'
+    cat "$stack_events_json" | jq '.StackEvents | .[] | select ( .ResourceStatus == "CREATE_FAILED" )'
 
     local stack_delete_start_time=$(date +%s)
     echo ""
     echo "Deleting the stack: $stack_id"
-    aws cloudformation delete-stack --stack-name $stack_id
+    aws cloudformation delete-stack --stack-name "$stack_id"
 
     echo ""
     echo "Polling till the stack deletion completes..."
-    aws cloudformation wait stack-delete-complete --stack-name $stack_id
-    printf "Stack deletion time: %s\n" "$(format_time $(measure_time $stack_delete_start_time))"
+    aws cloudformation wait stack-delete-complete --stack-name "$stack_id"
+    printf "Stack deletion time: %s\n" "$(format_time $(measure_time "$stack_delete_start_time"))"
 
-    printf "Script execution time: %s\n" "$(format_time $(measure_time $script_start_time))"
+    printf "Script execution time: %s\n" "$(format_time $(measure_time "$script_start_time"))"
 }
 
-mkdir $results_dir
+mkdir "$results_dir"
 echo ""
 echo "Results will be downloaded to $results_dir"
 
 echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
-tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C $results_dir
+tar -xf ../distribution/target/is-performance-distribution-*.tar.gz -C "$results_dir"
 
 home="$results_dir/setup/single-node-setup"
 
@@ -265,14 +265,14 @@ $estimate_command
 temp_dir=$(mktemp -d)
 
 # Get absolute paths
-key_file=$(realpath $key_file) 
+key_file=$(realpath "$key_file")
 
 echo "your key is"
-echo $key_file
+echo "$key_file"
 
-ln -s $key_file $temp_dir/$key_filename
+ln -s "$key_file" "$temp_dir"/"$key_filename"
 
-cd $script_dir
+cd "$script_dir"
 
 echo ""
 echo "Validating stack..."
@@ -285,7 +285,7 @@ test_parameters_json+=' | .["bastion_node_ec2_instance_type"]=$bastion_node_ec2_
 jq -n \
     --arg is_nodes_ec2_instance_type "$wso2_is_instance_type" \
     --arg bastion_node_ec2_instance_type "$bastion_instance_type" \
-    "$test_parameters_json" > $results_dir/cf-test-metadata.json
+    "$test_parameters_json" > "$results_dir"/cf-test-metadata.json
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
@@ -315,30 +315,30 @@ echo "Created stack: $stack_id"
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
-sleep ${minimum_stack_creation_wait_time}m
+sleep "${minimum_stack_creation_wait_time}"m
 
 echo ""
 echo "Polling till the stack creation completes..."
-aws cloudformation wait stack-create-complete --stack-name $stack_id
-printf "Stack creation time: %s\n" "$(format_time $(measure_time $stack_create_start_time))"
+aws cloudformation wait stack-create-complete --stack-name "$stack_id"
+printf "Stack creation time: %s\n" "$(format_time $(measure_time "$stack_create_start_time"))"
 
 echo ""
 echo "Getting Bastion Node Public IP..."
-bastion_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2BastionInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
-bastion_node_ip="$(aws ec2 describe-instances --instance-ids $bastion_instance | jq -r '.Reservations[].Instances[].PublicIpAddress')"
+bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
 echo ""
 echo "Getting WSO2 IS Node Private IP..."
-wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
-wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $wso2is_auto_scaling_grp | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-wso2_is_ip="$(aws ec2 describe-instances --instance-ids $wso2is_instance | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
 echo "WSO2 IS Node Private IP: $wso2_is_ip"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name $stack_id --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
-rds_host="$(aws rds describe-db-instances --db-instance-identifier $rds_instance | jq -r '.DBInstances[].Endpoint.Address')"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
 copy_is_server_edit_command="scp -i $key_file -o "StrictHostKeyChecking=no" $home/isserver_edit.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
@@ -351,19 +351,19 @@ copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-con
 
 echo ""
 echo "Copying IS server setup files..."
-echo $copy_is_server_edit_command
+echo "$copy_is_server_edit_command"
 $copy_is_server_edit_command
-echo $copy_is_server_setups_command
+echo "$copy_is_server_setups_command"
 $copy_is_server_setups_command
-echo $copy_is_server_command
+echo "$copy_is_server_command"
 $copy_is_server_command
-echo $copy_is_master_setup_command
+echo "$copy_is_master_setup_command"
 $copy_is_master_setup_command
-echo $copy_key_file_command
+echo "$copy_key_file_command"
 $copy_key_file_command
-echo $copy_db_create_command
+echo "$copy_db_create_command"
 $copy_db_create_command
-echo $copy_connector_command
+echo "$copy_connector_command"
 $copy_connector_command
 
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup_is.sh -n $wso2_is_ip -r $rds_host"
@@ -379,11 +379,11 @@ copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distr
 
 echo ""
 echo "Copying files to Bastion node..."
-echo $copy_bastion_setup_command
+echo "$copy_bastion_setup_command"
 $copy_bastion_setup_command
-echo $copy_jmeter_setup_command
+echo "$copy_jmeter_setup_command"
 $copy_jmeter_setup_command
-echo $copy_repo_setup_command
+echo "$copy_repo_setup_command"
 $copy_repo_setup_command
 
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo ./setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
@@ -405,15 +405,15 @@ $download || echo "Remote download failed"
 if [[ ! -f $results_dir/results.zip ]]; then
     echo ""
     echo "Failed to download the results.zip"
-    exit 500
+    exit 0
 fi
 
 echo ""
 echo "Creating summary.csv..."
-cd $results_dir
+cd "$results_dir"
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-$results_dir/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+"$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \

@@ -20,7 +20,9 @@
 # ----------------------------------------------------------------------------
 
 # Cloud Formation parameters.
-stack_name="is-performance-test-stack-single-node"
+
+script_start_time=$(date +%s)
+stack_name="is-performance-test-single-node-"$script_start_time
 
 key_file=""
 aws_access_key=""
@@ -38,7 +40,6 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
-script_start_time=$(date +%s)
 script_dir=$(dirname "$0")
 results_dir="$PWD/results-$(date +%Y%m%d%H%M%S)"
 default_minimum_stack_creation_wait_time=10
@@ -269,7 +270,7 @@ cd "$script_dir"
 
 echo ""
 echo "Validating stack..."
-aws cloudformation validate-template --template-body file://singlenode/single-node.yaml
+aws cloudformation validate-template --template-body file://single-node.yaml
 
 # Save metadata
 test_parameters_json='.'
@@ -317,20 +318,20 @@ printf "Stack creation time: %s\n" "$(format_time $(measure_time "$stack_create_
 
 echo ""
 echo "Getting Bastion Node Public IP..."
-bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance | jq -r '.StackResources[].PhysicalResourceId')"
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
 echo ""
 echo "Getting WSO2 IS Node Private IP..."
-wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode1AutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNodeAutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
 wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
 wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
 echo "WSO2 IS Node Private IP: $wso2_is_ip"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance2 | jq -r '.StackResources[].PhysicalResourceId')"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 

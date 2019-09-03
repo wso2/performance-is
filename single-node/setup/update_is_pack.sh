@@ -67,24 +67,25 @@ carbon_home=$(realpath ~/wso2is)
 echo ""
 echo "Adding mysql connector to the pack..."
 echo "============================================"
-cp mysql-connector-java-5.1.47.jar "$carbon_home"/repository/components/lib/mysql-connector-java-5.1.47.jar
+cp mysql-connector-java-*.jar "$carbon_home"/repository/components/lib/
 
 echo ""
 echo "Adding deployment toml file to the pack..."
 echo "============================================"
-cp setup/deployment.toml "$carbon_home"/repository/conf/deployment.toml
+cp resources/deployment.toml "$carbon_home"/repository/conf/deployment.toml
 
 echo ""
 echo "Applying basic parameter changes..."
 echo "============================================"
-sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
+sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' \
+  "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
-"$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
-mysql -h "$db_instance_ip" -u wso2carbon -pwso2carbon < createDB.sql
+mysql -h "$db_instance_ip" -u wso2carbon -pwso2carbon < resources/createDB.sql
 
 echo ""
 echo "Starting WSO2 IS server..."

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    # Copyright 2018 WSO2 Inc. (http://wso2.org)
+    # Copyright 2019 WSO2 Inc. (http://wso2.org)
     #
     # Licensed under the Apache License, Version 2.0 (the "License");
     # you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.wso2.carbon</groupId>
-    <artifactId>is-performance</artifactId>
+    <groupId>org.wso2</groupId>
+    <artifactId>performance-is</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>distribution</module>
-        <module>cloudformation</module>
+        <module>single-node</module>
     </modules>
 
-    <name>IS - Artifacts for IS Performance Tests</name>
+    <name>IS - Artifacts for WSO2 Identity Server Performance Tests</name>
     <inceptionYear>2018</inceptionYear>
     <url>https://wso2.com/identity-and-access-management</url>
 
@@ -130,6 +129,7 @@
     </distributionManagement>
 
     <properties>
+        <project.scm.id>ballerina-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <performance.common.version>0.3.0</performance.common.version>
         <apache.rat.plugin.version>0.11</apache.rat.plugin.version>

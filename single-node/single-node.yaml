@@ -77,60 +77,60 @@ Metadata:
         default: Bastion Instance Type
 Resources:
   # networking configurations
-  WSO2ISVPC2:
+  WSO2ISVPC:
     Type: 'AWS::EC2::VPC'
     Properties:
       CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
-  WSO2ISPublicSubnet12:
+  WSO2ISPublicSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       CidrBlock: 10.0.254.0/24
       AvailabilityZone: !Select
         - '0'
         - !GetAZs ''
-  WSO2ISPublicSubnet22:
+  WSO2ISPublicSubnet2:
       Type: 'AWS::EC2::Subnet'
       Properties:
-        VpcId: !Ref WSO2ISVPC2
+        VpcId: !Ref WSO2ISVPC
         CidrBlock: 10.0.252.0/24
         AvailabilityZone: !Select
           - '1'
           - !GetAZs ''
-  WSO2ISPublicInternetGateway2:
+  WSO2ISPublicInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-  WSO2ISPublicRoute2Table:
+  WSO2ISPublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
-  WSO2ISPublicSubnet12RouteTableAssociation:
+      VpcId: !Ref WSO2ISVPC
+  WSO2ISPublicSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
-      SubnetId: !Ref WSO2ISPublicSubnet12
-  WSO2ISPublicSubnet22RouteTableAssociation:
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      SubnetId: !Ref WSO2ISPublicSubnet1
+  WSO2ISPublicSubnet2RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
-      SubnetId: !Ref WSO2ISPublicSubnet22
-  WSO2ISPublicRoute2:
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      SubnetId: !Ref WSO2ISPublicSubnet2
+  WSO2ISPublicRoute:
     Type: 'AWS::EC2::Route'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
-      GatewayId: !Ref WSO2ISPublicInternetGateway2
+      RouteTableId: !Ref WSO2ISPublicRouteTable
+      GatewayId: !Ref WSO2ISPublicInternetGateway
       DestinationCidrBlock: 0.0.0.0/0
-    DependsOn: WSO2ISVPC2InternetGatewayAttachment
-  WSO2ISVPC2InternetGatewayAttachment:
+    DependsOn: WSO2ISVPCInternetGatewayAttachment
+  WSO2ISVPCInternetGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
-      InternetGatewayId: !Ref WSO2ISPublicInternetGateway2
-      VpcId: !Ref WSO2ISVPC2
-  WSO2ISPrivateSubnet12:
+      InternetGatewayId: !Ref WSO2ISPublicInternetGateway
+      VpcId: !Ref WSO2ISVPC
+  WSO2ISPrivateSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       CidrBlock: 10.0.1.0/24
       AvailabilityZone: !Select
         - '0'
@@ -138,72 +138,72 @@ Resources:
   WSO2ISPrivateSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       CidrBlock: 10.0.2.0/24
       AvailabilityZone: !Select
         - '1'
         - !GetAZs ''
-  WSO2ISPrivateSubnetRouteTable2:
+  WSO2ISPrivateSubnetRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
   WSO2ISPrivateRoute2:
     Type: 'AWS::EC2::Route'
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref WSO2ISNATGateway2
-      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable2
-  WSO2ISPrivateSubnet12RouteTableAssociation:
+      NatGatewayId: !Ref WSO2ISNATGateway
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
+  WSO2ISPrivateSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable2
-      SubnetId: !Ref WSO2ISPrivateSubnet12
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
+      SubnetId: !Ref WSO2ISPrivateSubnet1
   WSO2ISPrivateSubnet2RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable2
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTable
       SubnetId: !Ref WSO2ISPrivateSubnet2
-  WSO2ISNATGateway2:
+  WSO2ISNATGateway:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt
-        - WSO2ISEIP2
+        - WSO2ISEIP
         - AllocationId
-      SubnetId: !Ref WSO2ISPublicSubnet12
-  WSO2BastionEIP2Association2:
+      SubnetId: !Ref WSO2ISPublicSubnet1
+  WSO2BastionEIPAssociation:
     Type: 'AWS::EC2::EIPAssociation'
     Properties:
-      AllocationId: !GetAtt WSO2BastionEIP2.AllocationId
-      InstanceId: !Ref WSO2BastionInstance2
-  WSO2ISEIP2:
+      AllocationId: !GetAtt WSO2BastionEIP.AllocationId
+      InstanceId: !Ref WSO2BastionInstance
+  WSO2ISEIP:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: vpc
-  WSO2BastionEIP2:
+  WSO2BastionEIP:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: vpc
   # database configurations
-  WSO2ISDBInstance2SecurityGroup2:
+  WSO2ISDBInstanceSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       GroupDescription: DB Security Group2
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
           CidrIp: 0.0.0.0/0
-  WSO2ISDBInstance2:
+  WSO2ISDBInstance:
     Type: 'AWS::RDS::DBInstance'
     DeletionPolicy: Delete
     Properties:
       VPCSecurityGroups:
-        - !Ref WSO2ISDBInstance2SecurityGroup2
+        - !Ref WSO2ISDBInstanceSecurityGroup
       DBInstanceClass: !Ref DBInstanceType
       AllocatedStorage: !Ref DBAllocationStorage
       BackupRetentionPeriod: '0'
-      DBInstanceIdentifier: WSO2ISDBInstance2
+      DBInstanceIdentifier: WSO2ISDBInstance
       DBName: WSO2_IS_DB_2
       #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
@@ -215,48 +215,48 @@ Resources:
       Iops: !Ref DBIops
       StorageType: io1
       DBParameterGroupName: wso2is-db-param-grp
-      DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup2
-  WSO2ISDBSubnetGroup2:
+      DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup
+  WSO2ISDBSubnetGroup:
     Type: 'AWS::RDS::DBSubnetGroup'
     Properties:
       DBSubnetGroupDescription: DB Subnet Group
       SubnetIds:
-        - !Ref WSO2ISPrivateSubnet12
+        - !Ref WSO2ISPrivateSubnet1
         - !Ref WSO2ISPrivateSubnet2
   # File system configurations
-  WSO2ISEFSSecurityGroup2:
+  WSO2ISEFSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       GroupDescription: EFS Security Group
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: '2049'
         ToPort: '2049'
         CidrIp: 0.0.0.0/0
-  WSO2ISEFSFileSystem2:
+  WSO2ISEFSFileSystem:
     Type: 'AWS::EFS::FileSystem'
     Properties:
       PerformanceMode: generalPurpose
-  WSO2ISPrivateSubnet12EFSMountTarget:
+  WSO2ISPrivateSubnet1EFSMountTarget:
     Type: 'AWS::EFS::MountTarget'
     Properties:
-      SubnetId: !Ref WSO2ISPrivateSubnet12
-      FileSystemId: !Ref WSO2ISEFSFileSystem2
+      SubnetId: !Ref WSO2ISPrivateSubnet1
+      FileSystemId: !Ref WSO2ISEFSFileSystem
       SecurityGroups:
-        - !Ref WSO2ISEFSSecurityGroup2
+        - !Ref WSO2ISEFSSecurityGroup
   WSO2ISPrivateSubnet2EFSMountTarget:
     Type: 'AWS::EFS::MountTarget'
     Properties:
       SubnetId: !Ref WSO2ISPrivateSubnet2
-      FileSystemId: !Ref WSO2ISEFSFileSystem2
+      FileSystemId: !Ref WSO2ISEFSFileSystem
       SecurityGroups:
-        - !Ref WSO2ISEFSSecurityGroup2
+        - !Ref WSO2ISEFSSecurityGroup
   # Product configurations
-  BastionSecurityGroup2:
+  BastionSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       GroupDescription: WSO2 Bastion node Security Group for 5.3
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -266,7 +266,7 @@ Resources:
   WSO2ISSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      VpcId: !Ref WSO2ISVPC2
+      VpcId: !Ref WSO2ISVPC
       GroupDescription: WSO2 Identity Manager Security Group
       GroupName: WSO2SecurityGroup
       SecurityGroupIngress:
@@ -277,11 +277,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: '8280'
           ToPort: '8280'
-          SourceSecurityGroupId: !Ref BastionSecurityGroup2
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
-          SourceSecurityGroupId: !Ref BastionSecurityGroup2
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
         - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
@@ -289,11 +289,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: '8243'
           ToPort: '8243'
-          SourceSecurityGroupId: !Ref BastionSecurityGroup2
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
         - IpProtocol: tcp
           FromPort: '5672'
           ToPort: '5672'
-          SourceSecurityGroupId: !Ref BastionSecurityGroup2
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
         - IpProtocol: tcp
           FromPort: '5701'
           ToPort: '5701'
@@ -302,7 +302,7 @@ Resources:
           FromPort: '8140'
           ToPort: '8140'
           CidrIp: 0.0.0.0/0
-  WSO2BastionInstance2:
+  WSO2BastionInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
       DisableApiTermination: 'false'
@@ -316,14 +316,14 @@ Resources:
       Monitoring: 'false'
       Tags:
         - Key: Name
-          Value: WSO2BastionInstance2for5.3
+          Value: WSO2BastionInstance
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
           DeviceIndex: 0
-          SubnetId: !Ref WSO2ISPublicSubnet12
+          SubnetId: !Ref WSO2ISPublicSubnet1
           GroupSet:
-            - !Ref BastionSecurityGroup2
+            - !Ref BastionSecurityGroup
       UserData: !Base64
         'Fn::Join':
           - |+
@@ -349,7 +349,7 @@ Resources:
             - source /etc/environment
             - exit
 
-  WSO2ISNode1LaunchConfiguration2:
+  WSO2ISNodeLaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
       # Uncomment below to assign a public IP to the IS instance.
@@ -395,19 +395,19 @@ Resources:
 
     DependsOn:
       - WSO2ISSecurityGroup
-      - WSO2ISVPC2InternetGatewayAttachment
-      - WSO2ISDBInstance2
-  WSO2ISNode1AutoScalingGroup:
+      - WSO2ISVPCInternetGatewayAttachment
+      - WSO2ISDBInstance
+  WSO2ISNodeAutoScalingGroup:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
-      LaunchConfigurationName: !Ref WSO2ISNode1LaunchConfiguration2
+      LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfiguration
       DesiredCapacity: 1
       MinSize: 1
       MaxSize: 1
       VPCZoneIdentifier:
         # Use public subnet to assign a public IP to the IS instance.
-        # - !Ref WSO2ISPublicSubnet12
-        - !Ref WSO2ISPrivateSubnet12
+        # - !Ref WSO2ISPublicSubnet1
+        - !Ref WSO2ISPrivateSubnet1
       Tags:
         - Key: Name
           Value: WSO2ISInstance1
@@ -416,12 +416,12 @@ Resources:
           Value: is
           PropagateAtLaunch: 'true'
     DependsOn:
-      - WSO2ISNode1LaunchConfiguration2
+      - WSO2ISNodeLaunchConfiguration
 
 Outputs:
   InstanceID:
     Description: The Bastion ID
-    Value: !Ref WSO2BastionInstance2
+    Value: !Ref WSO2BastionInstance
 
 Parameters:
   AWSAccessKeyId:

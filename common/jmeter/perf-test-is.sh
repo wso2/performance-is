@@ -188,26 +188,26 @@ fi
 
 declare -ag heap_sizes_array
 if [ ${#heap_sizes[@]} -eq 0 ]; then
-    heap_sizes_array+=("$default_heap_sizes")
+    heap_sizes_array=( $default_heap_sizes )
 else
-    heap_sizes_array+=("${heap_sizes[@]}")
+    heap_sizes_array=( ${heap_sizes[@]} )
 fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    concurrent_users_array+=("$default_concurrent_users")
+    concurrent_users_array=( $default_concurrent_users )
 else
-    concurrent_users_array+=("${concurrent_users[@]}")
+    concurrent_users_array=( ${concurrent_users[@]} )
 fi
 
-for heap in "${heap_sizes_array[@]}"; do
+for heap in ${heap_sizes_array[@]}; do
     if ! [[ $heap =~ $heap_regex ]]; then
         echo "Please specify a valid heap size for the application."
         exit 1
     fi
 done
 
-for users in "${concurrent_users_array[@]}"; do
+for users in ${concurrent_users_array[@]}; do
     if ! [[ $users =~ $number_regex ]]; then
         echo "Please specify a valid number for concurrent users."
         exit 1
@@ -248,13 +248,13 @@ function write_server_metrics() {
     if [[ -n $ssh_host_alias ]]; then
         command_prefix="ssh -o SendEnv=LC_TIME $ssh_host_alias"
     fi
-    $command_prefix ss -s >"${report_location}"/"${ssh_host}"_ss.txt
-    $command_prefix uptime >"${report_location}"/"${ssh_host}"_uptime.txt
-    $command_prefix sar -q >"${report_location}"/"${ssh_host}"_loadavg.txt
-    $command_prefix sar -A >"${report_location}"/"${ssh_host}"_sar.txt
-    $command_prefix top -bn 1 >"${report_location}"/"${ssh_host}"_top.txt
+    $command_prefix ss -s >"$report_location"/"$ssh_host"_ss.txt
+    $command_prefix uptime >"$report_location"/"$ssh_host"_uptime.txt
+    $command_prefix sar -q >"$report_location"/"$ssh_host"_loadavg.txt
+    $command_prefix sar -A >"$report_location"/"$ssh_host"_sar.txt
+    $command_prefix top -bn 1 >"$report_location"/"$ssh_host"_top.txt
     if [[ -n $pgrep_pattern ]]; then
-        $command_prefix ps u -p \`pgrep -f "$pgrep_pattern"\` >"${report_location}"/"${ssh_host_alias}"_ps.txt
+        $command_prefix ps u -p \`pgrep -f "$pgrep_pattern"\` >"$report_location"/"$ssh_host_alias"_ps.txt
     fi
 }
 
@@ -263,7 +263,7 @@ function download_file() {
     local remote_file=$2
     local local_file_name=$3
     echo "Downloading $remote_file from $server_ssh_alias to $local_file_name"
-    if scp -qp "$server_ssh_alias":"$remote_file" "${report_location}"/"$local_file_name"; then
+    if scp -qp "$server_ssh_alias":"$remote_file" "$report_location"/"$local_file_name"; then
         echo "File transfer succeeded."
     else
         echo "WARN: File transfer failed!"
@@ -379,11 +379,11 @@ function initiailize_test() {
     done
 
     local test_parameters_json='.'
-    test_parameters_json+=" | .[test_duration]=$test_duration"
-    test_parameters_json+=" | .[warmup_time]=$warm_up_time"
-    test_parameters_json+=" | .[jmeter_client_heap_size]=$jmeter_client_heap_size"
-    test_parameters_json+=" | .[test_scenarios]=$test_scenarios"
-    test_parameters_json+=" | .[heap_sizes]=$heap_sizes | .[concurrent_users]=$concurrent_users"
+    test_parameters_json+=' | .["test_duration"]=$test_duration'
+    test_parameters_json+=' | .["warmup_time"]=$warmup_time'
+    test_parameters_json+=' | .["jmeter_client_heap_size"]=$jmeter_client_heap_size'
+    test_parameters_json+=' | .["test_scenarios"]=$test_scenarios'
+    test_parameters_json+=' | .["heap_sizes"]=$heap_sizes | .["concurrent_users"]=$concurrent_users'
     jq -n \
         --arg test_duration "$test_duration" \
         --arg warmup_time "$warm_up_time" \
@@ -396,10 +396,10 @@ function initiailize_test() {
     if [ "$estimate" = false ]; then
         jmeter_dir=""
         for dir in "$HOME"/apache-jmeter*; do
-            [ -d "${dir}" ] && jmeter_dir="${dir}" && break
+            [ -d "$dir" ] && jmeter_dir="$dir" && break
         done
         if [[ -d $jmeter_dir ]]; then
-            export JMETER_HOME="${jmeter_dir}"
+            export JMETER_HOME="$jmeter_dir"
             export PATH=$JMETER_HOME/bin:$PATH
         else
             echo "WARNING: Could not find JMeter directory."
@@ -452,7 +452,7 @@ function test_scenarios() {
                 fi
                 local start_time=$(date +%s)
 
-                local scenario_desc="Scenario Name: ${scenario_name}, Duration: $test_duration m, Concurrent Users: ${users}"
+                local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
                 echo "# Starting the performance test"
                 echo "$scenario_desc"
                 echo "=========================================================================================="
@@ -460,7 +460,7 @@ function test_scenarios() {
                 report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
 
                 echo ""
-                echo "Report location is ${report_location}"
+                echo "Report location is $report_location"
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
@@ -475,7 +475,7 @@ function test_scenarios() {
                     jmeter_command+=" -J$param"
                 done
 
-                jmeter_command+=" -l ${report_location}/results.jtl"
+                jmeter_command+=" -l $report_location/results.jtl"
 
                 echo ""
                 echo "Starting JMeter Client with JVM_ARGS=$JVM_ARGS"
@@ -485,11 +485,11 @@ function test_scenarios() {
 
                 write_server_metrics jmeter
 
-                $HOME/workspace/jtl-splitter/jtl-splitter.sh -- -f "${report_location}"/results.jtl -t "$warm_up_time" -s
+                "$HOME"/workspace/jtl-splitter/jtl-splitter.sh -- -f "$report_location"/results.jtl -t "$warm_up_time" -s
 
                 echo ""
-                echo "Zipping JTL files in ${report_location}"
-                zip -jm "${report_location}"/jtls.zip "${report_location}"/results*.jtl
+                echo "Zipping JTL files in $report_location"
+                zip -jm "$report_location"/jtls.zip "$report_location"/results*.jtl
 
                 after_execute_test_scenario
 

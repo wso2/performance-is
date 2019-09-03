@@ -70,6 +70,24 @@
                                 <include>**/target</include>
                             </includes>
                         </fileset>
+                        <fileSet>
+                            <directory>jmeter</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>is</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>lib</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
                     </filesets>
                 </configuration>
             </plugin>

@@ -16,13 +16,16 @@
 # under the License.
 #
 # ----------------------------------------------------------------------------
-# Run all scripts.
+# Run Identity Server Performance tests for single node deployment.
 # ----------------------------------------------------------------------------
 
-# Cloud Formation parameters.
+source ../common/common-functions.sh
 
 script_start_time=$(date +%s)
-stack_name="is-performance-test-single-node-"$script_start_time
+timestamp=$(date +%Y-%m-%d-%H-%M-%S)
+stack_name="is-performance-two-node-$timestamp"
+
+# Cloud Formation parameters.
 
 key_file=""
 aws_access_key=""
@@ -41,7 +44,7 @@ default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
 script_dir=$(dirname "$0")
-results_dir="$PWD/results-$(date +%Y%m%d%H%M%S)"
+results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
@@ -183,64 +186,12 @@ fi
 key_filename=$(basename "$key_file")
 key_name=${key_filename%.*}
 
-function check_command() {
-    if ! command -v "$1" >/dev/null 2>&1; then
-        echo "Please install $1"
-        exit 1
-    fi
-}
-
 # Checking for the availability of commands in jenkins.
 check_command bc
 check_command aws
 check_command unzip
 check_command jq
 check_command python
-
-function format_time() {
-    # Duration in seconds
-    local duration="$1"
-    local minutes=$(echo "$duration/60" | bc)
-    local seconds=$(echo "$duration-$minutes*60" | bc)
-    if [[ $minutes -ge 60 ]]; then
-        local hours=$(echo "$minutes/60" | bc)
-        minutes=$(echo "$minutes-$hours*60" | bc)
-        printf "%d hour(s), %02d minute(s) and %02d second(s)\n" "$hours" "$minutes" "$seconds"
-    elif [[ $minutes -gt 0 ]]; then
-        printf "%d minute(s) and %02d second(s)\n" "$minutes" "$seconds"
-    else
-        printf "%d second(s)\n" "$seconds"
-    fi
-}
-
-function measure_time() {
-    local end_time=$(date +%s)
-    local start_time=$1
-    local duration=$(echo "$end_time - $start_time" | bc)
-    echo "$duration"
-}
-
-function exit_handler() {
-    # Get stack events
-    local stack_events_json=$results_dir/stack-events.json
-    echo ""
-    echo "Saving stack events to $stack_events_json"
-    aws cloudformation describe-stack-events --stack-name "$stack_id" --no-paginate --output json >"$stack_events_json"
-    # Check whether there are any failed events
-    cat "$stack_events_json" | jq '.StackEvents | .[] | select ( .ResourceStatus == "CREATE_FAILED" )'
-
-    local stack_delete_start_time=$(date +%s)
-    echo ""
-    echo "Deleting the stack: $stack_id"
-    aws cloudformation delete-stack --stack-name "$stack_id"
-
-    echo ""
-    echo "Polling till the stack deletion completes..."
-    aws cloudformation wait stack-delete-complete --stack-name "$stack_id"
-    printf "Stack deletion time: %s\n" "$(format_time $(measure_time "$stack_delete_start_time"))"
-
-    printf "Script execution time: %s\n" "$(format_time $(measure_time "$script_start_time"))"
-}
 
 mkdir "$results_dir"
 echo ""
@@ -270,6 +221,7 @@ cd "$script_dir"
 
 echo ""
 echo "Validating stack..."
+echo "============================================"
 aws cloudformation validate-template --template-body file://single-node.yaml
 
 # Save metadata
@@ -284,28 +236,27 @@ jq -n \
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
     --template-body file://single-node.yaml --parameters \
-        ParameterKey=AWSAccessKeyId,ParameterValue=$aws_access_key \
-        ParameterKey=AWSAccessKeySecret,ParameterValue=$aws_access_secret \
         ParameterKey=CertificateName,ParameterValue=$certificate_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
-        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
     --capabilities CAPABILITY_IAM"
 
 echo ""
 echo "Creating stack..."
+echo "============================================"
 echo "$create_stack_command"
 stack_id="$($create_stack_command)"
-stack_id=$(echo $stack_id|jq -r .StackId)
+stack_id=$(echo "$stack_id"|jq -r .StackId)
 
 # Delete the stack in case of an error.
-trap exit_handler EXIT
+trap exit_handler "$results_dir" "$stack_id" "$script_start_time" EXIT
 
 echo ""
-echo "Created stack: $stack_id"
+echo "Created stack ID: $stack_id"
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
@@ -314,7 +265,7 @@ sleep "${minimum_stack_creation_wait_time}"m
 echo ""
 echo "Polling till the stack creation completes..."
 aws cloudformation wait stack-create-complete --stack-name "$stack_id"
-printf "Stack creation time: %s\n" "$(format_time $(measure_time "$stack_create_start_time"))"
+printf "Stack creation time: %s\n" "$(format_time "$(measure_time "$stack_create_start_time")")"
 
 echo ""
 echo "Getting Bastion Node Public IP..."
@@ -335,55 +286,73 @@ rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
-copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_is_server_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
-copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/mysql-connector-java-5.1.47.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
+if [[ -z $bastion_node_ip ]]; then
+    echo "Bastion node IP could not be found. Exiting..."
+    exit 1
+fi
+if [[ -z $wso2_is_ip ]]; then
+    echo "WSO2 node IP could not be found. Exiting..."
+    exit 1
+fi
+if [[ -z $rds_host ]]; then
+    echo "RDS host could not be found. Exiting..."
+    exit 1
+fi
 
 echo ""
-echo "Copying setup files..."
+echo "Copying files to Bastion node..."
+echo "============================================"
+copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
+    ubuntu@$bastion_node_ip:/home/ubuntu"
+copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
+copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
+copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
+
 echo "$copy_setup_files_command"
 $copy_setup_files_command
-echo "$copy_is_server_command"
-$copy_is_server_command
+echo "$copy_is_pack_command"
+$copy_is_pack_command
 echo "$copy_key_file_command"
 $copy_key_file_command
 echo "$copy_connector_command"
 $copy_connector_command
-
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup_is.sh -n $wso2_is_ip -r $rds_host"
-
-echo ""
-echo "Running IS node setup script: $setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
-
-copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-singlenode-*.tar.gz \
-  ubuntu@$bastion_node_ip:/home/ubuntu"
-
-echo ""
-echo "Copying files to Bastion node..."
 echo "$copy_jmeter_setup_command"
 $copy_jmeter_setup_command
 echo "$copy_repo_setup_command"
 $copy_repo_setup_command
 
+echo ""
+echo "Running IS node setup script..."
+echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $wso2_is_ip -r $rds_host"
+echo "$setup_is_command"
+# Handle any error and let the script continue.
+$setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
+
+echo ""
+echo "Running Bastion Node setup script..."
+echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
     sudo ./setup/setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
-echo ""
-echo "Running Bastion Node setup script: $setup_bastion_node_command"
+echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
+echo ""
+echo "Running performance tests..."
+echo "============================================"
 run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
-echo ""
-echo "Running performance tests: $run_remote_tests"
+echo "$run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."
 
+echo ""
+echo "Downloading results..."
+echo "============================================"
 download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
-echo "Running command: $download"
+echo "$download"
 $download || echo "Remote download failed"
 
 if [[ ! -f $results_dir/results.zip ]]; then
@@ -394,6 +363,7 @@ fi
 
 echo ""
 echo "Creating summary.csv..."
+echo "============================================"
 cd "$results_dir"
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar

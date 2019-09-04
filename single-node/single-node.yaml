@@ -21,8 +21,6 @@ Metadata:
       - Label:
           default: Cluster Configuration
         Parameters:
-          - AWSAccessKeyId
-          - AWSAccessKeySecret
           - KeyPairName
           - WSO2InstanceType
           - BastionInstanceType
@@ -45,10 +43,6 @@ Metadata:
         Parameters:
           - JDK
     ParameterLabels:
-      AWSAccessKeyId:
-        default: AWS Access Key ID
-      AWSAccessKeySecret:
-        default: AWS Access Secret Key
       CertificateName:
         default: SSL Certificate Name
       KeyPairName:
@@ -392,7 +386,6 @@ Resources:
             - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
             - source /etc/environment
             - exit
-
     DependsOn:
       - WSO2ISSecurityGroup
       - WSO2ISVPCInternetGatewayAttachment
@@ -424,10 +417,6 @@ Outputs:
     Value: !Ref WSO2BastionInstance
 
 Parameters:
-  AWSAccessKeyId:
-    Type: String
-  AWSAccessKeySecret:
-    Type: String
   KeyPairName:
     Description: >-
       The private key used to log in to instances through SSH

@@ -59,10 +59,10 @@ if [[ -z $db_instance_ip ]]; then
     exit 1
 fi
 
-copy_is_server_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup/update_is_pack.sh ubuntu@$wso2_is_ip:/home/ubuntu/"
+copy_is_server_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup/update-is-conf.sh ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_is_server_resources_command="scp -r -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup/resources ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_is_server_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/wso2is.zip ubuntu@$wso2_is_ip:/home/ubuntu/wso2is.zip"
-copy_mysql_connector="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-java-5.1.47.jar ubuntu@$wso2_is_ip:/home/ubuntu/"
+copy_mysql_connector_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-java-*.jar ubuntu@$wso2_is_ip:/home/ubuntu/"
 
 echo ""
 echo "Copying Is server setup files..."
@@ -72,10 +72,10 @@ echo "$copy_is_server_resources_command"
 $copy_is_server_resources_command
 echo "$copy_is_server_command"
 $copy_is_server_command
-echo "$copy_mysql_connector"
-$copy_mysql_connector
+echo "$copy_mysql_connector_command"
+$copy_mysql_connector_command
 
-setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update_is_pack.sh -l $db_instance_ip"
+setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update-is-conf.sh -l $db_instance_ip"
 
 echo ""
 echo "Running IS node setup script: $setup_is_node_command"

@@ -60,7 +60,6 @@
         <fileSet>
             <directory>../common/lib</directory>
             <outputDirectory>lib</outputDirectory>
-            <filtered>true</filtered>
             <fileMode>0775</fileMode>
         </fileSet>
     </fileSets>

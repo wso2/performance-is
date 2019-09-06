@@ -22,8 +22,11 @@
 source ../common/common-functions.sh
 
 script_start_time=$(date +%s)
-timestamp=$(date +%Y-%m-%d-%H-%M-%S)
-stack_name="is-performance-single-node-$timestamp"
+timestamp=$(date +%Y-%m-%d--%H-%M-%S)
+
+random_number=$RANDOM
+
+stack_name="is-performance-single-node--$timestamp--$random_number"
 
 # Cloud Formation parameters.
 
@@ -43,7 +46,6 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
-script_dir=$(dirname "$0")
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -220,10 +222,9 @@ ln -s "$key_file" "$temp_dir"/"$key_filename"
 echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"
-random_number=$RANDOM
 echo "random_number: $random_number"
 cp single-node.yaml new-single-node.yaml
-sed -i "s/suffix/$random_number/" new-2-node-cluster.yml
+sed -i "s/suffix/$random_number/" new-single-node.yaml
 
 echo ""
 echo "Validating stack..."
@@ -241,7 +242,8 @@ jq -n \
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
-    --template-body file://new-single-node.yaml--parameters \
+    --template-body file://new-single-node.yaml \
+    --parameters \
         ParameterKey=CertificateName,ParameterValue=$certificate_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
@@ -276,20 +278,20 @@ printf "Stack creation time: %s\n" "$(format_time "$(measure_time "$stack_create
 
 echo ""
 echo "Getting Bastion Node Public IP..."
-bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance | jq -r '.StackResources[].PhysicalResourceId')"
+bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
 echo ""
 echo "Getting WSO2 IS Node Private IP..."
-wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNodeAutoScalingGroup | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNodeAutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
 wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
 echo "WSO2 IS Node Private IP: $wso2_is_ip"
 
 echo ""
 echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance | jq -r '.StackResources[].PhysicalResourceId')"
+rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 

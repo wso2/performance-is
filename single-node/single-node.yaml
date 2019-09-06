@@ -157,7 +157,7 @@ Resources:
     Properties:
       RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
       SubnetId: !Ref WSO2ISPrivateSubnet2suffix
-  WSO2ISNATGateway:
+  WSO2ISNATGatewaysuffix:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt

@@ -22,10 +22,12 @@
 source ../common/common-functions.sh
 
 script_start_time=$(date +%s)
-timestamp=$(date +%Y-%m-%d-%H-%M-%S)
-stack_name="is-performance-two-node-$timestamp"
+timestamp=$(date +%Y-%m-%d--%H-%M-%S)
 
-# Cloud Formation parameters.
+random_number=$RANDOM
+# random_number=21265
+
+stack_name="is-performance-two-node--$timestamp--$random_number"
 
 key_file=""
 aws_access_key=""
@@ -46,7 +48,6 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
-script_dir=$(dirname "$0")
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -241,7 +242,7 @@ ln -s "$key_file" "$temp_dir"/"$key_filename"
 echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"
-random_number=$RANDOM
+echo "random_number: $random_number"
 cp 2-node-cluster.yml new-2-node-cluster.yml
 sed -i "s/suffix/$random_number/" new-2-node-cluster.yml
 
@@ -352,31 +353,33 @@ echo ""
 echo "Copying files to Bastion node..."
 echo "============================================"
 copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
     ubuntu@$bastion_node_ip:/home/ubuntu"
+
+echo "$copy_setup_files_command"
+$copy_setup_files_command
+echo "$copy_repo_setup_command"
+$copy_repo_setup_command
+
+copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
 copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
 copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
 
-echo "$copy_setup_files_command"
-$copy_setup_files_command
+echo "$copy_jmeter_setup_command"
+$copy_jmeter_setup_command
 echo "$copy_is_pack_command"
 $copy_is_pack_command
 echo "$copy_key_file_command"
 $copy_key_file_command
 echo "$copy_connector_command"
 $copy_connector_command
-echo "$copy_jmeter_setup_command"
-$copy_jmeter_setup_command
-echo "$copy_repo_setup_command"
-$copy_repo_setup_command
 
 echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./workspace/setup/setup-is.sh -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
+    ./setup/setup-is.sh -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
@@ -385,7 +388,7 @@ echo ""
 echo "Running IS node 2 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./workspace/setup/setup-is.sh -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
+    ./setup/setup-is.sh -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."

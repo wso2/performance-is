@@ -21,6 +21,10 @@
 
 source ../common/common-functions.sh
 
+script_start_time=$(date +%s)
+timestamp=$(date +%Y-%m-%d-%H-%M-%S)
+stack_name="is-performance-two-node-$timestamp"
+
 # Cloud Formation parameters.
 
 key_file=""
@@ -42,9 +46,6 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
-script_start_time=$(date +%s)
-timestamp=$(date +%Y-%m-%d-%H-%M-%S)
-stack_name="is-performance-two-node-$timestamp"
 script_dir=$(dirname "$0")
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -241,6 +242,7 @@ cd "$script_dir"
 
 echo ""
 echo "Validating stack..."
+echo "============================================"
 aws cloudformation validate-template --template-body file://2-node-cluster.yml
 
 # Save metadata
@@ -267,6 +269,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
 
 echo ""
 echo "Creating stack..."
+echo "============================================"
 echo "$create_stack_command"
 stack_id="$($create_stack_command)"
 stack_id=$(echo "$stack_id"|jq -r .StackId)
@@ -275,7 +278,7 @@ stack_id=$(echo "$stack_id"|jq -r .StackId)
 trap exit_handler "$results_dir" "$stack_id" "$script_start_time" EXIT
 
 echo ""
-echo "Created stack: $stack_id"
+echo "Created stack ID: $stack_id"
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
@@ -339,49 +342,29 @@ if [[ -z $rds_host ]]; then
     exit 1
 fi
 
+echo ""
+echo "Copying files to Bastion node..."
+echo "============================================"
+copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
+    ubuntu@$bastion_node_ip:/home/ubuntu"
 copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_connector_command="scp -i $key_file -o "StrictHostKeyChecking=no" mysql-connector-java-*.jar ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
 
-echo ""
-echo "Copying IS server setup files..."
+echo "$copy_setup_files_command"
+$copy_setup_files_command
 echo "$copy_is_pack_command"
 $copy_is_pack_command
 echo "$copy_key_file_command"
 $copy_key_file_command
 echo "$copy_connector_command"
 $copy_connector_command
-
-copy_bastion_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $results_dir/setup/setup-bastion.sh ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" ../distribution/target/is-performance-distribution-*.tar.gz \
-    ubuntu@$bastion_node_ip:/home/ubuntu"
-
-echo ""
-echo "Copying files to Bastion node..."
-echo "$copy_bastion_setup_command"
-$copy_bastion_setup_command
 echo "$copy_jmeter_setup_command"
 $copy_jmeter_setup_command
 echo "$copy_repo_setup_command"
 $copy_repo_setup_command
-
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip sudo \
-    ./setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -r $rds_host -l $nginx_instance_ip"
-echo ""
-echo "Running Bastion Node setup script: $setup_bastion_node_command"
-# Handle any error and let the script continue.
-$setup_bastion_node_command || echo "Remote ssh command failed."
-
-echo ""
-echo "Creating databases in RDS..."
-echo "============================================"
-create_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $rds_host \
-    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createDB.sql"
-echo "$create_db_command"
-ssh -i "$key_file" -o "StrictHostKeyChecking=no" -t ubuntu@"$bastion_node_ip" "cd /home/ubuntu/ ; unzip -q wso2is.zip ; \
-    mv wso2is-* wso2is"
-$create_db_command
 
 echo ""
 echo "Running IS node 1 setup script..."
@@ -400,6 +383,25 @@ setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bast
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
+
+echo ""
+echo "Running Bastion Node setup script..."
+echo "============================================"
+setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    sudo ./setup/setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -r $rds_host -l $nginx_instance_ip"
+echo "$setup_bastion_node_command"
+# Handle any error and let the script continue.
+$setup_bastion_node_command || echo "Remote ssh command failed."
+
+echo ""
+echo "Creating databases in RDS..."
+echo "============================================"
+create_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $rds_host \
+    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createDB.sql"
+echo "$create_db_command"
+ssh -i "$key_file" -o "StrictHostKeyChecking=no" -t ubuntu@"$bastion_node_ip" "cd /home/ubuntu/ ; unzip -q wso2is.zip ; \
+    mv wso2is-* wso2is"
+$create_db_command
 
 echo ""
 echo "Running performance tests..."

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    # Copyright 2018 WSO2 Inc. (http://wso2.org)
+    # Copyright 2019 WSO2 Inc. (http://wso2.org)
     #
     # Licensed under the Apache License, Version 2.0 (the "License");
     # you may not use this file except in compliance with the License.
@@ -17,16 +17,81 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>performance-is</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>is-performance-two-node-cluster</artifactId>
+    <artifactId>is-performance-twonode-cluster</artifactId>
 
-    <packaging>pom</packaging>
     <name>IS Performance Two Node Cluster</name>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.performance.common</groupId>
+            <artifactId>performance-common-distribution</artifactId>
+            <type>tar.gz</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>distribution</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/bin.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>setup</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileset>
+                        <fileSet>
+                            <directory>jmeter</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>is</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>lib</directory>
+                            <includes>
+                                <include>**/target</include>
+                            </includes>
+                        </fileSet>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

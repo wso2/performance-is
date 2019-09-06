@@ -95,24 +95,24 @@ Resources:
           - !GetAZs ''
   WSO2ISPublicInternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-  WSO2ISPublicRoute2Table:
+  WSO2ISPublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref WSO2ISVPC
   WSO2ISPublicSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
+      RouteTableId: !Ref WSO2ISPublicRouteTable
       SubnetId: !Ref WSO2ISPublicSubnet1
   WSO2ISPublicSubnet2RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
+      RouteTableId: !Ref WSO2ISPublicRouteTable
       SubnetId: !Ref WSO2ISPublicSubnet2
-  WSO2ISPublicRoute2:
+  WSO2ISPublicRoute:
     Type: 'AWS::EC2::Route'
     Properties:
-      RouteTableId: !Ref WSO2ISPublicRoute2Table
+      RouteTableId: !Ref WSO2ISPublicRouteTable
       GatewayId: !Ref WSO2ISPublicInternetGateway
       DestinationCidrBlock: 0.0.0.0/0
     DependsOn: WSO2ISVPCInternetGatewayAttachment
@@ -161,7 +161,7 @@ Resources:
     Type: 'AWS::EC2::NatGateway'
     Properties:
       AllocationId: !GetAtt
-        - WSO2ISEIP2
+        - WSO2ISEIP
         - AllocationId
       SubnetId: !Ref WSO2ISPublicSubnet1
   WSO2BastionEIPAssociation:
@@ -169,7 +169,7 @@ Resources:
     Properties:
       AllocationId: !GetAtt WSO2BastionEIP.AllocationId
       InstanceId: !Ref WSO2BastionInstance
-  WSO2ISEIP2:
+  WSO2ISEIP:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: vpc
@@ -182,7 +182,7 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref WSO2ISVPC
-      GroupDescription: DB Security Group
+      GroupDescription: DB Security Group2
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '3306'
@@ -533,6 +533,8 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number

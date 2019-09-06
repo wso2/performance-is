@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018, wso2 Inc. (http://wso2.org) All Rights Reserved.
+# Copyright (c) 2019, wso2 Inc. (http://wso2.org) All Rights Reserved.
 #
 # wso2 Inc. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -86,7 +86,7 @@ if [[ -z $rds_host ]]; then
 fi
 
 function get_ssh_hostname() {
-    sudo -u ubuntu ssh -G $1 | awk '/^hostname / { print $2 }'
+    sudo -u ubuntu ssh -G "$1" | awk '/^hostname / { print $2 }'
 }
 
 #echo ""
@@ -100,19 +100,19 @@ function get_ssh_hostname() {
 echo ""
 echo "Setting up required files..."
 echo "============================================"
-cd /home/ubuntu
+cd /home/ubuntu || exit 0
 mkdir workspace
-cd workspace
+cd workspace || exit 0
 
 echo ""
 echo "Extracting is performance distribution..."
 echo "============================================"
-tar -C /home/ubuntu/workspace -xzf /home/ubuntu/is-performance-distribution-*.tar.gz
+tar -C /home/ubuntu/workspace -xzf /home/ubuntu/is-performance-*.tar.gz
 
 echo ""
 echo "Running JMeter setup script..."
 echo "============================================"
-cd /home/ubuntu
+cd /home/ubuntu || exit 0
 workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
             -i /home/ubuntu \
             -c /home/ubuntu \
@@ -127,7 +127,7 @@ sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
 
 echo ""
-echo "Coping files to IS instance 1..."
+echo "Setting up IS instance 1..."
 echo "============================================"
 sudo -u ubuntu ssh $wso2is_1_host_alias mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_1_host_alias:/home/ubuntu/setup/
@@ -136,7 +136,7 @@ sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_1_host_alias:/home/ubuntu/
 sudo -u ubuntu ssh $wso2is_1_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
 
 echo ""
-echo "Coping files to IS instance 2..."
+echo "Setting up IS instance 2..."
 echo "============================================"
 sudo -u ubuntu ssh $wso2is_2_host_alias mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_2_host_alias:/home/ubuntu/setup/

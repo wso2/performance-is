@@ -87,7 +87,7 @@ cd workspace || exit 0
 echo ""
 echo "Extracting is performance distribution..."
 echo "============================================"
-tar -C /home/ubuntu/workspace -xzf /home/ubuntu/is-performance-singlenode-*.tar.gz
+tar -C /home/ubuntu/workspace -xzf /home/ubuntu/is-performance-*.tar.gz
 
 echo ""
 echo "Running JMeter setup script..."
@@ -106,9 +106,8 @@ sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
 
 echo ""
-echo "Setting up IS instances..."
+echo "Setting up IS instance..."
 echo "============================================"
-
 sudo -u ubuntu ssh $wso2is_host_alias mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_host_alias:/home/ubuntu/setup/
 sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_host_alias:/home/ubuntu/sar/

@@ -16,7 +16,7 @@
 # under the License.
 #
 # ----------------------------------------------------------------------------
-# Setup is scripts.
+# Setup IS pack.
 # ----------------------------------------------------------------------------
 
 function usage() {
@@ -24,8 +24,8 @@ function usage() {
     echo "Usage: "
     echo "$0 -n <wso2_is_ip> -r <db_ip>"
     echo ""
-    echo "-n: The ip of wso2is node"
-    echo "-r: The ip address of RDS"
+    echo "-i: The IP of wso2is node."
+    echo "-r: The IP address of RDS."
     echo "-h: Display this help and exit."
     echo ""
 }
@@ -50,12 +50,12 @@ while getopts "n:r:h" opts; do
 done
 
 if [[ -z $wso2_is_ip ]]; then
-    echo "Please provide ip address of to IS node."
+    echo "Please provide the WSO2 IS node IP address."
     exit 1
 fi
 
 if [[ -z $db_instance_ip ]]; then
-    echo "Please provide the db instance ip address."
+    echo "Please provide the db instance IP address."
     exit 1
 fi
 

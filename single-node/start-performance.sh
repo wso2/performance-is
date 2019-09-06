@@ -23,7 +23,7 @@ source ../common/common-functions.sh
 
 script_start_time=$(date +%s)
 timestamp=$(date +%Y-%m-%d-%H-%M-%S)
-stack_name="is-performance-two-node-$timestamp"
+stack_name="is-performance-single-node-$timestamp"
 
 # Cloud Formation parameters.
 
@@ -217,12 +217,18 @@ echo "$key_file"
 
 ln -s "$key_file" "$temp_dir"/"$key_filename"
 
-cd "$script_dir"
+echo ""
+echo "Preparing cloud formation template..."
+echo "============================================"
+random_number=$RANDOM
+echo "random_number: $random_number"
+cp single-node.yaml new-single-node.yaml
+sed -i "s/suffix/$random_number/" new-2-node-cluster.yml
 
 echo ""
 echo "Validating stack..."
 echo "============================================"
-aws cloudformation validate-template --template-body file://single-node.yaml
+aws cloudformation validate-template --template-body file://new-single-node.yaml
 
 # Save metadata
 test_parameters_json='.'
@@ -235,7 +241,7 @@ jq -n \
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
-    --template-body file://single-node.yaml --parameters \
+    --template-body file://new-single-node.yaml--parameters \
         ParameterKey=CertificateName,ParameterValue=$certificate_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
@@ -253,10 +259,11 @@ stack_id="$($create_stack_command)"
 stack_id=$(echo "$stack_id"|jq -r .StackId)
 
 # Delete the stack in case of an error.
-trap exit_handler "$results_dir" "$stack_id" "$script_start_time" EXIT
+trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
 
 echo ""
 echo "Created stack ID: $stack_id"
+rm new-single-node.yaml
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."

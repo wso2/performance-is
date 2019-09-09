@@ -448,5 +448,7 @@ echo "Creating summary results markdown file..."
     "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
     "WSO2 Identity Server 1 GC Throughput (%)" "WSO2 Identity Server GC 2 Throughput (%)"
 
+rm -rf cf-test-metadata.json cloudformation/ common/ gcviewer.jar is/ jmeter/ jtl-splitter/ netty-service/ payloads/ results/ sar/ setup/
+
 echo ""
 echo "Done."

@@ -34,13 +34,13 @@ function usage() {
 while getopts "w:i:r:h" opts; do
     case $opts in
     w)
-        wso2_is_1_ip=("${OPTARG}")
+        wso2_is_1_ip=${OPTARG}
         ;;
     i)
-        wso2_is_2_ip=("${OPTARG}")
+        wso2_is_2_ip=${OPTARG}
         ;;
     r)
-        db_instance_ip=("${OPTARG}")
+        db_instance_ip=${OPTARG}
         ;;
     h)
         usage
@@ -68,25 +68,29 @@ if [[ -z $wso2_is_2_ip ]]; then
     exit 1
 fi
 
-sudo mkdir -p /etc/.java/.systemPrefs
-cd /etc/.java/.systemPrefs
-sudo touch .systemRootModFile
-sudo chmod 544 .systemRootModFile
-cd ..
-sudo chmod 777 .systemPrefs/
-cd ~
+#sudo mkdir -p /etc/.java/.systemPrefs
+#cd /etc/.java/.systemPrefs
+#sudo touch .systemRootModFile
+#sudo chmod 544 .systemRootModFile
+#cd ..
+#sudo chmod 777 .systemPrefs/
+#cd ~
 
+echo ""
 echo "unzipping is server"
+echo "============================================"
 unzip -q wso2is.zip
 
 echo ""
 echo "changing server name"
+echo "============================================"
 mv wso2is-* wso2is
 
 sudo chown -R ubuntu:ubuntu wso2is
 
+echo ""
 echo "changing permission for mysql connector"
-
+echo "============================================"
 chmod 644 mysql-connector-java-*.jar
 
 carbon_home=$(realpath ~/wso2is)

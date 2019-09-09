@@ -49,17 +49,21 @@ if [[ -z $db_instance_ip ]]; then
     exit 1
 fi
 
+echo ""
 echo "unzipping is server"
+echo "============================================"
 unzip -q wso2is.zip
 
 echo ""
 echo "changing server name"
+echo "============================================"
 mv wso2is-* wso2is
 
 sudo chown -R ubuntu:ubuntu wso2is
 
+echo ""
 echo "changing permission for mysql connector"
-
+echo "============================================"
 chmod 644 mysql-connector-java-5.1.47.jar
 
 carbon_home=$(realpath ~/wso2is)
@@ -91,4 +95,4 @@ echo ""
 echo "Starting WSO2 IS server..."
 echo "============================================"
 ./wso2is/bin/wso2server.sh start
-sleep 100s
+sleep 50s

@@ -310,7 +310,7 @@ Resources:
       Monitoring: 'false'
       Tags:
         - Key: Name
-          Value: suffix_WSO2BastionInstancesuffix
+          Value: suffix_WSO2BastionInstance
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -403,7 +403,7 @@ Resources:
         - !Ref WSO2ISPrivateSubnet1suffix
       Tags:
         - Key: Name
-          Value: suffix_WSO2ISInstance1suffix
+          Value: suffix_WSO2ISInstance
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is

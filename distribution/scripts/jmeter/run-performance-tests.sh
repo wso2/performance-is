@@ -121,6 +121,13 @@ declare -A test_scenario9=(
 #    [jmx]="scim2/SCIM2_Add_User.jmx"
 #    [skip]=false
 #)
+declare -A test_scenario13=(
+    [name]="13-challange_questions_by_super_tenant_users"
+    [display_name]="Challange questions by super tenant users"
+    [description]="Challange questions operated by the autheticated super tenant user"
+    [jmx]="Challange_Questions_Operate_By_Super_Tenant_User.jmx"
+    [skip]=false
+)
 
 echo_timestamp(){
   time=`date "+%Y-%m-%d__%H-%M-%S"`

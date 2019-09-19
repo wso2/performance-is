@@ -61,7 +61,7 @@ acceptCount = "500"
 prompt = false
 
 [admin_service]
-wsdl.enable=true
+wsdl.enable=false
 
 [keystore.tls]
 name = "wso2carbon.jks"

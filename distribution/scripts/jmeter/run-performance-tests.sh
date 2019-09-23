@@ -128,6 +128,14 @@ declare -A test_scenario13=(
     [jmx]="ChallangeQuestions/Challange_Questions_Operate_By_Super_Tenant_User.jmx"
     [skip]=false
 )
+declare -A test_scenario14=(
+    [name]="14-refresh_grant_refresh_token"
+    [display_name]="Refresh token refresh grant"
+    [description]="Request refresh token form refresh grant"
+    [jmx]="oauth/Refresh_Grant_Refresh_Token.jmx"
+    [skip]=false
+)
+
 
 echo_timestamp(){
   time=`date "+%Y-%m-%d__%H-%M-%S"`

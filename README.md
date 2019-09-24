@@ -4,16 +4,16 @@ WSO2 Identity Server performance artifacts are used to continuously test the per
 
 These performance test scripts make use of the Apache JMeter to run the tests with different concurrent users and different Identity Server version.
 
-The delpoyment is automated using AWS cloud formation. 
+The deployment is automated using AWS cloud formation. 
 
 ## About the deployment
 
 At the moment we support for two deployment patterns as,
 1. Single node deployment.
-  - ![Deployment Diagram](/home/vihanga/WSO2-Projects/27.is-5.9.0-perf-improvements/performance-is-new/common/images/deployment-diagram-singlenode.png)
+  - <img src="common/images/deployment-diagram-singlenode.png" height="400" alt="Single Node Deployment Diagram">
 
 2. Two node cluster deployment.
-  - ![Deployment Diagram](/home/vihanga/WSO2-Projects/27.is-5.9.0-perf-improvements/performance-is-new/common/images/deployment-diagram-twonode-cluster.png)
+  - <img src="common/images/deployment-diagram-twonode-cluster.png" height="400" alt="Two Node Cluster Deployment Diagram">
 
 WSO2 Identity Server is setup in an AWS EC2 instance. AWS RDS instance is used to host the MySQL user store and identity databases.
 
@@ -89,8 +89,8 @@ See usage:
    * RDS instance hostname.
 4. Setup the wso2 IS server in the instance and create the databases.
 5. Copy required files such as the key file, performance artifacts and the JMeter setup to the bastion node.
-6. SSH into the bastion node and execute the [setup-bastion.sh](setup) script, which will setup the additional components in the deployment.
-7. SSH into the bastion node and execute the [run-performance-test.sh](../common/jmeter) script, which will run the tests and collect the results.
+6. SSH into the bastion node and execute the [setup-bastion.sh](single-node/setup/README.md) script, which will setup the additional components in the deployment.
+7. SSH into the bastion node and execute the [run-performance-test.sh](common/jmeter/README.md) script, which will run the tests and collect the results.
 8. Download the test results from the bastion node.
 9. Create summary CSV file and MD file.
 

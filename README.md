@@ -36,28 +36,28 @@ You can run IS Performance Tests from the source using the following instruction
 
 1. Clone this repository.
 
-```
+```console
 git clone https://github.com/wso2/performance-is
 ```
 2. Checkout master branch for the latest Identity Server version or relevant version tag for previous releases.
-```
+```console
 cd performance-is
 git checkout v5.8.0
 ```
 3. Build the artifacts using Maven.
-```
+```console
 mvn clean install
 ```
 
 4. Based on your preferred deployment, navigate to `single-node` directory or `two-node-cluster` directory.
 4. Run the `start-performance.sh` script. It will take around 15 hours to complete the test round with default settings. Therefore, you might want to use `nohup`. Following is the basic command.
-```
+```console
 ./start-performance.sh -k is-perf-test.pem -a ******* -s ******* -c is-perf-cert -n wso2IS.zip -j apache-jmeter-3.3.tgz -- -d 10 -w 2
 ```
 
 See usage:
 
-```
+```console
 ./start-performance.sh -k <key_file> -a <aws_access_key> -s <aws_access_secret>
    -c <certificate_name> -j <jmeter_setup_path>
    [-n <IS_zip_file_path>]

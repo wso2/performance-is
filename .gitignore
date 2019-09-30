@@ -31,4 +31,4 @@ hs_err_pid*
 # Maven Target
 target
 
-cloudformation/test-metadata.json
+test-metadata.json

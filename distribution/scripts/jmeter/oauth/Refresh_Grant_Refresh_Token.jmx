@@ -69,11 +69,6 @@
             <stringProp name="Argument.value">${__P(concurrency,50)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="noOfUsers" elementType="Argument">
-            <stringProp name="Argument.name">noOfUsers</stringProp>
-            <stringProp name="Argument.value">${__P(userCount,1000)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="timeToRun" elementType="Argument">
             <stringProp name="Argument.name">timeToRun</stringProp>
             <stringProp name="Argument.value">${__P(time,900)}</stringProp>
@@ -82,11 +77,6 @@
           <elementProp name="rampUpPeriod" elementType="Argument">
             <stringProp name="Argument.name">rampUpPeriod</stringProp>
             <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="noOfSPs" elementType="Argument">
-            <stringProp name="Argument.name">noOfSPs</stringProp>
-            <stringProp name="Argument.value">${__P(spCount,3)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="constantTPS" elementType="Argument">
@@ -103,14 +93,6 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
-        <stringProp name="filename"></stringProp>
-        <stringProp name="parameters"></stringProp>
-        <boolProp name="resetInterpreter">false</boolProp>
-        <stringProp name="script">Map refreshCodeMap = new HashMap();
-bsh.shared.refreshCodeMap</stringProp>
-      </BeanShellPostProcessor>
-      <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Data creation" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -118,7 +100,7 @@ bsh.shared.refreshCodeMap</stringProp>
           <stringProp name="LoopController.loops">${count}</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
         <longProp name="ThreadGroup.start_time">1568791530000</longProp>
         <longProp name="ThreadGroup.end_time">1568791530000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -226,22 +208,6 @@ if (y == 0) {
             <stringProp name="Scope.variable"></stringProp>
           </RegexExtractor>
           <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="script">String mapKey=vars.get(&quot;count_id&quot;);
-String refresh_Token = vars.get(&quot;refreshToken&quot;);
-
-Map refreshCodeMap = bsh.shared.refreshCodeMap;
-refreshCodeMap.put(mapKey,refresh_Token);
-
-
-
-
-</stringProp>
-          </BeanShellPostProcessor>
-          <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP/1.1 200 Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="363828969">HTTP/1.1 200 
@@ -264,10 +230,20 @@ refreshCodeMap.put(mapKey,refresh_Token);
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput" enabled="true">
-          <intProp name="calcMode">1</intProp>
-          <stringProp name="throughput">${constantTPS}</stringProp>
-        </ConstantThroughputTimer>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Save refresh token to map" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey"></stringProp>
+          <stringProp name="script">def refreshCodeMap = new HashMap()
+if (props.get(&apos;refreshCodeMap&apos;) != null) {
+    refreshCodeMap = props.get(&apos;refreshCodeMap&apos;)
+}
+
+refreshCodeMap.put(vars.get(&apos;count_id&apos;),vars.get(&apos;refreshToken&apos;))
+props.put(&apos;refreshCodeMap&apos;, refreshCodeMap)
+</stringProp>
+        </JSR223Sampler>
         <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Request refresh token - refresh grant type" enabled="true">
@@ -276,14 +252,13 @@ refreshCodeMap.put(mapKey,refresh_Token);
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${count}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
         <longProp name="ThreadGroup.start_time">1568797010000</longProp>
         <longProp name="ThreadGroup.end_time">1568797010000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
       </ThreadGroup>
       <hashTree>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="counter" enabled="true">
@@ -309,20 +284,19 @@ if (y == 0) {
 </stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
-        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
-          <boolProp name="resetInterpreter">false</boolProp>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Get refresh token form map" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
-          <stringProp name="script">String count_id=vars.get(&quot;count_id&quot;);
+          <stringProp name="cacheKey"></stringProp>
+          <stringProp name="script">def count_id=vars.get(&apos;count_id&apos;)
+def refreshCodeMap = props.get(&apos;refreshCodeMap&apos;)
 
-Map refreshCodeMap = bsh.shared.refreshCodeMap;
-
-String refreshCode = refreshCodeMap.get(count_id);
-vars.put(&quot;refreshToken&quot;, refreshCode);
-
+def refreshCode = refreshCodeMap.get(count_id)
+vars.put(&quot;refreshToken&quot;, refreshCode)
 
 </stringProp>
-        </BeanShellPreProcessor>
+        </JSR223Sampler>
         <hashTree/>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
           <stringProp name="filename"></stringProp>
@@ -351,7 +325,7 @@ vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</st
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Refresh Token Request" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST - Refresh Token Request" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="grant_type" elementType="HTTPArgument">
@@ -416,17 +390,6 @@ vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</st
             <stringProp name="RegexExtractor.match_number">1</stringProp>
             <stringProp name="Scope.variable"></stringProp>
           </RegexExtractor>
-          <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="script">String mapKey=vars.get(&quot;count_id&quot;);
-String refresh_Token = vars.get(&quot;refreshToken&quot;);
-
-Map refreshCodeMap = bsh.shared.refreshCodeMap;
-refreshCodeMap.put(mapKey,refresh_Token);</stringProp>
-          </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput" enabled="true">

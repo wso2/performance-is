@@ -13,8 +13,8 @@
 
 
 ### Deployment Diagram - Single node
-![Deployment Diagram - Single node](https://github.com/vihanga-liyanage/performance-is/blob/single-node-performance/images/singlenode-deployment.png)
+![Deployment Diagram - Single node](https://github.com/wso2/performance-is/blob/master/common/images/deployment-diagram-singlenode.png)
 
 
 ### Deployment Diagram - Two node cluster
-![Deployment Diagram - Two node cluster](https://github.com/vihanga-liyanage/performance-is/blob/master/images/deployment-diagram.png)
+![Deployment Diagram - Two node cluster](https://github.com/wso2/performance-is/blob/master/common/images/deployment-diagram-twonode-cluster.png)

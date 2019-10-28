@@ -74,17 +74,27 @@ echo "============================================"
 cp mysql-connector-java-*.jar "$carbon_home"/repository/components/lib/
 
 echo ""
-echo "Adding deployment toml file to the pack..."
+echo "Adding conf files to the pack..."
 echo "============================================"
-cp resources/deployment.toml "$carbon_home"/repository/conf/deployment.toml
+cp resources/master-datasources.xml "$carbon_home"/repository/conf/datasources/master-datasources.xml
+cp resources/user-mgt.xml "$carbon_home"/repository/conf/user-mgt.xml
 
 echo ""
 echo "Applying basic parameter changes..."
 echo "============================================"
-sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' \
-  "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
-sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
-  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i 's$<dataSource>jdbc/WSO2CarbonDB$<dataSource>jdbc/WSO2_REG_DB$g' "$carbon_home"/repository/conf/registry.xml || echo "erro 1"
+sed -i 's$<Name>jdbc/WSO2CarbonDB$<Name>jdbc/WSO2_IDENTITY_DB$g' "$carbon_home"/repository/conf/identity/identity.xml || echo "erro 2"
+sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' "$carbon_home"/bin/wso2server.sh || echo "erro 3"
+sed -i "s|<url>jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|<url>jdbc:mysql://$db_instance_ip|g" "$carbon_home"/repository/conf/datasources/master-datasources.xml
+
+echo ""
+echo "Applying tuning parameters..."
+echo "============================================"
+sed -i 's/CaseInsensitiveUsername">true/CaseInsensitiveUsername">false/' "$carbon_home"/repository/conf/user-mgt.xml
+sed -i 's/<maxActive>50</<maxActive>300</' "$carbon_home"/repository/conf/datasources/master-datasources.xml
+sed -i 's/maxThreads="250"/maxThreads="500"/' "$carbon_home"/repository/conf/tomcat/catalina-server.xml
+sed -i 's/acceptCount="200"/acceptCount="500"/' "$carbon_home"/repository/conf/tomcat/catalina-server.xml
+sed -i 's/<EnableSSOConsentManagement>true</<EnableSSOConsentManagement>false</' "$carbon_home"/repository/conf/identity/identity.xml
 
 echo ""
 echo "Creating databases in RDS..."

@@ -4,6 +4,8 @@
 ### Guide to the Existing Data Files
 | Sheet | Server version | Deployment | Updated on | IS Instance Type | RDS Instance Type | Test Duration | Warmup period | OS | Java | Database |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| [5.6.0_single-node_2-core](5.6.0_single-node_2-core.md) | 5.6.0 GA | Single node | 2019/10/31 | c5.large | db.m4.xlarge | 15 min | 5 min | Ubuntu 18.04 (LTS) | 1.8.0_201-b09 | MySQL 5.7 |
+| [5.7.0_single-node_2-core](5.7.0_single-node_2-core.md) | 5.7.0 GA | Single node | 2019/10/31 | c5.large | db.m4.xlarge | 15 min | 5 min | Ubuntu 18.04 (LTS) | 1.8.0_201-b09 | MySQL 5.7 |
 | [5.7.0_single-node_4-core](5.7.0_single-node_4-core.md) | 5.7.0 GA | Single node | 2019/10/23 | c5.xlarge | db.m4.xlarge | 15 min | 5 min | Ubuntu 18.04 (LTS) | 1.8.0_201-b09 | MySQL 5.7 |
 | [5.8.0-beta6_single-node_4-core](5.8.0-beta6_single-node_4-core.md) | 5.8.0 Beta 6 | Single node | 2019/5/9 | c5.xlarge | db.m4.xlarge | 15 min | 5 min | Ubuntu 18.04 (LTS) | 1.8.0_201-b09 | MySQL 5.7 |
 | [5.8.0-rc2_single-node_2-core](5.8.0-rc2_single-node_2-core.md) | 5.8.0 RC 2 | Single node | 2019/5/14 | c5.large | db.m4.xlarge | 15 min | 5 min | Ubuntu 18.04 (LTS) | 1.8.0_201-b09 | MySQL 5.7 |

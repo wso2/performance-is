@@ -70,36 +70,36 @@ fi
 
 echo ""
 echo "unzipping is server"
-echo "============================================"
+echo "-------------------------------------------"
 unzip -q wso2is.zip
 
 echo ""
 echo "changing server name"
-echo "============================================"
+echo "-------------------------------------------"
 mv wso2is-* wso2is
 
 sudo chown -R ubuntu:ubuntu wso2is
 
 echo ""
 echo "changing permission for mysql connector"
-echo "============================================"
+echo "-------------------------------------------"
 chmod 644 mysql-connector-java-*.jar
 
 carbon_home=$(realpath ~/wso2is)
 
 echo ""
 echo "Adding mysql connector to the pack..."
-echo "============================================"
-cp mysql-connector-java-*.jar $carbon_home/repository/components/lib/
+echo "-------------------------------------------"
+cp mysql-connector-java-*.jar "$carbon_home"/repository/components/lib/
 
 echo ""
 echo "Adding deployment toml file to the pack..."
-echo "============================================"
+echo "-------------------------------------------"
 cp resources/deployment.toml "$carbon_home"/repository/conf/deployment.toml
 
 echo ""
 echo "Applying basic parameter changes..."
-echo "============================================"
+echo "-------------------------------------------"
 sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
@@ -110,6 +110,6 @@ sed -i "s|member_ip_2|$wso2_is_2_ip|g" "$carbon_home"/repository/conf/deployment
 
 echo ""
 echo "Starting WSO2 IS server..."
-echo "============================================"
+echo "-------------------------------------------"
 ./wso2is/bin/wso2server.sh start
 sleep 100s

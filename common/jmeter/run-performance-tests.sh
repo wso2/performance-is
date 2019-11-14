@@ -104,7 +104,6 @@ declare -A test_scenario9=(
 function before_execute_test_scenario() {
 
     ssh $wso2is_host_alias "./restart-is.sh -m $heap"
-    jmeter_params+=("port=9443")
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)

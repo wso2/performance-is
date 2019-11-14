@@ -203,6 +203,7 @@ echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
 tar -xf target/is-performance-singlenode-*.tar.gz -C "$results_dir"
 
+cp run-performance-tests.sh "$results_dir"/jmeter/
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
@@ -354,6 +355,7 @@ $setup_bastion_node_command || echo "Remote ssh command failed."
 echo ""
 echo "Running performance tests..."
 echo "============================================"
+scp -i "$key_file" -o StrictHostKeyChecking=no run-performance-tests.sh ubuntu@"$bastion_node_ip":/home/ubuntu/workspace/jmeter
 run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo "$run_remote_tests"

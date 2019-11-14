@@ -223,6 +223,7 @@ echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
 tar -xf target/is-performance-twonode-cluster*.tar.gz -C "$results_dir"
 
+cp run-performance-tests.sh "$results_dir"/jmeter/
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
@@ -376,24 +377,6 @@ echo "$copy_connector_command"
 $copy_connector_command
 
 echo ""
-echo "Running IS node 1 setup script..."
-echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
-echo "$setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
-
-echo ""
-echo "Running IS node 2 setup script..."
-echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
-echo "$setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
-
-echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
@@ -413,9 +396,28 @@ ssh -i "$key_file" -o "StrictHostKeyChecking=no" -t ubuntu@"$bastion_node_ip" "c
 $create_db_command
 
 echo ""
+echo "Running IS node 1 setup script..."
+echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    ./setup/setup-is.sh -a wso2is1 -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
+echo "$setup_is_command"
+# Handle any error and let the script continue.
+$setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
+
+echo ""
+echo "Running IS node 2 setup script..."
+echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    ./setup/setup-is.sh -a wso2is2 -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
+echo "$setup_is_command"
+# Handle any error and let the script continue.
+$setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
+
+echo ""
 echo "Running performance tests..."
 echo "============================================"
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
+scp -i "$key_file" -o StrictHostKeyChecking=no run-performance-tests.sh ubuntu@"$bastion_node_ip":/home/ubuntu/workspace/jmeter
+run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh -p 443 ${run_performance_tests_options[@]}"
 run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
 echo "$run_remote_tests"
 $run_remote_tests || echo "Remote test ssh command failed."

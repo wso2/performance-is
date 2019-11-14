@@ -40,7 +40,7 @@ function usage() {
     echo ""
 }
 
-while getopts "w:i:l:r:p:h" opts; do
+while getopts "w:i:l:r:h" opts; do
     case $opts in
     w)
         wso2_is_1_ip=${OPTARG}
@@ -89,14 +89,6 @@ function get_ssh_hostname() {
     sudo -u ubuntu ssh -G "$1" | awk '/^hostname / { print $2 }'
 }
 
-#echo ""
-#echo "Downloading IS Pack and Java..."
-#echo "============================================"
-#cd /home/ubuntu
-#curl -o jdk-8u144-linux-x64.tar.gz https://doc-0k-bs-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/n1c1eu1624j4057vi7dvcebllg9apadk/1556258400000/03950632627167213933/*/1aLrt9rTeE9TeZdJK6TUuYe72jTAmvAPE?e=download
-#wget https://github.com/wso2/product-is/releases/download/v5.8.0-beta3/wso2is-5.8.0-beta3.zip
-#mv wso2is-*.zip wso2is.zip
-
 echo ""
 echo "Setting up required files..."
 echo "============================================"
@@ -117,32 +109,14 @@ workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
             -i /home/ubuntu \
             -c /home/ubuntu \
             -f /home/ubuntu/apache-jmeter-*.tgz \
-            -a $wso2is_1_host_alias -n $wso2_is_1_ip \
-            -a $wso2is_2_host_alias -n $wso2_is_2_ip \
-            -a $lb_alias -n $lb_host\
-            -a rds -n $rds_host
+            -a $wso2is_1_host_alias -n "$wso2_is_1_ip" \
+            -a $wso2is_2_host_alias -n "$wso2_is_2_ip" \
+            -a $lb_alias -n "$lb_host"\
+            -a rds -n "$rds_host"
 sudo chown -R ubuntu:ubuntu workspace
 sudo chown -R ubuntu:ubuntu apache-jmeter-*
 sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
-
-echo ""
-echo "Setting up IS instance 1..."
-echo "============================================"
-sudo -u ubuntu ssh $wso2is_1_host_alias mkdir sar setup
-sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_1_host_alias:/home/ubuntu/setup/
-sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_1_host_alias:/home/ubuntu/sar/
-sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_1_host_alias:/home/ubuntu/
-sudo -u ubuntu ssh $wso2is_1_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
-
-echo ""
-echo "Setting up IS instance 2..."
-echo "============================================"
-sudo -u ubuntu ssh $wso2is_2_host_alias mkdir sar setup
-sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_2_host_alias:/home/ubuntu/setup/
-sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_2_host_alias:/home/ubuntu/sar/
-sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_2_host_alias:/home/ubuntu/
-sudo -u ubuntu ssh $wso2is_2_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
 
 echo ""
 echo "Coping files to NGinx instance..."
@@ -153,4 +127,4 @@ sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/u
 echo ""
 echo "Setting up NGinx..."
 echo "============================================"
-sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -i $wso2_is_1_ip -w $wso2_is_2_ip
+sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -i "$wso2_is_1_ip" -w "$wso2_is_2_ip"

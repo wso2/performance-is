@@ -79,6 +79,9 @@ estimate=false
 default_estimated_processing_time_in_between_tests=220
 estimated_processing_time_in_between_tests=$default_estimated_processing_time_in_between_tests
 
+default_is_port=9443
+is_port=$default_is_port
+
 # Start time of the test
 test_start_time=$(date +%s)
 # Scenario specific counters
@@ -97,7 +100,7 @@ function usage() {
     echo "Usage: "
     echo "$0 [-c <concurrent_users>] [-m <heap_sizes>] [-d <test_duration>] [-w <warm_up_time>]"
     echo "   [-j <jmeter_client_heap_size>] [-i <include_scenario_name>] [-e <exclude_scenario_name>]"
-    echo "   [-t] [-p <estimated_processing_time_in_between_tests>] [-h]"
+    echo "   [-t] [-p <is_port>] [-h]"
     echo ""
     echo "-c: Concurrency levels to test. You can give multiple options to specify multiple levels. Default \"$default_concurrent_users\"."
     echo "-m: Application heap memory sizes. You can give multiple options to specify multiple heap memory sizes. Default \"$default_heap_sizes\"."
@@ -107,7 +110,7 @@ function usage() {
     echo "-i: Scenario name to to be included. You can give multiple options to filter scenarios."
     echo "-e: Scenario name to to be excluded. You can give multiple options to filter scenarios."
     echo "-t: Estimate time without executing tests."
-    echo "-p: Estimated processing time in between tests in seconds. Default $default_estimated_processing_time_in_between_tests."
+    echo "-p: Identity Server Port. Default $default_is_port."
     echo "-h: Display this help and exit."
     echo ""
 }
@@ -139,7 +142,7 @@ while getopts "c:m:d:w:j:i:e:tp:h" opts; do
         estimate=true
         ;;
     p)
-        estimated_processing_time_in_between_tests=${OPTARG}
+        is_port=${OPTARG}
         ;;
     h)
         usage
@@ -323,7 +326,6 @@ function print_durations() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$test_start_time"))"
 }
 
-# todo double check
 function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
@@ -334,7 +336,7 @@ function run_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=9443 -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file"
         echo "$command"
         echo ""
         $command
@@ -464,7 +466,7 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port")
 
                 before_execute_test_scenario
 

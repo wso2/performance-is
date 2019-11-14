@@ -14,7 +14,6 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#!/bin/bash -e
 
 # This script can be used to observe long running tests. Just point the folder where all nohup.out files are.
 # ./observe <DIR>
@@ -27,7 +26,6 @@ if [[ ! -z $1 ]]; then
 else
     echo "results_dir: $results_dir"
 fi
-
 
 echo "============================================"
 echo ""

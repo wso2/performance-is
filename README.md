@@ -35,7 +35,6 @@ git clone https://github.com/wso2/performance-is
 ```
 2. Checkout to single-node-performance branch
 ```
-cd performance-is
 git checkout single-node-performance
 ```
 3. Build the artifacts using Maven.

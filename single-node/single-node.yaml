@@ -410,9 +410,7 @@ Resources:
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
-https://github:
-  com/aaujayasena/performance-is:
-    git:
+
 Outputs:
   InstanceID:
     Description: The Bastion ID

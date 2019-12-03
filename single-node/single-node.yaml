@@ -325,8 +325,8 @@ Resources:
           - - '#!/bin/bash'
             - 'export PATH=~/.local/bin:$PATH'
             - apt-get update
-            - apt-get install -y mysql-client
-            - apt-get install -y unzip
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
             - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
@@ -369,8 +369,8 @@ Resources:
           - - '#!/bin/bash'
             - 'export PATH=~/.local/bin:$PATH'
             - apt-get update
-            - apt-get install -y mysql-client
-            - apt-get install -y unzip
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
             - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm

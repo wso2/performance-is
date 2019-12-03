@@ -6,6 +6,8 @@ These performance test scripts make use of the Apache JMeter to run the tests wi
 
 The deployment is automated using AWS cloud formation. 
 
+Artifacts in the master branch can be used with the WSO2 Identity Server version 5.9.0 and onwards. If you wish to benchmark previous releases, please use the branch [is-5.8.0](https://github.com/wso2/performance-is/tree/is-5.8.0)
+
 ## About the deployment
 
 At the moment we support for two deployment patterns as,

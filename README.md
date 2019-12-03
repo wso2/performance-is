@@ -10,10 +10,10 @@ The delpoyment is automated using AWS cloud formation.
 
 At the moment we support for two deployment patterns as,
 1. Single node deployment.
-  - ![Deployment Diagram](/home/vihanga/WSO2-Projects/27.is-5.9.0-perf-improvements/performance-is-new/common/images/deployment-diagram-singlenode.png)
+  - <img src="common/images/deployment-diagram-singlenode.png" height="400" alt="Single Node Deployment Diagram">
 
 2. Two node cluster deployment.
-  - ![Deployment Diagram](/home/vihanga/WSO2-Projects/27.is-5.9.0-perf-improvements/performance-is-new/common/images/deployment-diagram-twonode-cluster.png)
+  - <img src="common/images/deployment-diagram-twonode-cluster.png" height="400" alt="Two Node Cluster Deployment Diagram">
 
 WSO2 Identity Server is setup in an AWS EC2 instance. AWS RDS instance is used to host the MySQL user store and identity databases.
 

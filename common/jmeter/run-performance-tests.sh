@@ -29,7 +29,6 @@ db_password="wso2carbon"
 
 # Execute common script
 . $script_dir/perf-test-is.sh
-
 declare -A test_scenario0=(
     [name]="00-authenticate_super_tenant_users"
     [display_name]="Authenticate Super Tenant User"
@@ -97,10 +96,16 @@ declare -A test_scenario9=(
     [name]="09-saml2_sso_redirect_binding"
     [display_name]="SAML2 SSO Redirect Binding"
     [description]="Obtain a SAML 2 assertion response using redirect binding."
-    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+    [jmx]="oauth/saml/SAML2_SSO_Redirect_Binding.jmx"
     [skip]=false
 )
-
+declare -A test_scenario10=(
+    [name]="10-OAuth_AuthCode_Redirect_WithConsent_Multi_Tenant"
+    [display_name]="Oath authcode redirect with consent multi tenant"
+    [description]="Obtain an access token using the OAuth 2.0 authorization code grant type multi tenant"
+    [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent_Multi_Tenant.jmx"
+    [skip]=false
+)
 function before_execute_test_scenario() {
 
     ssh $wso2is_host_alias "./restart-is.sh -m $heap"

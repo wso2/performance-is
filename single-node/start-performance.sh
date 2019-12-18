@@ -46,6 +46,10 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
+bastion_node_ip=""
+wso2_is_ip=""
+rds_host=""
+
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -71,12 +75,17 @@ function usage() {
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
+    echo "-A: The bastion_node_ip: $bastion_node_ip"
+    echo "-B: The wso2_is_ip: $wso2_is_ip"
+    echo "-C: The rds_host: $rds_host"
+
+
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "k:a:s:c:j:n:u:p:i:b:w:A:B:C:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -111,6 +120,15 @@ while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
+    A)
+        bastion_node_ip=${OPTARG}
+        ;;
+    B)
+        wso2_is_ip=${OPTARG}
+        ;;
+    C)
+        rds_host=${OPTARG}
+        ;;    
     h)
         usage
         exit 0
@@ -253,6 +271,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
     --capabilities CAPABILITY_IAM"
 
+if [ -z $bastion_node_ip ] ; then
 echo ""
 echo "Creating stack..."
 echo "============================================"
@@ -351,6 +370,8 @@ echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
+fi
+
 echo ""
 echo "Running performance tests..."
 echo "============================================"
@@ -379,7 +400,7 @@ cd "$results_dir"
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
 "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-    -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+    -c "Concurrent Users" -c "Tenant count" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -r "([0-9]+)_tenats" -i -l -k 1 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \

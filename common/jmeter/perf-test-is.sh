@@ -54,7 +54,8 @@
 # Finally, execute test scenarios using the function test_scenarios
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
-default_concurrent_users="50 100 150 300 500"
+default_concurrent_users="50 100 150 300 500 1000"
+default_tenant_count="500 1000"
 # Application heap Sizes
 default_heap_sizes="2G"
 
@@ -86,6 +87,9 @@ declare -A scenario_counter
 # Scenario specific durations
 declare -A scenario_duration
 
+default_execution_method=Deployment_and_Test
+execution_method=$default_execution_method
+
 function get_ssh_hostname() {
     ssh -G "$1" | awk '/^hostname / { print $2 }'
 }
@@ -107,12 +111,14 @@ function usage() {
     echo "-i: Scenario name to to be included. You can give multiple options to filter scenarios."
     echo "-e: Scenario name to to be excluded. You can give multiple options to filter scenarios."
     echo "-t: Estimate time without executing tests."
+    echo "-T: Tenant combinations to test. Default \"$default_tenant_count\"."
+    echo "-E: Execution method. Default $default_execution_method."
     echo "-p: Estimated processing time in between tests in seconds. Default $default_estimated_processing_time_in_between_tests."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:tp:h" opts; do
+while getopts "c:m:d:w:j:i:e:tp:T:E:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -140,6 +146,12 @@ while getopts "c:m:d:w:j:i:e:tp:h" opts; do
         ;;
     p)
         estimated_processing_time_in_between_tests=${OPTARG}
+        ;;
+    T)
+        tenant_count+=("${OPTARG}")
+        ;;
+    E)
+        execution_method=${OPTARG}
         ;;
     h)
         usage
@@ -200,6 +212,14 @@ else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi
 
+
+declare -ag tenant_count_array
+if [ ${#tenant_count[@]} -eq 0 ]; then
+    tenant_count_array=( $default_tenant_count )
+else
+    tenant_count_array=( ${tenant_count[@]} )
+fi
+
 for heap in ${heap_sizes_array[@]}; do
     if ! [[ $heap =~ $heap_regex ]]; then
         echo "Please specify a valid heap size for the application."
@@ -213,6 +233,13 @@ for users in ${concurrent_users_array[@]}; do
         exit 1
     fi
 done
+for tenants in ${tenant_count_array[@]}; do
+    if ! [[ $tenants =~ $number_regex ]]; then
+        echo "Please specify a valid number for tenant counts."
+        exit 1
+    fi
+done
+
 
 function format_time() {
     # Duration in seconds
@@ -328,7 +355,7 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+    declare -a scripts=("TestData_Add_Tenants_And_Tenant_Users.jmx" "TestData_Add_OAuth_Apps_Tenant.jmx" "TestData_Add_SAML_Apps_Multi_Tenant.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
@@ -391,6 +418,7 @@ function initiailize_test() {
         --argjson test_scenarios "$(echo "$all_scenarios" | jq -s '.')" \
         --argjson heap_sizes "$(printf '%s\n' "${heap_sizes_array[@]}" | jq -nR '[inputs]')" \
         --argjson concurrent_users "$(printf '%s\n' "${concurrent_users_array[@]}" | jq -nR '[inputs]')" \
+        --argjson tenants "$(printf '%s\n' "${tenant_count_array[@]}" | jq -nR '[inputs]')" \
         "$test_parameters_json" > test-metadata.json
 
     if [ "$estimate" = false ]; then
@@ -417,9 +445,10 @@ function initiailize_test() {
         mkdir results
         cp "$0" results
         mv test-metadata.json results/
-
+if [[ "$execution_method" == "Deployment_and_Test" ]] || [[ "$execution_method" == "Deployment_only" ]]; then
         run_test_data_scripts
     fi
+fi
 }
 
 function exit_handler() {
@@ -436,6 +465,8 @@ trap exit_handler EXIT
 function test_scenarios() {
 
     initiailize_test
+if [[ "$execution_method" == "Deployment_and_Test" ]] || [[ "$execution_method" == "Test_only" ]]; then
+
     for heap in "${heap_sizes_array[@]}"; do
         declare -ng scenario
         for scenario in ${!test_scenario@}; do
@@ -446,25 +477,26 @@ function test_scenarios() {
             local scenario_name=${scenario[name]}
             local jmx_file=${scenario[jmx]}
             for users in "${concurrent_users_array[@]}"; do
+             for tenants in "${tenant_count_array[@]}"; do
                 if [ "$estimate" = true ]; then
                     record_scenario_duration "$scenario_name" $((test_duration * 60 + estimated_processing_time_in_between_tests))
                     continue
                 fi
                 local start_time=$(date +%s)
 
-                local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
+                local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users, Tenant count: $tenants"
                 echo "# Starting the performance test"
                 echo "$scenario_desc"
                 echo "=========================================================================================="
 
-                report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+                report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users/${tenants}_tenants
 
                 echo ""
                 echo "Report location is $report_location"
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "tenants=$tenants")
 
                 before_execute_test_scenario
 
@@ -498,7 +530,9 @@ function test_scenarios() {
                 echo " $scenario_desc"
                 echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
                 record_scenario_duration "$scenario_name" "$current_execution_duration"
+         done
             done
         done
     done
+fi
 }

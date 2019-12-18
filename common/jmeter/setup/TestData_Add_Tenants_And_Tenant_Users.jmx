@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="AddTenantsAndTenantUsers" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -37,7 +37,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
-            <stringProp name="Argument.value">tenantUser_</stringProp>
+            <stringProp name="Argument.value">isTestUser_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="password" elementType="Argument">
@@ -47,17 +47,17 @@
           </elementProp>
           <elementProp name="tenantAdminUsername" elementType="Argument">
             <stringProp name="Argument.name">tenantAdminUsername</stringProp>
-            <stringProp name="Argument.value">admin@wso2.com</stringProp>
+            <stringProp name="Argument.value">admin</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tenantAdminPassword" elementType="Argument">
             <stringProp name="Argument.name">tenantAdminPassword</stringProp>
-            <stringProp name="Argument.value">tenantPassword</stringProp>
+            <stringProp name="Argument.value">TenantPass123!</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tenantDomainNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">tenantDomainNamePrefix</stringProp>
-            <stringProp name="Argument.value">dummytenant_</stringProp>
+            <stringProp name="Argument.value">tenant_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -68,12 +68,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="noOfThreads" elementType="Argument">
             <stringProp name="Argument.name">noOfThreads</stringProp>
-            <stringProp name="Argument.value">${__P(concurrency,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loopCount" elementType="Argument">
             <stringProp name="Argument.name">loopCount</stringProp>
-            <stringProp name="Argument.value">${__P(loopCount,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount,200)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampUpPeriod" elementType="Argument">
@@ -88,7 +88,7 @@
           </elementProp>
           <elementProp name="usersPerTenant" elementType="Argument">
             <stringProp name="Argument.name">usersPerTenant</stringProp>
-            <stringProp name="Argument.value">${__P(usersPerTenant,20)}</stringProp>
+            <stringProp name="Argument.value">${__P(usersPerTenant,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -199,9 +199,9 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1606201635">HTTP/1.1 200</stringProp>
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -209,7 +209,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
             <stringProp name="ConstantTimer.delay">5000</stringProp>
           </ConstantTimer>
           <hashTree/>
@@ -261,9 +261,9 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1606201635">HTTP/1.1 200</stringProp>
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -331,7 +331,7 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 OK HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="103171777">HTTP/1.1 202</stringProp>
             </collectionProp>
@@ -341,7 +341,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
             <stringProp name="ConstantTimer.delay">5000</stringProp>
           </ConstantTimer>
           <hashTree/>
@@ -409,7 +409,7 @@
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
               <stringProp name="ConstantTimer.delay">2000</stringProp>
             </ConstantTimer>
             <hashTree/>
@@ -465,6 +465,46 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
     </hashTree>
+    <WorkBench guiclass="WorkBenchGui" testclass="WorkBench" testname="WorkBench" enabled="true">
+      <boolProp name="WorkBench.save">true</boolProp>
+    </WorkBench>
+    <hashTree/>
   </hashTree>
 </jmeterTestPlan>

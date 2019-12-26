@@ -31,8 +31,6 @@ stack_name="is-performance-single-node--$timestamp--$random_number"
 # Cloud Formation parameters.
 
 key_file=""
-aws_access_key=""
-aws_access_secret=""
 certificate_name=""
 jmeter_setup=""
 is_setup=""
@@ -46,6 +44,18 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
+bastion_node_ip=""
+wso2_is_ip=""
+rds_host=""
+
+default_execution_mode="1 2 3 4"
+execution_mode=""
+
+stack_creation=false
+stack_config=false
+data_add=false
+test_run=false
+
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -53,16 +63,13 @@ minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
-    echo "   -c <certificate_name> -j <jmeter_setup_path>"
+    echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path>"
     echo "   [-n <IS_zip_file_path>]"
     echo "   [-u <db_username>] [-p <db_password>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
-    echo "-a: The AWS access key."
-    echo "-s: The AWS access secret."
     echo "-j: The path to JMeter setup."
     echo "-c: The name of the IAM certificate."
     echo "-n: The is server zip"
@@ -72,20 +79,25 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
+    echo "-d: The bastion_node_ip. Required if the stack creation step not used."
+    echo "-e: The wso2_is_ip. Required if the stack creation step not used."
+    echo "-r: The rds_host. Required if the stack creation step not used."
+    echo "-E: Execution mode combination"
+    echo "    1 - stack creation only"
+    echo "    2 - stack configuration only"
+    echo "    3 - data population only"
+    echo "    4 - test execution only"
+    echo "    ex: -E \"1 2 4\""
+    echo "    Default: $default_execution_mode"
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "k:c:j:n:u:p:i:b:w:d:e:r:E:h" opts; do
+    # echo "ARG is: $opts : ${OPTARG}"
     case $opts in
     k)
         key_file=${OPTARG}
-        ;;
-    a)
-        aws_access_key=${OPTARG}
-        ;;
-    s)
-        aws_access_secret=${OPTARG}
         ;;
     c)
         certificate_name=${OPTARG}
@@ -111,6 +123,18 @@ while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
+    d)
+        bastion_node_ip=${OPTARG}
+        ;;
+    e)
+        wso2_is_ip=${OPTARG}
+        ;;
+    r)
+        rds_host=${OPTARG}
+        ;;
+    E)
+        execution_mode=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -132,16 +156,6 @@ fi
 
 if [[ ${key_file: -4} != ".pem" ]]; then
     echo "AWS EC2 Key file must have .pem extension"
-    exit 1
-fi
-
-if [[ -z $aws_access_key ]]; then
-    echo "Please provide the AWS access Key."
-    exit 1
-fi
-
-if [[ -z $aws_access_secret ]]; then
-    echo "Please provide the AWS access secret."
     exit 1
 fi
 
@@ -185,10 +199,72 @@ if ! [[ $minimum_stack_creation_wait_time =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
+if [[ -z $execution_mode ]]; then
+    echo "Please provide the execution mode combination."
+    exit 1
+fi
+
+echo ""
+echo "Decoding execution mode..."
+
+function contains() {
+
+    local n=$#
+    local value=${!n}
+
+    for ((i=1;i < $#;i++)) {
+        if [ "${!i}" == "${value}" ]; then
+            echo "y"
+            return 0
+        fi
+    }
+    echo "n"
+    return 1
+}
+
+IFS=' ' read -r -a execution_mode_array <<< "$execution_mode"
+
+if [ "$(contains "${execution_mode_array[@]}" "1")" == "y" ]; then
+	  stack_creation=true
+fi
+
+if [ "$(contains "${execution_mode_array[@]}" "2")" == "y" ]; then
+	  stack_config=true
+fi
+
+if [ "$(contains "${execution_mode_array[@]}" "3")" == "y" ]; then
+    data_add=true
+fi
+
+if [ "$(contains "${execution_mode_array[@]}" "4")" == "y" ]; then
+    test_run=true
+fi
+
+echo "    stack_creation: $stack_creation"
+echo "    stack_config: $stack_config"
+echo "    data_add: $data_add"
+echo "    test_run: $test_run"
+
+if [ "$stack_creation" = false ] ; then
+    if [[ -z $bastion_node_ip ]]; then
+        echo "Please provide the bastion node ip, since the stack creation step is not enabled."
+        exit 1
+    fi
+    if [[ -z $wso2_is_ip ]]; then
+        echo "Please provide the WSO2 IS node ip, since the stack creation step is not enabled."
+        exit 1
+    fi
+    if [[ -z $rds_host ]]; then
+        echo "Please provide the RDS host, since the stack creation step is not enabled."
+        exit 1
+    fi
+fi
+
 key_filename=$(basename "$key_file")
 key_name=${key_filename%.*}
 
-# Checking for the availability of commands in jenkins.
+echo ""
+echo "Checking for the availability of commands in test execution node."
 check_command bc
 check_command aws
 check_command unzip
@@ -215,180 +291,198 @@ temp_dir=$(mktemp -d)
 # Get absolute paths
 key_file=$(realpath "$key_file")
 
-echo "your key is"
-echo "$key_file"
+echo ""
+echo "your key is: $key_file"
 
 ln -s "$key_file" "$temp_dir"/"$key_filename"
 
-echo ""
-echo "Preparing cloud formation template..."
-echo "============================================"
-echo "random_number: $random_number"
-cp single-node.yaml new-single-node.yaml
-sed -i "s/suffix/$random_number/" new-single-node.yaml
-
-echo ""
-echo "Validating stack..."
-echo "============================================"
-aws cloudformation validate-template --template-body file://new-single-node.yaml
-
-# Save metadata
-test_parameters_json='.'
-test_parameters_json+=' | .["is_nodes_ec2_instance_type"]=$is_nodes_ec2_instance_type'
-test_parameters_json+=' | .["bastion_node_ec2_instance_type"]=$bastion_node_ec2_instance_type'
-jq -n \
-    --arg is_nodes_ec2_instance_type "$wso2_is_instance_type" \
-    --arg bastion_node_ec2_instance_type "$bastion_instance_type" \
-    "$test_parameters_json" > "$results_dir"/cf-test-metadata.json
-
-stack_create_start_time=$(date +%s)
-create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
-    --template-body file://new-single-node.yaml \
-    --parameters \
-        ParameterKey=CertificateName,ParameterValue=$certificate_name \
-        ParameterKey=KeyPairName,ParameterValue=$key_name \
-        ParameterKey=DBUsername,ParameterValue=$db_username \
-        ParameterKey=DBPassword,ParameterValue=$db_password \
-        ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
-        ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
-        ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
-    --capabilities CAPABILITY_IAM"
-
-echo ""
-echo "Creating stack..."
-echo "============================================"
-echo "$create_stack_command"
-stack_id="$($create_stack_command)"
-stack_id=$(echo "$stack_id"|jq -r .StackId)
-
-# Delete the stack in case of an error.
-trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
-
-echo ""
-echo "Created stack ID: $stack_id"
-rm new-single-node.yaml
-
-echo ""
-echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
-sleep "${minimum_stack_creation_wait_time}"m
-
-echo ""
-echo "Polling till the stack creation completes..."
-aws cloudformation wait stack-create-complete --stack-name "$stack_id"
-printf "Stack creation time: %s\n" "$(format_time "$(measure_time "$stack_create_start_time")")"
-
-echo ""
-echo "Getting Bastion Node Public IP..."
-bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
-echo "Bastion Node Public IP: $bastion_node_ip"
-
-echo ""
-echo "Getting WSO2 IS Node Private IP..."
-wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNodeAutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
-echo "WSO2 IS Node Private IP: $wso2_is_ip"
-
-echo ""
-echo "Getting RDS Hostname..."
-rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
-echo "RDS Hostname: $rds_host"
-
-if [[ -z $bastion_node_ip ]]; then
-    echo "Bastion node IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $wso2_is_ip ]]; then
-    echo "WSO2 node IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $rds_host ]]; then
-    echo "RDS host could not be found. Exiting..."
-    exit 1
-fi
-
-echo ""
-echo "Copying files to Bastion node..."
-echo "============================================"
-copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
-    ubuntu@$bastion_node_ip:/home/ubuntu"
-
-echo "$copy_setup_files_command"
-$copy_setup_files_command
-echo "$copy_repo_setup_command"
-$copy_repo_setup_command
-
-copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
-copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
-
-echo "$copy_jmeter_setup_command"
-$copy_jmeter_setup_command
-echo "$copy_is_pack_command"
-$copy_is_pack_command
-echo "$copy_key_file_command"
-$copy_key_file_command
-echo "$copy_connector_command"
-$copy_connector_command
-
-echo ""
-echo "Running IS node setup script..."
-echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $wso2_is_ip -r $rds_host"
-echo "$setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
-
-echo ""
-echo "Running Bastion Node setup script..."
-echo "============================================"
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
-echo "$setup_bastion_node_command"
-# Handle any error and let the script continue.
-$setup_bastion_node_command || echo "Remote ssh command failed."
-
-echo ""
-echo "Running performance tests..."
-echo "============================================"
-scp -i "$key_file" -o StrictHostKeyChecking=no run-performance-tests.sh ubuntu@"$bastion_node_ip":/home/ubuntu/workspace/jmeter
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
-run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
-echo "$run_remote_tests"
-$run_remote_tests || echo "Remote test ssh command failed."
-
-echo ""
-echo "Downloading results..."
-echo "============================================"
-download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
-echo "$download"
-$download || echo "Remote download failed"
-
-if [[ ! -f $results_dir/results.zip ]]; then
+if [ "$stack_creation" = true ] ; then
     echo ""
-    echo "Failed to download the results.zip"
-    exit 0
+    echo "Preparing cloud formation template..."
+    echo "============================================"
+    echo "random_number: $random_number"
+    cp single-node.yaml new-single-node.yaml
+    sed -i "s/suffix/$random_number/" new-single-node.yaml
+
+    echo ""
+    echo "Validating stack..."
+    echo "============================================"
+    aws cloudformation validate-template --template-body file://new-single-node.yaml
+
+    # Save metadata
+    test_parameters_json='.'
+    test_parameters_json+=' | .["is_nodes_ec2_instance_type"]=$is_nodes_ec2_instance_type'
+    test_parameters_json+=' | .["bastion_node_ec2_instance_type"]=$bastion_node_ec2_instance_type'
+    jq -n \
+        --arg is_nodes_ec2_instance_type "$wso2_is_instance_type" \
+        --arg bastion_node_ec2_instance_type "$bastion_instance_type" \
+        "$test_parameters_json" > "$results_dir"/cf-test-metadata.json
+
+    stack_create_start_time=$(date +%s)
+    create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
+        --template-body file://new-single-node.yaml \
+        --parameters \
+            ParameterKey=CertificateName,ParameterValue=$certificate_name \
+            ParameterKey=KeyPairName,ParameterValue=$key_name \
+            ParameterKey=DBUsername,ParameterValue=$db_username \
+            ParameterKey=DBPassword,ParameterValue=$db_password \
+            ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+            ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
+            ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
+        --capabilities CAPABILITY_IAM"
+
+    echo ""
+    echo "Creating stack..."
+    echo "============================================"
+    echo "$create_stack_command"
+    stack_id="$($create_stack_command)"
+    stack_id=$(echo "$stack_id"|jq -r .StackId)
+
+    # Delete the stack in case of an error.
+    # todo need to figure out what to do with the trap
+    # trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
+
+    echo ""
+    echo "Created stack ID: $stack_id"
+    rm new-single-node.yaml
+
+    echo ""
+    echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
+    sleep "${minimum_stack_creation_wait_time}"m
+
+    echo ""
+    echo "Polling till the stack creation completes..."
+    aws cloudformation wait stack-create-complete --stack-name "$stack_id"
+    printf "Stack creation time: %s\n" "$(format_time "$(measure_time "$stack_create_start_time")")"
+
+    echo ""
+    echo "Getting Bastion Node Public IP..."
+    bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2BastionInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+    bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
+    echo "Bastion Node Public IP: $bastion_node_ip"
+
+    echo ""
+    echo "Getting WSO2 IS Node Private IP..."
+    wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNodeAutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+    wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+    wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    echo "WSO2 IS Node Private IP: $wso2_is_ip"
+
+    echo ""
+    echo "Getting RDS Hostname..."
+    rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+    rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
+    echo "RDS Hostname: $rds_host"
+
+    if [[ -z $bastion_node_ip ]]; then
+        echo "Bastion node IP could not be found. Exiting..."
+        exit 1
+    fi
+    if [[ -z $wso2_is_ip ]]; then
+        echo "WSO2 node IP could not be found. Exiting..."
+        exit 1
+    fi
+    if [[ -z $rds_host ]]; then
+        echo "RDS host could not be found. Exiting..."
+        exit 1
+    fi
 fi
 
-echo ""
-echo "Creating summary.csv..."
-echo "============================================"
+if [ "$stack_config" = true ] ; then
+    echo ""
+    echo "Copying files to Bastion node..."
+    echo "============================================"
+    copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+    copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
+        ubuntu@$bastion_node_ip:/home/ubuntu"
+
+    echo "$copy_setup_files_command"
+    $copy_setup_files_command
+    echo "$copy_repo_setup_command"
+    $copy_repo_setup_command
+
+    copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
+    copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
+    copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
+    copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
+
+    echo "$copy_jmeter_setup_command"
+    $copy_jmeter_setup_command
+    echo "$copy_is_pack_command"
+    $copy_is_pack_command
+    echo "$copy_key_file_command"
+    $copy_key_file_command
+    echo "$copy_connector_command"
+    $copy_connector_command
+
+    echo ""
+    echo "Running IS node setup script..."
+    echo "============================================"
+    setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $wso2_is_ip -r $rds_host"
+    echo "$setup_is_command"
+    # Handle any error and let the script continue.
+    $setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
+
+    echo ""
+    echo "Running Bastion Node setup script..."
+    echo "============================================"
+    setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+        sudo ./setup/setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
+    echo "$setup_bastion_node_command"
+    # Handle any error and let the script continue.
+    $setup_bastion_node_command || echo "Remote ssh command failed."
+fi
+
+if [ "$data_add" = true ] ; then
+    echo ""
+    echo "Populating test data..."
+    echo "============================================"
+    data_populate_command="./workspace/jmeter/populate-data.sh -i $wso2_is_ip -p 9443"
+    data_populate_remote_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $data_populate_command"
+    echo "$data_populate_remote_command"
+    $data_populate_remote_command || echo "Remote data populating command failed."
+fi
+
+if [ "$test_run" = true ] ; then
+    echo ""
+    echo "Running performance tests..."
+    echo "============================================"
+    scp -i "$key_file" -o StrictHostKeyChecking=no run-performance-tests.sh ubuntu@"$bastion_node_ip":/home/ubuntu/workspace/jmeter
+    run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
+    run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
+    echo "$run_remote_tests"
+    $run_remote_tests || echo "Remote test ssh command failed."
+
+    echo ""
+    echo "Downloading results..."
+    echo "============================================"
+    download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
+    echo "$download"
+    $download || echo "Remote download failed"
+
+    if [[ ! -f $results_dir/results.zip ]]; then
+        echo ""
+        echo "Failed to download the results.zip"
+        exit 0
+    fi
+
+    echo ""
+    echo "Creating summary.csv..."
+    echo "============================================"
+    cd "$results_dir"
+    unzip -q results.zip
+    wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
+    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
+        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+
+    echo "Creating summary results markdown file..."
+    ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
+        "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
+        "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
+        "WSO2 Identity Server GC Throughput (%)"
+fi
+
 cd "$results_dir"
-unzip -q results.zip
-wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-"$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-    -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
-
-echo "Creating summary results markdown file..."
-./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-    "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
-    "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
-    "WSO2 Identity Server GC Throughput (%)"
-
 rm -rf cf-test-metadata.json cloudformation/ common/ gcviewer.jar is/ jmeter/ jtl-splitter/ netty-service/ payloads/ results/ sar/ setup/
 
 echo ""

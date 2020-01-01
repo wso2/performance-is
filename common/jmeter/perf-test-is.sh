@@ -55,6 +55,14 @@
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
 default_concurrent_users="50 100 150 300 500"
+
+enable_multi_tenant_mode=false
+
+# Tenant count combination for multi tenant test execution.
+default_tenant_count="5 50 100"
+
+default_users_per_tenant=1000
+
 # Application heap Sizes
 default_heap_sizes="2G"
 
@@ -100,7 +108,7 @@ function usage() {
     echo "Usage: "
     echo "$0 [-c <concurrent_users>] [-m <heap_sizes>] [-d <test_duration>] [-w <warm_up_time>]"
     echo "   [-j <jmeter_client_heap_size>] [-i <include_scenario_name>] [-e <exclude_scenario_name>]"
-    echo "   [-t] [-p <is_port>] [-h]"
+    echo "   [-t] [-M] [-T <tenant_count>] [-p <is_port>] [-h]"
     echo ""
     echo "-c: Concurrency levels to test. You can give multiple options to specify multiple levels. Default \"$default_concurrent_users\"."
     echo "-m: Application heap memory sizes. You can give multiple options to specify multiple heap memory sizes. Default \"$default_heap_sizes\"."
@@ -109,6 +117,9 @@ function usage() {
     echo "-j: Heap Size of JMeter Client. Default $default_jmeter_client_heap_size."
     echo "-i: Scenario name to to be included. You can give multiple options to filter scenarios."
     echo "-e: Scenario name to to be excluded. You can give multiple options to filter scenarios."
+    echo "-M: Execute tests in multi tenant mode."
+    echo "-T: Tenant combinations to test. Default \"$default_tenant_count\". Specifying this will automatically enable multi tenant mode."
+    echo "-U: Users per tenant. This works only in adding data multi tenant mode. Default \"$default_users_per_tenant\"."
     echo "-t: Estimate time without executing tests."
     echo "-p: Identity Server Port. Default $default_is_port."
     echo "-h: Display this help and exit."
@@ -141,6 +152,16 @@ while getopts "c:m:d:w:j:i:e:tp:h" opts; do
     t)
         estimate=true
         ;;
+    M)
+        enable_multi_tenant_mode=true
+        ;;        
+    T)
+        enable_multi_tenant_mode=true
+        tenant_count+=("${OPTARG}")
+        ;;
+    U)
+        users_per_tenant=${OPTARG}
+        ;;                 
     p)
         is_port=${OPTARG}
         ;;
@@ -201,6 +222,29 @@ if [ ${#concurrent_users[@]} -eq 0 ]; then
     concurrent_users_array=( $default_concurrent_users )
 else
     concurrent_users_array=( ${concurrent_users[@]} )
+fi
+
+declare -ag tenant_count_array
+if [ ${#tenant_count[@]} -eq 0 ]; then
+    tenant_count_array=( $default_tenant_count )
+else
+    tenant_count_array=( ${tenant_count[@]} )
+fi
+
+max_tenant_count=${tenant_count_array[0]}
+for tenants in ${tenant_count_array[@]}; do
+    if ! [[ $tenants =~ $number_regex ]]; then
+        echo "Please specify a valid number for tenant counts."
+        exit 1
+    fi
+
+    if (( $tenants>$max_tenant_count )); then
+        max_tenant_count=$tenants
+    fi
+done
+
+if [[ -z $users_per_tenant ]]; then
+    users_per_tenant=$default_users_per_tenant
 fi
 
 for heap in ${heap_sizes_array[@]}; do
@@ -330,16 +374,23 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
-#    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
+    local jm_command="jmeter -Jhost=$lb_host -Jport=$is_port -n"
+
+    if [[ "$enable_multi_tenant_mode" = true ]]; then
+        jm_command+=" -Jtenants=$tenants -JusersPerTenant=$users_per_tenant"
+        declare -a scripts=("TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx" "TestData_Add_OAuth_Apps_Multi_Tenant.jmx" "TestData_Add_SAML_Apps_Multi_Tenant.jmx")
+    else
+        declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+    fi
+
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file"
-        echo "$command"
+        jm_command+=" -t $script_file"
+        echo "$jm_command"
         echo ""
-        $command
+        $jm_command
         echo ""
     done
 }
@@ -354,6 +405,9 @@ function initiailize_test() {
             for name in "${include_scenario_names[@]}"; do
                 if [[ ${scenario[name]} =~ $name ]]; then
                     scenario[skip]=false
+                    if [[ "$enable_multi_tenant_mode" = true && "${scenario[multi_tenant]}" != true ]]; then
+                        scenario[skip]=true
+                    fi      
                 fi
             done
             for name in "${exclude_scenario_names[@]}"; do
@@ -435,6 +489,74 @@ function exit_handler() {
 
 trap exit_handler EXIT
 
+function execute_test() {
+
+    local scenario=$1
+    local scenario_name=${scenario[name]}
+    local jmx_file=${scenario[jmx]}
+    local heap=$2
+    local users=$3
+    local tenants=$4
+
+    if [ "$estimate" = true ]; then
+        record_scenario_duration "$scenario_name" $((test_duration * 60 + estimated_processing_time_in_between_tests))
+        continue
+    fi
+    local start_time=$(date +%s)
+
+    local scenario_desc=""
+    if [ "$enable_multi_tenant_mode" = true ]; then
+        scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users, Tenants: $tenants"
+        report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users/${tenatns}_tenants
+        declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "tenants=$tenants" "usersPerTenant=$users_per_tenant")
+    else
+        scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
+        report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+        declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host")
+    fi    
+    echo "# Starting the performance test"
+    echo "$scenario_desc"
+    echo "=========================================================================================="   
+    echo ""
+    echo "Report location is $report_location"
+    mkdir -p "$report_location"
+
+    time=$(expr "$test_duration" \* 60)
+    
+    before_execute_test_scenario
+
+    export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
+
+    local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
+    for param in "${jmeter_params[@]}"; do
+        jmeter_command+=" -J$param"
+    done
+
+    jmeter_command+=" -l $report_location/results.jtl"
+
+    echo ""
+    echo "Starting JMeter Client with JVM_ARGS=$JVM_ARGS"
+    echo ""
+    echo "Running JMeter command: $jmeter_command"
+    $jmeter_command
+
+    write_server_metrics jmeter
+
+    "$HOME"/workspace/jtl-splitter/jtl-splitter.sh -- -f "$report_location"/results.jtl -t "$warm_up_time" -s
+
+    echo ""
+    echo "Zipping JTL files in $report_location"
+    zip -jm "$report_location"/jtls.zip "$report_location"/results*.jtl
+
+    after_execute_test_scenario
+
+    local current_execution_duration="$(measure_time "$start_time")"
+    echo -n "# Completed the performance test."
+    echo " $scenario_desc"
+    echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
+    record_scenario_duration "$scenario_name" "$current_execution_duration"
+}
+
 function test_scenarios() {
 
     initiailize_test
@@ -448,58 +570,13 @@ function test_scenarios() {
             local scenario_name=${scenario[name]}
             local jmx_file=${scenario[jmx]}
             for users in "${concurrent_users_array[@]}"; do
-                if [ "$estimate" = true ]; then
-                    record_scenario_duration "$scenario_name" $((test_duration * 60 + estimated_processing_time_in_between_tests))
-                    continue
+                if [ "$enable_multi_tenant_mode" = true ]; then
+                    for tenants in "${tenant_count_array[@]}"; do
+                        execute_test $scenario $heap $users $tenants
+                    done    
+                else
+                    execute_test $scenario $heap $users    
                 fi
-                local start_time=$(date +%s)
-
-                local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
-                echo "# Starting the performance test"
-                echo "$scenario_desc"
-                echo "=========================================================================================="
-
-                report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
-
-                echo ""
-                echo "Report location is $report_location"
-                mkdir -p "$report_location"
-
-                time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port")
-
-                before_execute_test_scenario
-
-                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
-
-                local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
-                for param in "${jmeter_params[@]}"; do
-                    jmeter_command+=" -J$param"
-                done
-
-                jmeter_command+=" -l $report_location/results.jtl"
-
-                echo ""
-                echo "Starting JMeter Client with JVM_ARGS=$JVM_ARGS"
-                echo ""
-                echo "Running JMeter command: $jmeter_command"
-                $jmeter_command
-
-                write_server_metrics jmeter
-
-                "$HOME"/workspace/jtl-splitter/jtl-splitter.sh -- -f "$report_location"/results.jtl -t "$warm_up_time" -s
-
-                echo ""
-                echo "Zipping JTL files in $report_location"
-                zip -jm "$report_location"/jtls.zip "$report_location"/results*.jtl
-
-                after_execute_test_scenario
-
-                local current_execution_duration="$(measure_time "$start_time")"
-                echo -n "# Completed the performance test."
-                echo " $scenario_desc"
-                echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
-                record_scenario_duration "$scenario_name" "$current_execution_duration"
             done
         done
     done

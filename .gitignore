@@ -31,4 +31,7 @@ hs_err_pid*
 # Maven Target
 target
 
+.DS_Store
+.project
+.settings
 test-metadata.json

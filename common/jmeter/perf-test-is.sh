@@ -326,24 +326,6 @@ function print_durations() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$test_start_time"))"
 }
 
-function run_test_data_scripts() {
-
-    echo "Running test data setup scripts"
-    echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
-#    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
-    setup_dir="/home/ubuntu/workspace/jmeter/setup"
-
-    for script in "${scripts[@]}"; do
-        script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file"
-        echo "$command"
-        echo ""
-        $command
-        echo ""
-    done
-}
-
 function initiailize_test() {
 
     # Filter scenarios
@@ -419,8 +401,6 @@ function initiailize_test() {
         mkdir results
         cp "$0" results
         mv test-metadata.json results/
-
-        run_test_data_scripts
     fi
 }
 

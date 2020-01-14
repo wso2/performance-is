@@ -44,12 +44,13 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 
+default_execution_mode="1 2 3 4"
+execution_mode=""
 bastion_node_ip=""
 wso2_is_ip=""
 rds_host=""
 
-default_execution_mode="1 2 3 4"
-execution_mode=""
+kill_stack=true
 
 stack_creation=false
 stack_config=false
@@ -67,7 +68,9 @@ function usage() {
     echo "   [-n <IS_zip_file_path>]"
     echo "   [-u <db_username>] [-p <db_password>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
-    echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
+    echo "   [-w <minimum_stack_creation_wait_time>] [-P]"
+    echo "   [-E <execution_mode>] [-d <bastion_node_ip] [-e <is_node_ip>] [-r <rds_host]"
+    echo "   [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-j: The path to JMeter setup."
@@ -79,9 +82,7 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
-    echo "-d: The bastion_node_ip. Required if the stack creation step not used."
-    echo "-e: The wso2_is_ip. Required if the stack creation step not used."
-    echo "-r: The rds_host. Required if the stack creation step not used."
+    echo "-P: Preserve the stack even after the commands completed."
     echo "-E: Execution mode combination"
     echo "    1 - stack creation only"
     echo "    2 - stack configuration only"
@@ -89,11 +90,14 @@ function usage() {
     echo "    4 - test execution only"
     echo "    ex: -E \"1 2 4\""
     echo "    Default: $default_execution_mode"
+    echo "-d: The bastion_node_ip. Required if the stack creation step not used."
+    echo "-e: The wso2_is_ip. Required if the stack creation step not used."
+    echo "-r: The rds_host. Required if the stack creation step not used."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:c:j:n:u:p:i:b:w:d:e:r:E:h" opts; do
+while getopts "k:c:j:n:u:p:i:b:w:d:e:r:E:P:h" opts; do
     # echo "ARG is: $opts : ${OPTARG}"
     case $opts in
     k)
@@ -134,6 +138,9 @@ while getopts "k:c:j:n:u:p:i:b:w:d:e:r:E:h" opts; do
         ;;
     E)
         execution_mode=${OPTARG}
+        ;;
+    P)
+        kill_stack=false
         ;;
     h)
         usage
@@ -222,14 +229,18 @@ function contains() {
     return 1
 }
 
+# Split the execution_mode string by space into an array.
+# We use IFS (Internal Field Separator) to split and as a best practice, we should reset it back.
+OLDIFS=$IFS
 IFS=' ' read -r -a execution_mode_array <<< "$execution_mode"
+IFS=$OLDIFS
 
 if [ "$(contains "${execution_mode_array[@]}" "1")" == "y" ]; then
-	  stack_creation=true
+    stack_creation=true
 fi
 
 if [ "$(contains "${execution_mode_array[@]}" "2")" == "y" ]; then
-	  stack_config=true
+    stack_config=true
 fi
 
 if [ "$(contains "${execution_mode_array[@]}" "3")" == "y" ]; then
@@ -296,6 +307,11 @@ echo "your key is: $key_file"
 
 ln -s "$key_file" "$temp_dir"/"$key_filename"
 
+# Delete the stack in case of an error or the commands are completed
+if [ "$kill_stack" = true ] ; then
+    trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
+fi
+
 if [ "$stack_creation" = true ] ; then
     echo ""
     echo "Preparing cloud formation template..."
@@ -337,10 +353,6 @@ if [ "$stack_creation" = true ] ; then
     echo "$create_stack_command"
     stack_id="$($create_stack_command)"
     stack_id=$(echo "$stack_id"|jq -r .StackId)
-
-    # Delete the stack in case of an error.
-    # todo need to figure out what to do with the trap
-    # trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
 
     echo ""
     echo "Created stack ID: $stack_id"

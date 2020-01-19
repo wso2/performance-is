@@ -30,7 +30,6 @@
             <stringProp name="Argument.desc">admin:admin</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
@@ -51,7 +50,6 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -78,7 +76,7 @@
           </elementProp>
           <elementProp name="locationCsvPath" elementType="Argument">
             <stringProp name="Argument.name">locationCsvPath</stringProp>
-            <stringProp name="Argument.value">/home/ubuntu/location.csv</stringProp>
+            <stringProp name="Argument.value">/home/ubuntu/image_service_test_data.csv</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="imageLocationPath" elementType="Argument">
@@ -87,7 +85,6 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">ec2-34-207-59-213.compute-1.amazonaws.com</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Upload images" enabled="true">
@@ -216,7 +213,7 @@ catch (Throwable ex) {
           </RegexExtractor>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -253,7 +250,7 @@ catch (Throwable ex) {
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>

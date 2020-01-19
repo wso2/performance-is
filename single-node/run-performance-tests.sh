@@ -102,8 +102,8 @@ declare -A test_scenario9=(
 )
 declare -A test_scenario10=(
     [name]="10-Get_user_image"
-    [display_name]="Get user images"
-    [description]="Get the image"
+    [display_name]="GET request of the image API"
+    [description]="Testing the GET request of the image API"
     [jmx]="image/Get_image.jmx"
     [skip]=false
 )

@@ -44,8 +44,16 @@ test parameters.
 
 The following is the summary of performance test results collected for the measurement period.
 
+{% set count = namespace(value=0) %}
+{%- for i in range(parameters.test_scenarios | length) %}
+
+**{{i+1}}. {{ parameters.test_scenarios[i].display_name }}**
+
+{{ parameters.test_scenarios[i].description }}
 | {% for column_name in column_names %} {{ column_name }} |{%- endfor %}
 | {%- for column_name in column_names %}---{% if not loop.first %}:{% endif%}|{%- endfor %}
-{%- for row in rows %}
-| {% for column_name in column_names %} {{ row[column_name] }} |{% endfor %}
+{%- for j in range(parameters.concurrent_users | length) %}
+| {% for column_name in column_names %} {{ rows[count.value][column_name] }} |{% endfor %}
+{%- set count.value = count.value + 1 %}
+{%- endfor %}
 {%- endfor %}

@@ -360,10 +360,9 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
     -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
+./summary/summary-modifier.py
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-    "Scenario Name" "Concurrent Users" "Label" "Error %" "Throughput (Requests/sec)" "Average Response Time (ms)" \
-    "Standard Deviation of Response Time (ms)" "99th Percentile of Response Time (ms)" \
-    "WSO2 Identity Server GC Throughput (%)"
+    "Concurrent Users" "Throughput (Requests/sec)" "Average Response Time (ms)"
 
 rm -rf cf-test-metadata.json cloudformation/ common/ gcviewer.jar is/ jmeter/ jtl-splitter/ netty-service/ payloads/ results/ sar/ setup/
 

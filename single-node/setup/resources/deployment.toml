@@ -9,11 +9,11 @@ password = "admin"
 create_admin_account = true
 
 [user_store]
-type = "database"
-connection_url = "ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}"
-connection_name = "uid=admin,ou=system"
-connection_password = "admin"
-base_dn = "dc=wso2,dc=org"
+type = "database_unique_id"
+#connection_url = "ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}"
+##connection_name = "uid=admin,ou=system"
+#connection_password = "admin"
+#base_dn = "dc=wso2,dc=org"
 [user_store.properties]
 CaseInsensitiveUsername = false
 SCIMEnabled=true

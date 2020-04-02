@@ -325,6 +325,7 @@ copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_
 copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
 copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
 copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
+copy_resources_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/resources/* ubuntu@$bastion_node_ip:/home/ubuntu/"
 
 echo "$copy_jmeter_setup_command"
 $copy_jmeter_setup_command
@@ -334,6 +335,8 @@ echo "$copy_key_file_command"
 $copy_key_file_command
 echo "$copy_connector_command"
 $copy_connector_command
+echo "$copy_resources_command"
+$copy_resources_command
 
 echo ""
 echo "Running IS node setup script..."

@@ -31,8 +31,6 @@ stack_name="is-performance-single-node--$timestamp--$random_number"
 # Cloud Formation parameters.
 
 key_file=""
-aws_access_key=""
-aws_access_secret=""
 certificate_name=""
 jmeter_setup=""
 is_setup=""
@@ -53,18 +51,14 @@ minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -k <key_file> -a <aws_access_key> -s <aws_access_secret>"
-    echo "   -c <certificate_name> -j <jmeter_setup_path>"
-    echo "   [-n <IS_zip_file_path>]"
+    echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
     echo "   [-u <db_username>] [-p <db_password>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
-    echo "-a: The AWS access key."
-    echo "-s: The AWS access secret."
-    echo "-j: The path to JMeter setup."
     echo "-c: The name of the IAM certificate."
+    echo "-j: The path to JMeter setup."
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
@@ -76,16 +70,10 @@ function usage() {
     echo ""
 }
 
-while getopts "k:a:s:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "k:c:j:n:u:p:i:b:w:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
-        ;;
-    a)
-        aws_access_key=${OPTARG}
-        ;;
-    s)
-        aws_access_secret=${OPTARG}
         ;;
     c)
         certificate_name=${OPTARG}
@@ -132,16 +120,6 @@ fi
 
 if [[ ${key_file: -4} != ".pem" ]]; then
     echo "AWS EC2 Key file must have .pem extension"
-    exit 1
-fi
-
-if [[ -z $aws_access_key ]]; then
-    echo "Please provide the AWS access Key."
-    exit 1
-fi
-
-if [[ -z $aws_access_secret ]]; then
-    echo "Please provide the AWS access secret."
     exit 1
 fi
 

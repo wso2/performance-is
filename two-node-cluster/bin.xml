@@ -62,6 +62,11 @@
             <outputDirectory>lib</outputDirectory>
             <fileMode>0775</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>../common/summary</directory>
+            <outputDirectory>summary</outputDirectory>
+            <fileMode>0775</fileMode>
+        </fileSet>
     </fileSets>
 
 </assembly>

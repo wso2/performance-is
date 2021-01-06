@@ -75,12 +75,12 @@
           </elementProp>
           <elementProp name="spCount" elementType="Argument">
             <stringProp name="Argument.name">spCount</stringProp>
-            <stringProp name="Argument.value">${__P(apps,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(apps,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loopCount" elementType="Argument">
             <stringProp name="Argument.name">loopCount</stringProp>
-            <stringProp name="Argument.value">${__P(loopCount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampUpPeriod" elementType="Argument">
@@ -90,7 +90,7 @@
           </elementProp>
           <elementProp name="noOfTenants" elementType="Argument">
             <stringProp name="Argument.name">noOfTenants</stringProp>
-            <stringProp name="Argument.value">${__P(tenants,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(tenants,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -126,6 +126,12 @@
           <stringProp name="LoopController.loops">${noOfTenants}</stringProp>
         </LoopController>
         <hashTree>
+          <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+            <collectionProp name="CookieManager.cookies"/>
+            <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+            <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+          </CookieManager>
+          <hashTree/>
           <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Tenant Counter" enabled="true">
             <stringProp name="CounterConfig.start">1</stringProp>
             <stringProp name="CounterConfig.end">${noOfTenants}</stringProp>
@@ -183,146 +189,104 @@ if (y == 0) {
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:aut=&quot;http://authentication.services.core.carbon.wso2.org&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;aut:login&gt;&#xd;
-         &lt;aut:username&gt;${adminUsername}&lt;/aut:username&gt;&#xd;
-         &lt;aut:password&gt;${adminPassword}&lt;/aut:password&gt;&#xd;
-      &lt;/aut:login&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap11Endpoint/</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="103171775">HTTP/1.1 200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">2</intProp>
-              <stringProp name="Assertion.custom_message"></stringProp>
-            </ResponseAssertion>
-            <hashTree/>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">SOAPAction</stringProp>
-                  <stringProp name="Header.value">urn:login</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">text/xml</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register OAuth App" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://dto.oauth.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;xsd:registerOAuthApplicationData&gt;&#xd;
-         &lt;xsd:application&gt;&#xd;
-            &lt;xsd1:OAuthVersion&gt;OAuth-2.0&lt;/xsd1:OAuthVersion&gt;&#xd;
-            &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:applicationName&gt;&#xd;
-            &lt;xsd1:callbackUrl&gt;${callbackUrlPrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:callbackUrl&gt;&#xd;
-            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
-            &lt;xsd1:oauthConsumerKey&gt;${consumerKeyPrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:oauthConsumerKey&gt;&#xd;
-            &lt;xsd1:oauthConsumerSecret&gt;${consumerSecretPrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:oauthConsumerSecret&gt;&#xd;
-            &lt;xsd1:pkceMandatory&gt;false&lt;/xsd1:pkceMandatory&gt;&#xd;
-            &lt;xsd1:pkceSupportPlain&gt;true&lt;/xsd1:pkceSupportPlain&gt;&#xd;
-         &lt;/xsd:application&gt;&#xd;
-      &lt;/xsd:registerOAuthApplicationData&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/services/OAuthAdminService.OAuthAdminServiceHttpsSoap11Endpoint/</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="103171775">HTTP/1.1 200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">2</intProp>
-              <stringProp name="Assertion.custom_message"></stringProp>
-            </ResponseAssertion>
-            <hashTree/>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">SOAPAction</stringProp>
-                  <stringProp name="Header.value">urn:registerOAuthApplicationData</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">text/xml</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create SP" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://model.common.application.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-       &lt;xsd:createApplication&gt; &#xd;
-      &lt;xsd:serviceProvider&gt; &#xd;
-            &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:applicationName&gt; &#xd;
-         &lt;/xsd:serviceProvider&gt; &#xd;
-      &lt;/xsd:createApplication&gt; &#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
+                  <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;${spNamePrefix}${sp_count_id}${tenantDomain}&quot;,&#xd;
+  &quot;description&quot;: &quot;appDesc&quot;,&#xd;
+  &quot;imageUrl&quot;: &quot;https://example.com/logo/my-logo.png&quot;,&#xd;
+  &quot;accessUrl&quot;: &quot;https://example.com/login&quot;,&#xd;
+  &quot;claimConfiguration&quot;: {&#xd;
+    &quot;dialect&quot;: &quot;CUSTOM&quot;,&#xd;
+    &quot;claimMappings&quot;: [],&#xd;
+    &quot;requestedClaims&quot;: [],&#xd;
+    &quot;subject&quot;: {&#xd;
+      &quot;includeUserDomain&quot;: false,&#xd;
+      &quot;includeTenantDomain&quot;: false,&#xd;
+      &quot;useMappedLocalSubject&quot;: false&#xd;
+    },&#xd;
+    &quot;role&quot;: {&#xd;
+      &quot;includeUserDomain&quot;: true&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;inboundProtocolConfiguration&quot;: {&#xd;
+    &quot;oidc&quot;: {&#xd;
+      &quot;accessToken&quot;: {&#xd;
+        &quot;type&quot;: &quot;Default&quot;,&#xd;
+        &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
+        &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
+        &quot;revokeTokensWhenIDPSessionTerminated&quot;: false,&#xd;
+        &quot;validateTokenBinding&quot;: false&#xd;
+      },&#xd;
+      &quot;allowedOrigins&quot;: [],&#xd;
+      &quot;callbackURLs&quot;: [&#xd;
+       &quot;${callbackUrlPrefix}${sp_count_id}${tenantDomain}&quot;&#xd;
+      ],&#xd;
+      &quot;grantTypes&quot;: [&#xd;
+        &quot;authorization_code&quot;,&#xd;
+        &quot;implicit&quot;,&#xd;
+        &quot;password&quot;,&#xd;
+        &quot;client_credentials&quot;,&#xd;
+        &quot;refresh_token&quot;,&#xd;
+        &quot;urn:ietf:params:oauth:grant-type:saml2-bearer&quot;,&#xd;
+        &quot;iwa:ntlm&quot;&#xd;
+      ],&#xd;
+      &quot;idToken&quot;: {&#xd;
+        &quot;audience&quot;: [&#xd;
+          &quot;&quot;&#xd;
+        ],&#xd;
+        &quot;encryption&quot;: {&#xd;
+          &quot;algorithm&quot;: &quot;&quot;,&#xd;
+          &quot;enabled&quot;: false,&#xd;
+          &quot;method&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;expiryInSeconds&quot;: 3600&#xd;
+      },&#xd;
+      &quot;logout&quot;: {&#xd;
+      },&#xd;
+      &quot;pkce&quot;: {&#xd;
+        &quot;mandatory&quot;: false,&#xd;
+        &quot;supportPlainTransformAlgorithm&quot;: true&#xd;
+      },&#xd;
+      &quot;publicClient&quot;: false,&#xd;
+      &quot;refreshToken&quot;: {&#xd;
+        &quot;expiryInSeconds&quot;: 86400,&#xd;
+        &quot;renewRefreshToken&quot;: true&#xd;
+      },&#xd;
+      &quot;scopeValidators&quot;: [],&#xd;
+      &quot;validateRequestObjectSignature&quot;: false,&#xd;
+      &quot;clientId&quot;: &quot;${consumerKeyPrefix}${sp_count_id}${tenantDomain}&quot;,&#xd;
+      &quot;clientSecret&quot;: &quot;${consumerSecretPrefix}${sp_count_id}${tenantDomain}&quot;&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;authenticationSequence&quot;: {&#xd;
+    &quot;type&quot;: &quot;DEFAULT&quot;,&#xd;
+    &quot;steps&quot;: [&#xd;
+      {&#xd;
+        &quot;id&quot;: 1,&#xd;
+        &quot;options&quot;: [&#xd;
+          {&#xd;
+            &quot;idp&quot;: &quot;LOCAL&quot;,&#xd;
+            &quot;authenticator&quot;: &quot;BasicAuthenticator&quot;&#xd;
+          }&#xd;
+        ]&#xd;
+      }&#xd;
+    ],&#xd;
+    &quot;requestPathAuthenticators&quot;: [],&#xd;
+    &quot;subjectStepId&quot;: 1,&#xd;
+    &quot;attributeStepId&quot;: 1&#xd;
+  },&#xd;
+  &quot;provisioningConfigurations&quot;: {&#xd;
+    &quot;inboundProvisioning&quot;: {&#xd;
+      &quot;provisioningUserstoreDomain&quot;: &quot;PRIMARY&quot;&#xd;
+    },&#xd;
+    &quot;outboundProvisioningIdps&quot;: []&#xd;
+  }&#xd;
+}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
@@ -331,7 +295,7 @@ if (y == 0) {
             <stringProp name="HTTPSampler.port">${is_port}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService.IdentityApplicationManagementServiceHttpsSoap11Endpoint/</stringProp>
+            <stringProp name="HTTPSampler.path">/t/${tenantDomain}.com/api/server/v1/applications</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -344,7 +308,7 @@ if (y == 0) {
           <hashTree>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
-                <stringProp name="103171775">HTTP/1.1 200</stringProp>
+                <stringProp name="103171776">HTTP/1.1 201</stringProp>
               </collectionProp>
               <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
               <boolProp name="Assertion.assume_success">false</boolProp>
@@ -355,190 +319,27 @@ if (y == 0) {
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">SOAPAction</stringProp>
-                  <stringProp name="Header.value">urn:createApplication</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
                   <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">text/xml</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
                 </elementProp>
               </collectionProp>
             </HeaderManager>
             <hashTree/>
           </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get SP ID" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;xsd:getApplication&gt;&#xd;
-         &lt;!--Optional:--&gt;&#xd;
-         &lt;xsd:applicationName&gt;${spNamePrefix}${sp_count_id}${tenantDomain}&lt;/xsd:applicationName&gt;&#xd;
-      &lt;/xsd:getApplication&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService.IdentityApplicationManagementServiceHttpsSoap11Endpoint/</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="103171775">HTTP/1.1 200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">2</intProp>
-              <stringProp name="Assertion.custom_message"></stringProp>
-            </ResponseAssertion>
-            <hashTree/>
-            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
-              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-              <stringProp name="RegexExtractor.refname">appID</stringProp>
-              <stringProp name="RegexExtractor.regex">applicationID&gt;(.*?)&lt;/</stringProp>
-              <stringProp name="RegexExtractor.template">$1$</stringProp>
-              <stringProp name="RegexExtractor.default">NP_AppID</stringProp>
-              <stringProp name="RegexExtractor.match_number">1</stringProp>
-              <stringProp name="Sample.scope">all</stringProp>
-            </RegexExtractor>
-            <hashTree/>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">SOAPAction</stringProp>
-                  <stringProp name="Header.value">urn:getApplication</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">text/xml</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update SP" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:xsd=&quot;http://org.apache.axis2/xsd&quot; xmlns:xsd1=&quot;http://model.common.application.identity.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;xsd:updateApplication&gt;&#xd;
-         &lt;!--Optional:--&gt;&#xd;
-         &lt;xsd:serviceProvider&gt;&#xd;
-            &lt;!--Optional:--&gt;&#xd;
-            &lt;xsd1:applicationID&gt;${appID}&lt;/xsd1:applicationID&gt;&#xd;
-                  &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:applicationName&gt; &#xd;
-            &lt;xsd1:claimConfig&gt; &#xd;
-               &lt;xsd1:alwaysSendMappedLocalSubjectId&gt;false&lt;/xsd1:alwaysSendMappedLocalSubjectId&gt; &#xd;
-            &lt;/xsd1:claimConfig&gt; &#xd;
-            &lt;xsd1:description&gt;appDesc&lt;/xsd1:description&gt; &#xd;
-            &lt;xsd1:inboundAuthenticationConfig&gt; &#xd;
-                        &lt;xsd1:inboundAuthenticationRequestConfigs&gt; &#xd;
-                  &lt;xsd1:inboundAuthKey&gt;${consumerKeyPrefix}${sp_count_id}${tenantDomain}&lt;/xsd1:inboundAuthKey&gt; &#xd;
-                  &lt;xsd1:inboundAuthType&gt;oauth2&lt;/xsd1:inboundAuthType&gt; &#xd;
-                  &lt;xsd1:properties&gt; &#xd;
-                     &lt;xsd1:confidential&gt;false&lt;/xsd1:confidential&gt; &#xd;
-                     &lt;xsd1:defaultValue xsd:nil=&quot;true&quot;/&gt; &#xd;
-                     &lt;xsd1:description xsd:nil=&quot;true&quot;/&gt; &#xd;
-                     &lt;xsd1:displayName xsd:nil=&quot;true&quot;/&gt; &#xd;
-                     &lt;xsd1:name&gt;oauthConsumerSecret&lt;/xsd1:name&gt; &#xd;
-                     &lt;xsd1:required&gt;true&lt;/xsd1:required&gt; &#xd;
-                     &lt;xsd1:type xsd:nil=&quot;true&quot;/&gt; &#xd;
-                     &lt;xsd1:value&gt;${consumerSecretPrefix}${sp_count_id}&lt;/xsd1:value&gt; &#xd;
-                  &lt;/xsd1:properties&gt; &#xd;
-               &lt;/xsd1:inboundAuthenticationRequestConfigs&gt; &#xd;
-            &lt;/xsd1:inboundAuthenticationConfig&gt; &#xd;
-            &lt;xsd1:inboundProvisioningConfig&gt; &#xd;
-               &lt;xsd1:provisioningEnabled&gt;false&lt;/xsd1:provisioningEnabled&gt; &#xd;
-               &lt;xsd1:provisioningUserStore&gt;PRIMARY&lt;/xsd1:provisioningUserStore&gt; &#xd;
-            &lt;/xsd1:inboundProvisioningConfig&gt; &#xd;
-            &lt;xsd1:localAndOutBoundAuthenticationConfig&gt;&#xd;
-			&lt;xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt;false&lt;/xsd1:alwaysSendBackAuthenticatedListOfIdPs&gt; &#xd;
-               &lt;xsd1:authenticationStepForAttributes xsd:nil=&quot;true&quot;/&gt; &#xd;
-               &lt;xsd1:authenticationStepForSubject xsd:nil=&quot;true&quot;/&gt; &#xd;
-               &lt;xsd1:authenticationType&gt;default&lt;/xsd1:authenticationType&gt; &#xd;
-            &lt;/xsd1:localAndOutBoundAuthenticationConfig&gt; &#xd;
-            &lt;xsd1:outboundProvisioningConfig&gt; &#xd;
-               &lt;xsd1:provisionByRoleList xsd:nil=&quot;true&quot;/&gt; &#xd;
-            &lt;/xsd1:outboundProvisioningConfig&gt; &#xd;
-            &lt;xsd1:permissionAndRoleConfig&gt; &#xd;
-             &lt;xsd1:idpRoles&gt;myapp1&lt;/xsd1:idpRoles&gt; &#xd;
-            &lt;/xsd1:permissionAndRoleConfig&gt; &#xd;
-            &lt;xsd1:requestPathAuthenticatorConfigs&gt;              &#xd;
-               &lt;xsd1:displayName&gt;?&lt;/xsd1:displayName&gt;&#xd;
-               &lt;xsd1:enabled&gt;true&lt;/xsd1:enabled&gt;&#xd;
-               &lt;xsd1:name&gt;BasicAuthRequestPathAuthenticator&lt;/xsd1:name&gt;               &#xd;
-               &lt;xsd1:valid&gt;true&lt;/xsd1:valid&gt;&#xd;
-            &lt;/xsd1:requestPathAuthenticatorConfigs&gt;           &#xd;
-            &lt;xsd1:saasApp&gt;false&lt;/xsd1:saasApp&gt; &#xd;
-         &lt;/xsd:serviceProvider&gt;&#xd;
-      &lt;/xsd:updateApplication&gt;&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="103171775">HTTP/1.1 200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">2</intProp>
-              <stringProp name="Assertion.custom_message"></stringProp>
-            </ResponseAssertion>
-            <hashTree/>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">SOAPAction</stringProp>
-                  <stringProp name="Header.value">urn:updateApplication</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">text/xml</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import org.apache.jmeter.protocol.http.control.CookieManager;
+import org.apache.jmeter.protocol.http.control.Cookie;
+CookieManager cm = ctx.getCurrentSampler().getCookieManager();
+
+if (cm != null) {
+	cm.clear();
+}</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
         </hashTree>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">

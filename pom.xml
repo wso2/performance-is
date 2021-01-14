@@ -27,6 +27,7 @@
     <modules>
         <module>single-node</module>
         <module>two-node-cluster</module>
+        <module>pre-provisioned</module>
     </modules>
 
     <name>IS - Artifacts for WSO2 Identity Server Performance Tests</name>

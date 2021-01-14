@@ -1,0 +1,204 @@
+# Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# 'suffix' in each component name will be replaced by a random value to enable multiple stacks at the same time.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  WSO2 Cloud Performance Bastion deployment.
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Cluster Configuration
+        Parameters:
+          - KeyPairName
+          - BastionInstanceType
+          - OSType
+      - Label:
+          default: Other Configuration
+        Parameters:
+          - JDK
+    ParameterLabels:
+      KeyPairName:
+        default: Key Pair Name
+      JDK:
+        default: JDK Version
+      JDKVersion:
+        default: JDK Version
+      OSType:
+        default: OS Type
+      BastionInstanceType:
+        default: Bastion Instance Type
+Resources:
+  # networking configurations
+  WSO2ISVPCsuffix:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+  WSO2ISPublicSubnet1suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.254.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+  WSO2ISPublicInternetGatewaysuffix:
+    Type: 'AWS::EC2::InternetGateway'
+  WSO2ISPublicRouteTablesuffix:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+  WSO2ISPublicSubnet1suffixRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      SubnetId: !Ref WSO2ISPublicSubnet1suffix
+  WSO2ISPublicRoutesuffix:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      GatewayId: !Ref WSO2ISPublicInternetGatewaysuffix
+      DestinationCidrBlock: 0.0.0.0/0
+    DependsOn: WSO2ISVPCInternetGatewayAttachmentsuffix
+  WSO2BastionEIPAssociationsuffix:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt WSO2BastionEIPsuffix.AllocationId
+      InstanceId: !Ref WSO2BastionInstancesuffix
+  WSO2ISVPCInternetGatewayAttachmentsuffix:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      InternetGatewayId: !Ref WSO2ISPublicInternetGatewaysuffix
+      VpcId: !Ref WSO2ISVPCsuffix
+  WSO2BastionEIPsuffix:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  # Product configurations
+  BastionSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: WSO2 Bastion node Security Group for 5.3
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  WSO2BastionInstancesuffix:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMapsuffix
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref BastionInstanceType
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2BastionInstance
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref WSO2ISPublicSubnet1suffix
+          GroupSet:
+            - !Ref BastionSecurityGroupsuffix
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
+            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - sudo mkdir /usr/lib/jvm
+            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            - sudo chmod a+x /usr/bin/java
+            - sudo chmod a+x /usr/bin/javac
+            - sudo chmod a+x /usr/bin/javaws
+            - export JAVA_HOME=/usr/lib/jvm/jdk
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
+            - source /etc/environment
+            - exit
+Outputs:
+  InstanceID:
+    Description: The Bastion ID
+    Value: !Ref WSO2BastionInstancesuffix
+
+Parameters:
+  KeyPairName:
+    Description: >-
+      The private key used to log in to instances through SSH
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  JDKVersion:
+    Type: String
+    Default: Oracle_JDK_8
+    AllowedValues:
+      - Open_JDK_8
+      - Oracle_JDK_8
+  OSType:
+    Type: String
+    Default: Ubuntu_18.04
+    AllowedValues:
+      - Ubuntu_18.04
+      - CentOS_7
+  BastionInstanceType:
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - t2.micro
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - c4.large
+      - c4.xlarge
+      - c5.large
+      - c5.xlarge
+    ConstraintDescription: Must be a valid EC2 instance type
+Mappings:
+  WSO2ISAMIRegionMapsuffix:
+    us-east-1:
+      AMI: ami-0b86cfbff176b7d3a
+    us-east-2:
+      AMI: ami-0125a7e5b2489477a
+    us-west-1:
+      AMI: ami-0e81aa4c57820bb57
+    us-west-2:
+      AMI: ami-03fa1f014b48fa6bd

@@ -1,5 +1,3 @@
-use IDENTITY_DB;
-
 SET FOREIGN_KEY_CHECKS=0;
 
 -- add tables that need to be truncated

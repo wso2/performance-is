@@ -276,7 +276,8 @@ if (y == 0) {
         ]&#xd;
       }&#xd;
     ],&#xd;
-    &quot;requestPathAuthenticators&quot;: [],&#xd;
+    &quot;requestPathAuthenticators&quot;: [&#xd;
+    &quot;BasicAuthRequestPathAuthenticator&quot;],&#xd;
     &quot;subjectStepId&quot;: 1,&#xd;
     &quot;attributeStepId&quot;: 1&#xd;
   },&#xd;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="SAML2 SSO Redirect Binding" enabled="true">
       <stringProp name="TestPlan.comments">This is a Jmeter test to the SAML 2.0 SSO functionality.</stringProp>
@@ -59,6 +59,11 @@
             <stringProp name="Argument.value">com/home.jsp</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="tenantDomainPrefix" elementType="Argument">
+            <stringProp name="Argument.name">tenantDomainPrefix</stringProp>
+            <stringProp name="Argument.value">dummytenant_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -95,6 +100,16 @@
             <stringProp name="Argument.desc">samples per minute.</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="tenantMode" elementType="Argument">
+            <stringProp name="Argument.name">tenantMode</stringProp>
+            <stringProp name="Argument.value">${__P(tenantMode,false)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfTenants" elementType="Argument">
+            <stringProp name="Argument.name">noOfTenants</stringProp>
+            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -111,8 +126,18 @@
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
         <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Tenant Counter" enabled="true">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${noOfTenants}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">tenant_idx</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
@@ -122,6 +147,15 @@
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
         <hashTree/>
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random_sp_count" enabled="true">
+          <stringProp name="maximumValue">${noOfSPs}</stringProp>
+          <stringProp name="minimumValue">1</stringProp>
+          <stringProp name="outputFormat"></stringProp>
+          <boolProp name="perThread">true</boolProp>
+          <stringProp name="randomSeed"></stringProp>
+          <stringProp name="variableName">sp_count_id_random</stringProp>
+        </RandomVariableConfig>
+        <hashTree/>
         <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random User Counter" enabled="true">
           <stringProp name="variableName">user_count_id</stringProp>
           <stringProp name="outputFormat"></stringProp>
@@ -130,6 +164,35 @@
           <stringProp name="randomSeed"></stringProp>
           <boolProp name="perThread">false</boolProp>
         </RandomVariableConfig>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">String tenantMode = vars.get(&quot;tenantMode&quot;);
+String tenantIndex = vars.get(&quot;tenant_idx&quot;);
+String sp_count_id_random = vars.get(&quot;sp_count_id_random&quot;);
+tenantDomain = &quot;carbon.super&quot;;
+String tenantDomainPrefix = vars.get(&quot;tenantDomainPrefix&quot;);
+String spId = vars.get(&quot;spId&quot;);
+String username = &quot;&quot;;
+
+if (new String(tenantMode).equals(&quot;true&quot;)) {
+
+username = &quot;${usernamePrefix}${user_count_id}@${tenantDomainPrefix}${tenant_idx}.com&quot;;
+tenantDomain = &quot;${tenantDomainPrefix}${tenant_idx}.com&quot;;
+spId = &quot;${sp_count_id_random}&quot;;
+
+} else {
+
+username = &quot;${usernamePrefix}${user_count_id}&quot;;
+
+}
+
+vars.put(&quot;username&quot;, new String(username));
+vars.put(&quot;tenantDomain&quot;,new String(tenantDomain));
+vars.put(&quot;spId&quot;,new String(spId));</stringProp>
+        </BeanShellPreProcessor>
         <hashTree/>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setSAMLRequest()" enabled="true">
           <boolProp name="resetInterpreter">false</boolProp>
@@ -176,6 +239,7 @@ if (y == 0) {
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
           <collectionProp name="CookieManager.cookies"/>
           <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
         </CookieManager>
         <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -196,6 +260,13 @@ if (y == 0) {
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">SAMLRequest</stringProp>
+              </elementProp>
+              <elementProp name="tenantDomain" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${tenantDomain}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">tenantDomain</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
@@ -218,7 +289,7 @@ if (y == 0) {
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 302" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-161833916">HTTP/1.1 302</stringProp>
+              <stringProp name="103172738">HTTP/1.1 302</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -256,7 +327,7 @@ sessionDataKey=([a-z0-9-]+)\&amp;?</stringProp>
               <elementProp name="username" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">true</boolProp>
                 <stringProp name="Argument.name">username</stringProp>
-                <stringProp name="Argument.value">${usernamePrefix}${user_count_id}</stringProp>
+                <stringProp name="Argument.value">${username}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
               </elementProp>
@@ -293,7 +364,7 @@ ${password}
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1606201635">HTTP/1.1 200</stringProp>
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>

@@ -85,7 +85,7 @@
           </elementProp>
           <elementProp name="noOfTenants" elementType="Argument">
             <stringProp name="Argument.name">noOfTenants</stringProp>
-            <stringProp name="Argument.value">${__P(tenantCount,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(tenantCount,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -171,11 +171,11 @@ vars.put(&quot;tenantDomain&quot;,new String(&quot;dummytenant_&quot;+ tenantidx
   &quot;inboundProtocolConfiguration&quot;: {&#xd;
     &quot;saml&quot;: {&#xd;
       &quot;manualConfiguration&quot;: {&#xd;
-        &quot;issuer&quot;: &quot;${travelocityAppNamePrefix}_${spId}&quot;,&#xd;
+        &quot;issuer&quot;: &quot;${issuerPrefix}_${spId}&quot;,&#xd;
         &quot;assertionConsumerUrls&quot;: [&#xd;
-          &quot;http://localhost:8080/${travelocityAppNamePrefix}_${spId}.com/home.jsp&quot;&#xd;
+          &quot;http://localhost:8080/${issuerPrefix}_${spId}.com/home.jsp&quot;&#xd;
         ],&#xd;
-        &quot;defaultAssertionConsumerUrl&quot;: &quot;http://localhost:8080/${travelocityAppNamePrefix}_${spId}.com/home.jsp&quot;,&#xd;
+        &quot;defaultAssertionConsumerUrl&quot;: &quot;http://localhost:8080/${issuerPrefix}_${spId}.com/home.jsp&quot;,&#xd;
         &quot;singleSignOnProfile&quot;: {&#xd;
           &quot;bindings&quot;: [&#xd;
             &quot;HTTP_POST&quot;,&#xd;

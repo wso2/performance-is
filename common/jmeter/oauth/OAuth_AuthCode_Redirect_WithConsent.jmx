@@ -175,6 +175,8 @@ String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
 String tenantDomainPrefix = vars.get(&quot;tenantDomainPrefix&quot;);
 String tenantIndex = vars.get(&quot;tenant_idx&quot;);
 String sp_count_id_random = vars.get(&quot;sp_count_id_random&quot;);
+String tokenEndpoint = &quot;/oauth2/token&quot;;
+String authEndpoint = &quot;/oauth2/authorize&quot;;
 
 String username = &quot;&quot;;
 String client_secret = &quot;&quot;;
@@ -188,6 +190,8 @@ username = &quot;${usernamePrefix}${user_count_id}@${tenantDomainPrefix}${tenant
 client_secret = &quot;${consumerSecretPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
 client_id = &quot;${consumerKeyPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
 redirect_uri = &quot;${callback_url_prefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
+tokenEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/token&quot;;
+authEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/authorize&quot;;
 
 } else {
 
@@ -195,6 +199,8 @@ username = &quot;${usernamePrefix}${user_count_id}&quot;;
 client_secret = &quot;${consumerSecretPrefix}${sp_count_id}&quot;;
 client_id = &quot;${consumerKeyPrefix}${sp_count_id}&quot;;
 redirect_uri = &quot;${callback_url_prefix}${sp_count_id}&quot;;
+vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));
+vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
 
 }
 
@@ -202,6 +208,9 @@ vars.put(&quot;username&quot;, new String(username));
 vars.put(&quot;client_secret&quot;, new String(client_secret));
 vars.put(&quot;client_id&quot;, new String(client_id));
 vars.put(&quot;redirect_uri&quot;,new String(redirect_uri));
+vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));
+vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
+
 </stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
@@ -274,7 +283,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/oauth2/authorize</stringProp>
+          <stringProp name="HTTPSampler.path">${authEndpoint}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -543,7 +552,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/oauth2/token</stringProp>
+          <stringProp name="HTTPSampler.path">${tokenEndpoint}</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

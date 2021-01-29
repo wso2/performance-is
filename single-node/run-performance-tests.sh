@@ -107,7 +107,7 @@ function before_execute_test_scenario() {
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    mysql -u $db_username -h "$rds_host" -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
+    mysql -u $db_username -h "$rds_host" "IDENTITY_DB" -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
 }
 
 function after_execute_test_scenario() {

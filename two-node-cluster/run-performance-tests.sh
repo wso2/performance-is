@@ -36,6 +36,7 @@ declare -A test_scenario0=(
     [display_name]="Authenticate Super Tenant User"
     [description]="Select random super tenant users and authenticate through the RemoteUserStoreManagerService."
     [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario1=(
@@ -43,6 +44,7 @@ declare -A test_scenario1=(
     [display_name]="Auth Code Grant Redirect With Consent"
     [description]="Obtain an access token using the OAuth 2.0 authorization code grant type."
     [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario2=(
@@ -50,6 +52,7 @@ declare -A test_scenario2=(
     [display_name]="Implicit Grant Redirect With Consent"
     [description]="Obtain an access token using the OAuth 2.0 implicit grant type."
     [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario3=(
@@ -57,6 +60,7 @@ declare -A test_scenario3=(
     [display_name]="Password Grant Type"
     [description]="Obtain an access token using the OAuth 2.0 password grant type."
     [jmx]="oauth/OAuth_Password_Grant.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario4=(
@@ -64,6 +68,7 @@ declare -A test_scenario4=(
     [display_name]="Client Credentials Grant Type"
     [description]="Obtain an access token using the OAuth 2.0 client credential grant type."
     [jmx]="oauth/OAuth_Client_Credentials_Grant.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario5=(
@@ -71,6 +76,7 @@ declare -A test_scenario5=(
     [display_name]="OIDC Auth Code Grant Redirect With Consent"
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
     [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario6=(
@@ -78,6 +84,7 @@ declare -A test_scenario6=(
     [display_name]="OIDC Implicit Grant Redirect With Consent"
     [description]="Obtain an access token and an id token using the OAuth 2.0 implicit grant type."
     [jmx]="oidc/OIDC_Implicit_Redirect_WithConsent.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario7=(
@@ -85,6 +92,7 @@ declare -A test_scenario7=(
     [display_name]="OIDC Password Grant Type"
     [description]="Obtain an access token and an id token using the OAuth 2.0 password grant type."
     [jmx]="oidc/OIDC_Password_Grant.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario8=(
@@ -92,6 +100,7 @@ declare -A test_scenario8=(
     [display_name]="OIDC Auth Code Request Path Authenticator With Consent"
     [description]="Obtain an access token and an id token using the request path authenticator."
     [jmx]="oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx"
+    [tenantMode]=false
     [skip]=false
 )
 declare -A test_scenario9=(
@@ -99,7 +108,80 @@ declare -A test_scenario9=(
     [display_name]="SAML2 SSO Redirect Binding"
     [description]="Obtain a SAML 2 assertion response using redirect binding."
     [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+    [tenantMode]=false
     [skip]=false
+)
+declare -A test_scenario10=(
+    [name]="10-oauth_auth_code_redirect_with_consent_tenant"
+    [display_name]="Auth Code Grant Redirect With Consent"
+    [description]="Obtain an access token using the OAuth 2.0 authorization code grant type."
+    [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario11=(
+    [name]="11-oauth_implicit_redirect_with_consent_tenant"
+    [display_name]="Implicit Grant Redirect With Consent"
+    [description]="Obtain an access token using the OAuth 2.0 implicit grant type."
+    [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario12=(
+    [name]="12-oauth_password_grant_tenant"
+    [display_name]="Password Grant Type"
+    [description]="Obtain an access token using the OAuth 2.0 password grant type."
+    [jmx]="oauth/OAuth_Password_Grant.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario13=(
+    [name]="04-oauth_client_credential_grant_tenant"
+    [display_name]="Client Credentials Grant Type"
+    [description]="Obtain an access token using the OAuth 2.0 client credential grant type."
+    [jmx]="oauth/OAuth_Client_Credentials_Grant.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario14=(
+    [name]="14-oidc_auth_code_redirect_with_consent_tenant"
+    [display_name]="OIDC Auth Code Grant Redirect With Consent"
+    [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
+    [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario15=(
+    [name]="15-oidc_implicit_redirect_with_consent_tenant"
+    [display_name]="OIDC Implicit Grant Redirect With Consent"
+    [description]="Obtain an access token and an id token using the OAuth 2.0 implicit grant type."
+    [jmx]="oidc/OIDC_Implicit_Redirect_WithConsent.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario16=(
+    [name]="16-oidc_password_grant_tenant"
+    [display_name]="OIDC Password Grant Type"
+    [description]="Obtain an access token and an id token using the OAuth 2.0 password grant type."
+    [jmx]="oidc/OIDC_Password_Grant.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario17=(
+    [name]="17-oidc_request_path_authenticator_tenant"
+    [display_name]="OIDC Auth Code Request Path Authenticator With Consent"
+    [description]="Obtain an access token and an id token using the request path authenticator."
+    [jmx]="oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx"
+    [tenantMode]=true
+    [skip]=true
+)
+declare -A test_scenario18=(
+    [name]="18-saml2_sso_redirect_binding_tenant"
+    [display_name]="SAML2 SSO Redirect Binding"
+    [description]="Obtain a SAML 2 assertion response using redirect binding."
+    [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
+    [tenantMode]=true
+    [skip]=true
 )
 
 function before_execute_test_scenario() {

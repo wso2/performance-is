@@ -75,7 +75,7 @@
           </elementProp>
           <elementProp name="spCount" elementType="Argument">
             <stringProp name="Argument.name">spCount</stringProp>
-            <stringProp name="Argument.value">${__P(apps,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(spCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="loopCount" elementType="Argument">
@@ -90,7 +90,7 @@
           </elementProp>
           <elementProp name="noOfTenants" elementType="Argument">
             <stringProp name="Argument.name">noOfTenants</stringProp>
-            <stringProp name="Argument.value">${__P(tenants,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

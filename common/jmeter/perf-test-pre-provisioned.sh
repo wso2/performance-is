@@ -95,6 +95,9 @@ populateTestData=true
 rds_host=""
 databaseType="mysql"
 databaseName="IDENTITY_DB"
+noOfTenants=100
+spCount=10
+userCount=1000
 
 function get_ssh_hostname() {
     ssh -G "$1" | awk '/^hostname / { print $2 }'
@@ -129,7 +132,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:tp:u:k:l:n:r:s:q:b:f:h" opts; do
+while getopts "c:m:d:w:j:i:e:x:y:z:tp:u:k:l:n:r:s:q:b:f:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -151,6 +154,15 @@ while getopts "c:m:d:w:j:i:e:tp:u:k:l:n:r:s:q:b:f:h" opts; do
         ;;
     e)
         exclude_scenario_names+=("${OPTARG}")
+        ;;
+    x)
+        noOfTenants=("${OPTARG}")
+        ;;
+    y)
+        spCount=("${OPTARG}")
+        ;;
+    z)
+        userCount=("${OPTARG}")
         ;;
     t)
         estimate=true
@@ -372,12 +384,31 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx TestData_Add_OAuth_Apps.jmx TestData_Add_SAML_Apps.jmx TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_SAML_Apps.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx ")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+    credentials="$superAdminUsername:$superAdminPassword"
+    base64EncodedCredentials=$(echo -n "$credentials" | base64)
+
+    for script in "${scripts[@]}"; do
+        script_file="$setup_dir/$script"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -Jusername=$superAdminUsername -Jpassword=$superAdminPassword -JadminCredentials=$base64EncodedCredentials -n -t $script_file"
+        echo "$command"
+        echo ""
+        $command
+        echo ""
+    done
+}
+
+function run_tenant_test_data_scripts() {
+
+    echo "Running tenant test data setup scripts"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_SAML_Apps.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -Jusername=$superAdminUsername -Jpassword=$superAdminPassword -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -Jusername=$superAdminUsername -Jpassword=$superAdminPassword -JnoOfTenants=$noOfTenants -JspCount=$spCount -JuserCount=$userCount -n -t $script_file"
         echo "$command"
         echo ""
         $command
@@ -463,7 +494,8 @@ function initiailize_test() {
 
         if [ "$populateTestData" = true ] ; then
           echo 'Populating test data since flag is enabled.'
-          run_test_data_scripts
+          #run_test_data_scripts
+          run_tenant_test_data_scripts
         fi
     fi
 }
@@ -508,9 +540,14 @@ function test_scenarios() {
                 echo ""
                 echo "Report location is $report_location"
                 mkdir -p "$report_location"
-
+                credentials="$superAdminUsername:$superAdminPassword"
+                base64EncodedCredentials=$(echo -n "$credentials" | base64)
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "tenantMode=true" "noOfTenants=100" "spCount=10" "userCount=1000")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "adminCredentials=$base64EncodedCredentials")
+                local tenantMode=${scenario[tenantMode]}
+                if [ "$tenantMode" = true ]; then
+                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JuserCount=$userCount"
+                fi
 
                 before_execute_test_scenario
 

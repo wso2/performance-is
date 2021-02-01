@@ -56,8 +56,6 @@ AS
 	END;
 GO
 
-USE IDENTITY_DB;
-
 -- Temporary table for holding foreign key dropping and creating statements.
 DROP TABLE IF EXISTS #temp_foreign_key_scripts;
 CREATE TABLE #temp_foreign_key_scripts

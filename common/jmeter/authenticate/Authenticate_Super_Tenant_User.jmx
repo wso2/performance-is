@@ -25,7 +25,7 @@
           </elementProp>
           <elementProp name="adminCredentials" elementType="Argument">
             <stringProp name="Argument.name">adminCredentials</stringProp>
-            <stringProp name="Argument.value">YWRtaW46YWRtaW4=</stringProp>
+            <stringProp name="Argument.value">${__P(adminCredentials,YWRtaW46YWRtaW4=)}</stringProp>
             <stringProp name="Argument.desc">admin:admin</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>

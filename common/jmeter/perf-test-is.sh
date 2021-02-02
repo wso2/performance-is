@@ -82,6 +82,10 @@ estimated_processing_time_in_between_tests=$default_estimated_processing_time_in
 default_is_port=9443
 is_port=$default_is_port
 
+noOfTenants=100
+spCount=10
+userCount=1000
+
 # Start time of the test
 test_start_time=$(date +%s)
 # Scenario specific counters
@@ -115,7 +119,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:tp:h" opts; do
+while getopts "c:m:d:w:j:i:e:n:s:u:tp:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -137,6 +141,15 @@ while getopts "c:m:d:w:j:i:e:tp:h" opts; do
         ;;
     e)
         exclude_scenario_names+=("${OPTARG}")
+        ;;
+    n)
+        noOfTenants=("${OPTARG}")
+        ;;
+    s)
+        spCount=("${OPTARG}")
+        ;;
+    u)
+        userCount=("${OPTARG}")
         ;;
     t)
         estimate=true
@@ -344,6 +357,23 @@ function run_test_data_scripts() {
     done
 }
 
+function run_tenant_test_data_scripts() {
+
+    echo "Running tenant test data setup scripts"
+    echo "=========================================================================================="
+    declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx" "TestData_Add_Tenant_SAML_Apps.jmx")
+    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+
+    for script in "${scripts[@]}"; do
+        script_file="$setup_dir/$script"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfTenants=$noOfTenants -JspCount=$spCount -JuserCount=$userCount -n -t $script_file"
+        echo "$command"
+        echo ""
+        $command
+        echo ""
+    done
+}
+
 function initiailize_test() {
 
     # Filter scenarios
@@ -421,6 +451,7 @@ function initiailize_test() {
         mv test-metadata.json results/
 
         run_test_data_scripts
+        #run_tenant_test_data_scripts
     fi
 }
 
@@ -467,6 +498,11 @@ function test_scenarios() {
 
                 time=$(expr "$test_duration" \* 60)
                 declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port")
+
+                local tenantMode=${scenario[tenantMode]}
+                if [ "$tenantMode" = true ]; then
+                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JuserCount=$userCount"
+                fi
 
                 before_execute_test_scenario
 

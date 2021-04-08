@@ -82,9 +82,9 @@ estimated_processing_time_in_between_tests=$default_estimated_processing_time_in
 default_is_port=9443
 is_port=$default_is_port
 
-noOfTenants=100
+noOfTenants=10
 spCount=10
-userCount=1000
+userCount=10
 
 # Start time of the test
 test_start_time=$(date +%s)
@@ -450,8 +450,8 @@ function initiailize_test() {
         cp "$0" results
         mv test-metadata.json results/
 
-        run_test_data_scripts
-        #run_tenant_test_data_scripts
+        #run_test_data_scripts
+        run_tenant_test_data_scripts
     fi
 }
 

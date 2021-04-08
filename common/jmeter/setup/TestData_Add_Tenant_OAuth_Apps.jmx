@@ -236,9 +236,6 @@ if (y == 0) {
         &quot;iwa:ntlm&quot;&#xd;
       ],&#xd;
       &quot;idToken&quot;: {&#xd;
-        &quot;audience&quot;: [&#xd;
-          &quot;&quot;&#xd;
-        ],&#xd;
         &quot;encryption&quot;: {&#xd;
           &quot;algorithm&quot;: &quot;&quot;,&#xd;
           &quot;enabled&quot;: false,&#xd;

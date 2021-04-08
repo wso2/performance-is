@@ -82,7 +82,7 @@ estimated_processing_time_in_between_tests=$default_estimated_processing_time_in
 default_is_port=9443
 is_port=$default_is_port
 
-noOfTenants=10
+noOfTenants=100
 spCount=10
 userCount=10
 

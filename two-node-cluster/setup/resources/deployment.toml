@@ -79,3 +79,7 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_2:4000", "member_ip_1:4000"]
+
+# Token persistance config.
+[oauth.extensions]
+token_persistence_processor = "org.wso2.carbon.identity.oauth.tokenprocessor.EncryptionDecryptionPersistenceProcessor"

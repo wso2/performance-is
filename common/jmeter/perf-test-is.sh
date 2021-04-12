@@ -82,7 +82,7 @@ estimated_processing_time_in_between_tests=$default_estimated_processing_time_in
 default_is_port=9443
 is_port=$default_is_port
 
-noOfTenants=10
+noOfTenants=100
 spCount=10
 userCount=100
 
@@ -361,7 +361,7 @@ function run_tenant_test_data_scripts() {
 
     echo "Running tenant test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx" "TestData_Add_Tenant_SAML_Apps.jmx")
+    declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in "${scripts[@]}"; do

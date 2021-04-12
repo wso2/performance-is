@@ -181,7 +181,7 @@ declare -A test_scenario18=(
     [description]="Obtain a SAML 2 assertion response using redirect binding."
     [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
     [tenantMode]=true
-    [skip]=false
+    [skip]=true
 )
 
 function before_execute_test_scenario() {

@@ -219,6 +219,7 @@ if (y == 0) {
         &quot;type&quot;: &quot;Default&quot;,&#xd;
         &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
+        &quot;bindingType&quot;: &quot;sso-session&quot;,&#xd;
         &quot;revokeTokensWhenIDPSessionTerminated&quot;: false,&#xd;
         &quot;validateTokenBinding&quot;: false&#xd;
       },&#xd;
@@ -237,7 +238,7 @@ if (y == 0) {
       ],&#xd;
       &quot;idToken&quot;: {&#xd;
         &quot;audience&quot;: [&#xd;
-          &quot;&quot;&#xd;
+          &quot;localhost&quot;&#xd;
         ],&#xd;
         &quot;encryption&quot;: {&#xd;
           &quot;algorithm&quot;: &quot;&quot;,&#xd;

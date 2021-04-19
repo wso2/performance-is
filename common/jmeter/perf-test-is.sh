@@ -82,7 +82,7 @@ estimated_processing_time_in_between_tests=$default_estimated_processing_time_in
 default_is_port=9443
 is_port=$default_is_port
 
-noOfTenants=100
+noOfTenants=1000
 spCount=10
 userCount=100
 
@@ -366,7 +366,7 @@ function run_tenant_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfTenants=100 -JspCount=$spCount -JuserCount=$userCount -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfTenants=$noOfTenants -JspCount=$spCount -JuserCount=$userCount -n -t $script_file"
         echo "$command"
         echo ""
         $command

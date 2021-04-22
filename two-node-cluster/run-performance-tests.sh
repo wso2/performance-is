@@ -117,7 +117,7 @@ declare -A test_scenario10=(
     [description]="Obtain an access token using the OAuth 2.0 authorization code grant type."
     [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=true
-    [skip]=false
+    [skip]=true
 )
 declare -A test_scenario11=(
     [name]="11-oauth_implicit_redirect_with_consent_tenant"
@@ -149,7 +149,7 @@ declare -A test_scenario14=(
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
     [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=true
-    [skip]=true
+    [skip]=false
 )
 declare -A test_scenario15=(
     [name]="15-oidc_implicit_redirect_with_consent_tenant"

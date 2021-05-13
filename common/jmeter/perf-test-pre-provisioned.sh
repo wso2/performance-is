@@ -494,7 +494,7 @@ function initiailize_test() {
 
         if [ "$populateTestData" = true ] ; then
           echo 'Populating test data since flag is enabled.'
-          run_test_data_scripts
+          #run_test_data_scripts
           run_tenant_test_data_scripts
         fi
     fi

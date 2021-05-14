@@ -361,7 +361,7 @@ function run_tenant_test_data_scripts() {
 
     echo "Running tenant test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx" "TestData_Add_Tenant_SAML_Apps.jmx")
+    declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in "${scripts[@]}"; do
@@ -450,8 +450,8 @@ function initiailize_test() {
         cp "$0" results
         mv test-metadata.json results/
 
-        run_test_data_scripts
-        #run_tenant_test_data_scripts
+        #run_test_data_scripts
+        run_tenant_test_data_scripts
     fi
 }
 

@@ -88,7 +88,7 @@ echo "JAVA_OPTS: $JAVA_OPTS"
 echo "JVM_MEM_OPTS: $JVM_MEM_OPTS"
 
 echo "Restarting identity server..."
-sh $carbon_home/bin/wso2server.sh restart
+sh $carbon_home/bin/wso2server.sh -DenableCorrelationLogs=true restart
 
 echo "Waiting $waiting_time seconds..."
 sleep $waiting_time

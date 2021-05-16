@@ -201,11 +201,13 @@ function after_execute_test_scenario() {
     write_server_metrics $wso2is_1_host_alias $wso2is_1_host_alias
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_1_host_alias.log"
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/gc.log $wso2is_1_host_alias"_gc.log"
+    download_file "$wso2is_1_host_alias" $is_home/repository/logs/correlation.log $wso2is_1_host_alias"_correlation.log"
     download_file "$wso2is_1_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_1_host_alias-heap-dump.hprof"
 
     write_server_metrics $wso2is_2_host_alias $wso2is_2_host_alias
     download_file "$wso2is_2_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_2_host_alias.log"
     download_file "$wso2is_2_host_alias" $is_home/repository/logs/gc.log $wso2is_2_host_alias"_gc.log"
+    download_file "$wso2is_2_host_alias" $is_home/repository/logs/correlation.log $wso2is_2_host_alias"_correlation.log"
     download_file "$wso2is_2_host_alias" $is_home/repository/logs/heap-dump.hprof "$wso2is_2_host_alias-heap-dump.hprof"
 }
 

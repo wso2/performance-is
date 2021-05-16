@@ -111,5 +111,5 @@ sed -i "s|member_ip_2|$wso2_is_2_ip|g" "$carbon_home"/repository/conf/deployment
 echo ""
 echo "Starting WSO2 IS server..."
 echo "-------------------------------------------"
-./wso2is/bin/wso2server.sh start
+./wso2is/bin/wso2server.sh -DenableCorrelationLogs=true start
 sleep 100s

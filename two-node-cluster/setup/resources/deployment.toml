@@ -20,6 +20,10 @@ CaseInsensitiveUsername = false
 SCIMEnabled=true
 IsBulkImportSupported=false
 
+[oauth]
+extensions.token_persistence_processor = "org.wso2.carbon.identity.oauth.tokenprocessor.EncryptionDecryptionPersistenceProcessor"
+drop_unregistered_scopes = "true"
+
 #[realm_manager]
 #data_source = "WSO2USER_DB"
 

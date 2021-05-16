@@ -211,6 +211,7 @@ Resources:
       Iops: !Ref DBIops
       StorageType: io1
       DBParameterGroupName: wso2is-db-param-grp
+      StorageEncrypted: true
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISDBSubnetGroupsuffix:
     Type: 'AWS::RDS::DBSubnetGroup'

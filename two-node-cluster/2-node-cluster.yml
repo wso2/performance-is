@@ -318,6 +318,13 @@ Resources:
         - AMI
       InstanceType: !Ref BastionInstanceType
       KeyName: !Ref KeyPairName
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: '100'
+            DeleteOnTermination: 'true'
+            Encrypted: 'false'
       Monitoring: 'false'
       Tags:
         - Key: Name

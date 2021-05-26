@@ -450,8 +450,8 @@ function initiailize_test() {
         cp "$0" results
         mv test-metadata.json results/
 
-        run_test_data_scripts
-        #run_tenant_test_data_scripts
+        #run_test_data_scripts
+        run_tenant_test_data_scripts
     fi
 }
 

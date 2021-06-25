@@ -198,6 +198,8 @@ echo "$key_file"
 
 ln -s "$key_file" "$temp_dir"/"$key_filename"
 
+export AWS_DEFAULT_OUTPUT="json"
+
 echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"

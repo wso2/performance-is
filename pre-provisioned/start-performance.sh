@@ -165,6 +165,8 @@ $estimate_command
 
 temp_dir=$(mktemp -d)
 
+export AWS_DEFAULT_OUTPUT="json"
+
 echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"

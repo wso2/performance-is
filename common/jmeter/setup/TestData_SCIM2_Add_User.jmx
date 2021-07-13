@@ -109,7 +109,7 @@
    &lt;soapenv:Header/&gt;&#xd;
    &lt;soapenv:Body&gt;&#xd;
       &lt;ser:addRole&gt;&#xd;
-         &lt;ser:roleName&gt;${rolename}&lt;/ser:roleName&gt;       &#xd;
+         &lt;ser:roleName&gt;perf1/${rolename}&lt;/ser:roleName&gt;       &#xd;
            &lt;ser:permissions&gt;&#xd;
             &lt;xsd:action&gt;ui.execute&lt;/xsd:action&gt;&#xd;
             &lt;xsd:resourceId&gt;/permission/admin/login&lt;/xsd:resourceId&gt;&#xd;
@@ -260,7 +260,7 @@ catch (Throwable ex) {
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
    &quot;schemas&quot;:[],&#xd;
-   &quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
+   &quot;userName&quot;:&quot;perf1/${usernamePrefix}${user_index}&quot;,&#xd;
    &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
    &quot;name&quot;:{&#xd;
       &quot;familyName&quot;:&quot;testFamily&quot;,&#xd;
@@ -283,7 +283,7 @@ catch (Throwable ex) {
    &quot;roles&quot;:[  &#xd;
       {  &#xd;
          &quot;type&quot;:&quot;default&quot;,&#xd;
-         &quot;value&quot;:&quot;${rolename}&quot;&#xd;
+         &quot;value&quot;:&quot;perf1/${rolename}&quot;&#xd;
       }&#xd;
    ]&#xd;
 }</stringProp>

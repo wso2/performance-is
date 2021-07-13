@@ -349,7 +349,7 @@ function run_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file -l $report_location/TestData_SCIM2_Add_User.jtl"
         echo "$command"
         echo ""
         $command

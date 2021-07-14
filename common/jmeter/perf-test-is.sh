@@ -349,7 +349,7 @@ function run_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file -l $report_location/TestData_SCIM2_Add_User.jtl"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -n -t $script_file -l /home/ubuntu/results/05-oidc_auth_code_redirect_with_consent/2G_heap/100_users/TestData_SCIM2_Add_User.jtl"
         echo "$command"
         echo ""
         $command

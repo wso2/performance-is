@@ -71,8 +71,7 @@ function exit_handler() {
 
     echo ""
     echo "Polling till the stack deletion completes..."
-    aws cloudformation wait stack-delete-complete --stack-name "$stack_id"
-    printf "Stack deletion time: %s\n" "$(format_time $(measure_time "$stack_delete_start_time"))"
-
+    # aws cloudformation wait stack-delete-complete --stack-name "$stack_id"
+    # printf "Stack deletion time: %s\n" "$(format_time $(measure_time "$stack_delete_start_time"))"
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$script_start_time"))"
 }

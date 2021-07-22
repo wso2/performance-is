@@ -343,7 +343,7 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" )
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 

@@ -66,8 +66,8 @@ function exit_handler() {
 
     local stack_delete_start_time=$(date +%s)
     echo ""
-    #echo "Deleting the stack: $stack_id"
-    aws cloudformation delete-stack --stack-name "$stack_id"
+    echo "Deleting the stack: $stack_id"
+    #aws cloudformation delete-stack --stack-name "$stack_id"
 
     echo ""
     echo "Polling till the stack deletion completes..."

@@ -221,7 +221,7 @@ vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count&quot;));
+          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
 int y = x - (x/2)*2;
 if (y == 0) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);

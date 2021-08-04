@@ -25,7 +25,7 @@ IsBulkImportSupported=false
 
 [database.identity_db]
 driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/IDENTITY_DB?useSSL=false"
+url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/IDENTITY_DB?useSSL=false&amp;rewriteBatchedStatements=true"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -34,7 +34,7 @@ maxActive = "300"
 
 [database.shared_db]
 driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/REG_DB?useSSL=false"
+url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/REG_DB?useSSL=false&amp;rewriteBatchedStatements=true"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -43,7 +43,7 @@ maxActive = "300"
 
 [database.user]
 driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/UM_DB?useSSL=false"
+url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/UM_DB?useSSL=false&amp;rewriteBatchedStatements=true"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -59,7 +59,7 @@ maxThreads = "500"
 acceptCount = "500"
 
 [authentication.consent]
-prompt = false
+prompt = true
 
 [admin_service]
 wsdl.enable=false

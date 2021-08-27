@@ -384,7 +384,7 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_Public_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
     credentials="$superAdminUsername:$superAdminPassword"
     base64EncodedCredentials=$(echo -n "$credentials" | base64)

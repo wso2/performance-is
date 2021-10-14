@@ -136,8 +136,8 @@ declare -A test_scenario11=(
     [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
     [tenantMode]=true
     [skip]=true
+    [modes]="Full"
 )
-[modes]="Full"
 declare -A test_scenario12=(
     [name]="12-oauth_password_grant_tenant"
     [display_name]="Password Grant Type"

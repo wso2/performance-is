@@ -45,6 +45,7 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+mode=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -70,11 +71,12 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
+    echo "-t The required testing mode [Full/Quick]"
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "k:c:j:n:u:p:d:e:i:b:w:h" opts; do
+while getopts "k:c:j:n:u:p:d:e:i:b:w:t:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -109,6 +111,9 @@ while getopts "k:c:j:n:u:p:d:e:i:b:w:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
+    t)
+        mode=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -121,7 +126,9 @@ while getopts "k:c:j:n:u:p:d:e:i:b:w:h" opts; do
 done
 shift "$((OPTIND - 1))"
 
+echo "Run mode: $mode"
 run_performance_tests_options="$@"
+run_performance_tests_options+=(" -v $mode")
 
 if [[ ! -f $key_file ]]; then
     echo "Please provide the key file."

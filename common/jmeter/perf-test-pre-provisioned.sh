@@ -451,7 +451,6 @@ function initiailize_test() {
         for i in $modeValues; do
             if [ "$i" == $mode ]; then
                 scenario[skip]=false
-                echo "$i"
                 break
             fi
         done

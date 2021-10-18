@@ -71,7 +71,7 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
-    echo "-t The required testing mode [FULL/QUICK]"
+    echo "-t: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
     echo ""
 }

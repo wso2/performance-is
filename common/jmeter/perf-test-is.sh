@@ -402,17 +402,19 @@ function initiailize_test() {
         done
     fi
     
-    declare -n scenario
-    for scenario in ${!test_scenario@}; do
-        scenario[skip]=true
-        modeValues=${scenario[modes]}
-        for i in $modeValues; do
-            if [ "$i" == $mode ]; then
-                scenario[skip]=false
-                break
-            fi
+    if [[ ! -z $mode ]]; then
+        declare -n scenario
+        for scenario in ${!test_scenario@}; do
+            scenario[skip]=true
+            modeValues=${scenario[modes]}
+            for i in $modeValues; do
+                if [ "$i" == $mode ]; then
+                    scenario[skip]=false
+                    break
+                fi
+            done
         done
-    done
+    fi
 
     echo ""
     echo "Saving test metadata..."

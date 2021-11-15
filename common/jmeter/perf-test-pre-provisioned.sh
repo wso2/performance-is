@@ -98,6 +98,7 @@ databaseName="IDENTITY_DB"
 noOfTenants=100
 spCount=10
 userCount=1000
+mode=""
 
 function get_ssh_hostname() {
     ssh -G "$1" | awk '/^hostname / { print $2 }'
@@ -132,7 +133,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:x:y:z:tp:u:k:l:n:r:s:q:b:f:h" opts; do
+while getopts "c:m:d:w:j:i:e:x:y:z:tp:u:k:l:n:r:s:q:b:f:v:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -197,6 +198,9 @@ while getopts "c:m:d:w:j:i:e:x:y:z:tp:u:k:l:n:r:s:q:b:f:h" opts; do
     f)
         databaseName=${OPTARG}
         ;;
+    v)
+        mode=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -252,7 +256,11 @@ fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    concurrent_users_array=( $default_concurrent_users )
+    if [ "$mode" == "QUICK" ]; then
+        concurrent_users_array=( "200" )
+    else
+        concurrent_users_array=( $default_concurrent_users )
+    fi
 else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi
@@ -431,6 +439,20 @@ function initiailize_test() {
             for name in "${exclude_scenario_names[@]}"; do
                 if [[ ${scenario[name]} =~ $name ]]; then
                     scenario[skip]=true
+                fi
+            done
+        done
+    fi
+
+    if [[ ! -z $mode ]]; then
+        declare -n scenario
+        for scenario in ${!test_scenario@}; do
+            scenario[skip]=true
+            modeValues=${scenario[modes]}
+            for i in $modeValues; do
+                if [ "$i" == $mode ]; then
+                    scenario[skip]=false
+                    break
                 fi
             done
         done

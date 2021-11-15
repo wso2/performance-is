@@ -47,6 +47,7 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 cloud_host_name=""
+mode=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=5
@@ -70,11 +71,12 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
+    echo "-t: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "j:u:p:n:p:i:b:k:d:h" opts; do
+while getopts "j:u:p:n:p:i:b:k:t:d:h" opts; do
     case $opts in
     j)
         jmeter_setup=${OPTARG}
@@ -97,6 +99,9 @@ while getopts "j:u:p:n:p:i:b:k:d:h" opts; do
     k)
         key_file=${OPTARG}
         ;;
+    t)
+        mode=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -110,11 +115,11 @@ done
 shift "$((OPTIND - 1))"
 
 echo $rds_host
-
+echo "Run mode: $mode"
 
 run_performance_tests_options="$@"
 
-run_performance_tests_options+=(" -l $cloud_host_name -n $rds_host -r $db_username -s $db_password")
+run_performance_tests_options+=(" -l $cloud_host_name -n $rds_host -r $db_username -s $db_password -v $mode")
 
 if [[ -z $db_username ]]; then
     echo "Please provide the database username."

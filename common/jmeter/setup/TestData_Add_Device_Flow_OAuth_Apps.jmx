@@ -211,7 +211,7 @@ if (y == 0) {
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register Public OAuth App" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register Device flow OAuth App" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -231,6 +231,7 @@ if (y == 0) {
             &lt;xsd1:bypassClientCredentials&gt;true&lt;/xsd1:bypassClientCredentials&gt;&#xd;
             &lt;xsd1:pkceMandatory&gt;false&lt;/xsd1:pkceMandatory&gt;&#xd;
             &lt;xsd1:pkceSupportPlain&gt;true&lt;/xsd1:pkceSupportPlain&gt;&#xd;
+            &lt;xsd1:tokenBindingType&gt;device-flow&lt;/xsd1:tokenBindingType&gt;&#xd;
          &lt;/xsd:application&gt;&#xd;
       &lt;/xsd:registerOAuthApplicationData&gt;&#xd;
    &lt;/soapenv:Body&gt;&#xd;

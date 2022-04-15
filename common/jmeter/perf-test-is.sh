@@ -85,6 +85,7 @@ is_port=$default_is_port
 noOfTenants=100
 spCount=10
 userCount=1000
+mode=""
 
 # Start time of the test
 test_start_time=$(date +%s)
@@ -119,7 +120,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:n:s:u:tp:h" opts; do
+while getopts "c:m:d:w:j:i:e:n:s:u:tp:v:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -156,6 +157,9 @@ while getopts "c:m:d:w:j:i:e:n:s:u:tp:h" opts; do
         ;;
     p)
         is_port=${OPTARG}
+        ;;
+    v)
+        mode=${OPTARG}
         ;;
     h)
         usage
@@ -211,7 +215,11 @@ fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    concurrent_users_array=( $default_concurrent_users )
+    if [ "$mode" == "QUICK" ]; then
+        concurrent_users_array=( "200" )
+    else
+        concurrent_users_array=( $default_concurrent_users )
+    fi
 else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi
@@ -389,6 +397,20 @@ function initiailize_test() {
             for name in "${exclude_scenario_names[@]}"; do
                 if [[ ${scenario[name]} =~ $name ]]; then
                     scenario[skip]=true
+                fi
+            done
+        done
+    fi
+    
+    if [[ ! -z $mode ]]; then
+        declare -n scenario
+        for scenario in ${!test_scenario@}; do
+            scenario[skip]=true
+            modeValues=${scenario[modes]}
+            for i in $modeValues; do
+                if [ "$i" == $mode ]; then
+                    scenario[skip]=false
+                    break
                 fi
             done
         done

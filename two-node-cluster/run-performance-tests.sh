@@ -83,7 +83,7 @@ declare -A test_scenario5=(
     [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK DEVICE_FLOW"
+    [modes]="DEVICE_FLOW FULL QUICK"
 )
 declare -A test_scenario6=(
     [name]="06-oidc_implicit_redirect_with_consent"

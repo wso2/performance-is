@@ -34,6 +34,6 @@ mkdir -p $alpnboot_dir
 
 command="$script_dir/setup-jmeter-client.sh $@ \
     -w http://search.maven.org/remotecontent?filepath=org/mortbay/jetty/alpn/alpn-boot/8.1.12.v20180117/alpn-boot-8.1.12.v20180117.jar \
-    -o $alpnboot_dir/alpnboot.jar"
+    -o $alpnboot_dir/alpnboot.jar -j bzm-parallel"
 echo $command
 $command

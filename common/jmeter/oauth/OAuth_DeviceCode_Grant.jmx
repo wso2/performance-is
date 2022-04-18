@@ -583,8 +583,8 @@ vars.put(&quot;token&quot;, &quot;&quot;);</stringProp>
                 <hashTree/>
               </hashTree>
               <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-                <stringProp name="ConstantTimer.delay">15000</stringProp>
-                <stringProp name="RandomTimer.range">5000.0</stringProp>
+                <stringProp name="ConstantTimer.delay">5000</stringProp>
+                <stringProp name="RandomTimer.range">2000.0</stringProp>
               </GaussianRandomTimer>
               <hashTree/>
             </hashTree>

@@ -202,6 +202,24 @@ declare -A test_scenario18=(
     [skip]=true
     [modes]="FULL"
 )
+declare -A test_scenario19=(
+  [name]="19-oidc_device_code_grant"
+  [display_name]="Device Code Grant Flow"
+  [description]="Obtain an access token using the OAuth 2.0 device code grant type."
+  [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
+  [tenantMode]=false
+  [skip]=false
+  [modes]="FULL DEVICE_FLOW"
+)
+declare -A test_scenario20=(
+  [name]="20-oidc_device_code_grant_tenant"
+  [display_name]="Device Code Grant Flow"
+  [description]="Obtain an access token using the OAuth 2.0 device code grant type."
+  [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
+  [tenantMode]=true
+  [skip]=false
+  [modes]="FULL DEVICE_FLOW"
+)
 
 function before_execute_test_scenario() {
 

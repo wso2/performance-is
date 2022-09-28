@@ -22,9 +22,14 @@ Server version | Deployment | Updated on | IS Instance Type | RDS Instance Type 
 5.10.0 WUM (1600099543376) | Single node | 2020/09/21 | c5.xlarge (4 core) | db.m4.xlarge | [:arrow_upper_right:](5.10.0/WUM/1600099543376/5.10.0_single-node_4-core.md)
 5.10.0 WUM (1600099543376) | 2-node cluster | 2020/09/21 | c5.large (2 core) | db.m4.xlarge | [:arrow_upper_right:](5.10.0/WUM/1600099543376/5.10.0_two-nodes_2-core.md)
 5.10.0 WUM (1600099543376) | Single node | 2020/09/21 | c5.large (2 core) | db.m4.xlarge | [:arrow_upper_right:](5.10.0/WUM/1600099543376/5.10.0_single-node_2-core.md)
-5.11.0 GA | Single node | 2020/12/23 | c5.xlarge (4 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/5.11.0_single-node_4-core.md)
-5.11.0 GA | Single node | 2020/12/23 | c5.large (2 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/5.11.0_single-node_2-core.md)
-5.11.0 GA | 2-node cluster | 2021/01/02 | c5.xlarge (4 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/5.11.0_two-nodes_4-core.md)
+5.11.0 GA | Single node | 2020/12/23 | c5.xlarge (4 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/jdk-8/5.11.0_single-node_4-core_dk-8.md)
+5.11.0 GA | Single node | 2020/12/23 | c5.large (2 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/jdk-8/5.11.0_single-node_2-core_jdk-8.md)
+5.11.0 GA | 2-node cluster | 2021/01/02 | c5.xlarge (4 core) | db.m4.xlarge | [:arrow_upper_right:](5.11.0/jdk-8/5.11.0_two-nodes_4-core_jdk-8.md)
+5.11.0 GA | Single node | 2022/09/25 | c5.xlarge (2 core) | db.m4.2xlarge | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_single-node_2-core_jdk-11.md)
+5.11.0 GA | 2-node cluster | 2022/09/26 | c5.xlarge (2 core) | db.m4.2xlarge | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_two-node_2-core_jdk-11.md)
+6.0.0 GA | Single node | 2022/09/27 | c5.xlarge (2 core) | db.m4.2xlarge | [:arrow_upper_right:](6.0.0/6.0.0_single-node_2-core_jdk-11.md)
+6.0.0 GA | Single node | 2022/09/25 | c5.xlarge (4 core) | db.m4.2xlarge | [:arrow_upper_right:](6.0.0/6.0.0_single-node_4-core_jdk-11.md)
+6.0.0 GA | 2-node cluster | 2022/09/27 | c5.xlarge (2 core) | db.m4.2xlarge | [:arrow_upper_right:](6.0.0/6.0.0_two-node_2-core_jdk-11.md)
 
 ### Deployment Diagram - Single node
 ![Deployment Diagram - Single node](https://github.com/wso2/performance-is/blob/master/common/images/deployment-diagram-singlenode.png)

@@ -28,6 +28,7 @@ Server version | Deployment | Updated on | IS Instance Type | RDS Instance Type 
 5.11.0 GA | Single node | 2022/09/24 | c5.large (2 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_single-node_2-core_jdk-11.md)
 5.11.0 GA | Single node | 2022/09/28 | c5.xlarge (4 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_single-node_4-core_jdk-11.md)
 5.11.0 GA | 2-node cluster | 2022/09/26 | c5.large (2 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_two-node_2-core_jdk-11.md)
+5.11.0 GA | 2-node cluster | 2022/09/29 | c5.xlarge (4 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](5.11.0/jdk-11/5.11.0_two-node_4-core_jdk-11.md)
 6.0.0 GA | Single node | 2022/09/27 | c5.large (2 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](6.0.0/6.0.0_single-node_2-core_jdk-11.md)
 6.0.0 GA | Single node | 2022/09/25 | c5.xlarge (4 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](6.0.0/6.0.0_single-node_4-core_jdk-11.md)
 6.0.0 GA | 2-node cluster | 2022/09/27 | c5.large (2 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](6.0.0/6.0.0_two-node_2-core_jdk-11.md)

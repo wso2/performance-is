@@ -79,3 +79,12 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_2:4000", "member_ip_1:4000"]
+
+[authentication_policy]
+disable_account_lock_handler=true
+
+[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
+subscriptions=[]
+
+[authorization_manager.properties]
+GroupAndRoleSeparationEnabled=false

@@ -71,3 +71,12 @@ password = "wso2carbon"
 [truststore]
 name = "client-truststore.jks"
 password = "wso2carbon"
+
+[authentication_policy]
+disable_account_lock_handler=true
+
+[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
+subscriptions=[]
+
+[authorization_manager.properties]
+GroupAndRoleSeparationEnabled=false

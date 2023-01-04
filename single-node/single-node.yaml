@@ -203,6 +203,7 @@ Resources:
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
       EngineVersion: 5.7.41
       Engine: MySQL
+      EnablePerformanceInsights : 'true'
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
@@ -327,7 +328,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -371,7 +372,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -457,7 +458,7 @@ Parameters:
     NoEcho: true
   DBInstanceType:
     Type: String
-    Default: db.m4.xlarge
+    Default: db.m4.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large
@@ -469,6 +470,7 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m4.2xlarge
       - db.m5.xlarge
       - db.m5.2xlarge
   DBAllocationStorage:

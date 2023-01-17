@@ -119,6 +119,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2BastionInstance
+        - Key: User
+          Value: 'sachinm@wso2.com'
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface

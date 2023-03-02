@@ -228,15 +228,15 @@ declare -A test_scenario21=(
     [skip]=false
     [modes]="FULL JWT_GRANT_FLOW"
 )
-#declare -A test_scenario22=(
-#    [name]="22-oauth_jwt_grant_tenant"
-#    [display_name]="Jwt Grant Type"
-#    [description]="Obtain an access token using the OAuth 2.0 jwt grant type."
-#    [jmx]="oauth/OAuth_Jwt_Grant.jmx"
-#    [tenantMode]=true
-#    [skip]=true
-#    [modes]="FULL JWT_GRANT_FLOW"
-#)
+declare -A test_scenario22=(
+    [name]="22-oauth_jwt_grant_tenant"
+    [display_name]="Jwt Grant Type"
+    [description]="Obtain an access token using the OAuth 2.0 jwt grant type."
+    [jmx]="oauth/OAuth_Jwt_Grant.jmx"
+    [tenantMode]=true
+    [skip]=true
+    [modes]="FULL JWT_GRANT_FLOW"
+)
 
 function before_execute_test_scenario() {
 

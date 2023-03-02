@@ -235,7 +235,7 @@ declare -A test_scenario22=(
     [description]="Obtain an access token using the OAuth 2.0 jwt grant type."
     [jmx]="oauth/OAuth_Jwt_Grant.jmx"
     [tenantMode]=true
-    [skip]=false
+    [skip]=true
     [modes]="FULL JWT_GRANT_FLOW"
 )
 

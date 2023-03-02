@@ -30,12 +30,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="jwtTokenClientId" elementType="Argument">
             <stringProp name="Argument.name">jwtTokenClientId</stringProp>
-            <stringProp name="Argument.value">lsBp7fUIdfjSxJRRAZUI2zQGJhka</stringProp>
+            <stringProp name="Argument.value">lT4PsSl3lHxHVf7iWOfzAaE8fAMa</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tokenEndpoint" elementType="Argument">
             <stringProp name="Argument.name">tokenEndpoint</stringProp>
-            <stringProp name="Argument.value">https://api.asgardeo.io/t/sachinm/oauth2/token</stringProp>
+            <stringProp name="Argument.value">https://api.asgardeo.io/t/isperformancetest/oauth2/token</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="jwtTokenFilePath" elementType="Argument">
@@ -45,7 +45,7 @@
           </elementProp>
           <elementProp name="jwtTokenUsername" elementType="Argument">
             <stringProp name="Argument.name">jwtTokenUsername</stringProp>
-            <stringProp name="Argument.value">sachinmamoru@gmail.com</stringProp>
+            <stringProp name="Argument.value">testasgardeouser@perftest.com</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

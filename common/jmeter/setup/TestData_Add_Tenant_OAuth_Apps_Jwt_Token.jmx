@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add OAuth Apps" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add OAuth Apps to get JWT Token" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -40,22 +40,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="spNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">spNamePrefix</stringProp>
-            <stringProp name="Argument.value">app_</stringProp>
+            <stringProp name="Argument.value">jwtApp_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="roleNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">roleNamePrefix</stringProp>
-            <stringProp name="Argument.value">appRole__</stringProp>
+            <stringProp name="Argument.value">jwtAppRole__</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">consumerKey_</stringProp>
+            <stringProp name="Argument.value">jwtConsumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">consumerSecret_</stringProp>
+            <stringProp name="Argument.value">jwtConsumerSecret_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callbackUrlPrefix" elementType="Argument">
@@ -216,7 +216,7 @@ if (y == 0) {
   &quot;inboundProtocolConfiguration&quot;: {&#xd;
     &quot;oidc&quot;: {&#xd;
       &quot;accessToken&quot;: {&#xd;
-        &quot;type&quot;: &quot;Default&quot;,&#xd;
+        &quot;type&quot;: &quot;JWT&quot;,&#xd;
         &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;bindingType&quot;: &quot;sso-session&quot;,&#xd;
@@ -234,6 +234,7 @@ if (y == 0) {
         &quot;client_credentials&quot;,&#xd;
         &quot;refresh_token&quot;,&#xd;
         &quot;urn:ietf:params:oauth:grant-type:saml2-bearer&quot;,&#xd;
+        &quot;urn:ietf:params:oauth:grant-type:jwt-bearer&quot;,&#xd;
         &quot;iwa:ntlm&quot;&#xd;
       ],&#xd;
       &quot;idToken&quot;: {&#xd;

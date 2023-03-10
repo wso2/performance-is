@@ -30,12 +30,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">consumerKey_</stringProp>
+            <stringProp name="Argument.value">jwtConsumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">consumerSecret_</stringProp>
+            <stringProp name="Argument.value">jwtConsumerSecret_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tenantDomainPrefix" elementType="Argument">

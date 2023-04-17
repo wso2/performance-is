@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add OAuth Idps" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Server Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="is_host" elementType="Argument">
+            <stringProp name="Argument.name">is_host</stringProp>
+            <stringProp name="Argument.value">${__P(host,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="is_port" elementType="Argument">
+            <stringProp name="Argument.name">is_port</stringProp>
+            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="UsernamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">UsernamePrefix</stringProp>
+            <stringProp name="Argument.value">admin@wso2.com@dummytenant_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="Password" elementType="Argument">
+            <stringProp name="Argument.name">Password</stringProp>
+            <stringProp name="Argument.value">tenantPassword</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="idpNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">idpNamePrefix</stringProp>
+            <stringProp name="Argument.value">idp_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="idpIssuerName" elementType="Argument">
+            <stringProp name="Argument.name">idpIssuerName</stringProp>
+            <stringProp name="Argument.value">https://api.asgardeo.io/t/isperformancetest/oauth2/token</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="idpName" elementType="Argument">
+            <stringProp name="Argument.name">idpName</stringProp>
+            <stringProp name="Argument.value">jwtIdp</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="noOfThreads" elementType="Argument">
+            <stringProp name="Argument.name">noOfThreads</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="idpCount" elementType="Argument">
+            <stringProp name="Argument.name">idpCount</stringProp>
+            <stringProp name="Argument.value">${__P(idpCount,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loopCount" elementType="Argument">
+            <stringProp name="Argument.name">loopCount</stringProp>
+            <stringProp name="Argument.value">${__P(loopCount,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="rampUpPeriod" elementType="Argument">
+            <stringProp name="Argument.name">rampUpPeriod</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfTenants" elementType="Argument">
+            <stringProp name="Argument.name">noOfTenants</stringProp>
+            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create IDP" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${idpCount}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
+        <longProp name="ThreadGroup.start_time">1464340313000</longProp>
+        <longProp name="ThreadGroup.end_time">1464340313000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="IDP Counter" enabled="true">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${idpCount}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">idp_count_id</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <stringProp name="LoopController.loops">${noOfTenants}</stringProp>
+        </LoopController>
+        <hashTree>
+          <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+            <collectionProp name="CookieManager.cookies"/>
+            <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+            <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+          </CookieManager>
+          <hashTree/>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Tenant Counter" enabled="true">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end">${noOfTenants}</stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">tenant_index</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">false</boolProp>
+          </CounterConfig>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+String user = vars.get(&quot;UsernamePrefix&quot;);
+String passwd = vars.get(&quot;Password&quot;);
+String tenantidx = vars.get(&quot;tenant_index&quot;);
+String credentials = user + tenantidx + &quot;.com&quot; + &quot;:&quot; + passwd;
+byte[] encodedUsernamePassword = Base64.encodeBase64(credentials.getBytes());
+vars.put(&quot;adminCredentials&quot;,new String(encodedUsernamePassword));
+vars.put(&quot;adminUsername&quot;,new String(user + tenantidx + &quot;.com&quot;));
+vars.put(&quot;adminPassword&quot;,new String(passwd));
+vars.put(&quot;tenantDomain&quot;,new String(&quot;dummytenant_&quot; + tenantidx));
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;idp_count_id&quot;));
+int y = x - (x/2)*2;
+if (y == 0) {
+	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else {
+	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+}
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+              <elementProp name="X-Server-Select" elementType="Header">
+                <stringProp name="Header.name">X-Server-Select</stringProp>
+                <stringProp name="Header.value">${serverNode}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create IDP" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;certificate&quot;: {&#xd;
+        &quot;jwksUri&quot;: &quot;&quot;,&#xd;
+        &quot;certificates&quot;:[&quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlERWpDQ0FmcWdBd0lCQWdJRTQ3VnBwakFOQmdrcWhraUc5dzBCQVFRRkFEQkxNUm93R0FZRFZRUUREQkZwDQpjM0JsY21admNtMWhibU5sZEdWemRERU5NQXNHQTFVRUN3d0VUbTl1WlRFUE1BMEdBMVVFQ2d3R1RtOXVaU0JNDQpNUTB3Q3dZRFZRUUdFd1JPYjI1bE1CNFhEVEl6TURFek1ERXpNamsxT1ZvWERUTXpNREl5TmpFek1qazFPVm93DQpTekVhTUJnR0ExVUVBd3dSYVhOd1pYSm1iM0p0WVc1alpYUmxjM1F4RFRBTEJnTlZCQXNNQkU1dmJtVXhEekFODQpCZ05WQkFvTUJrNXZibVVnVERFTk1Bc0dBMVVFQmhNRVRtOXVaVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEDQpnZ0VQQURDQ0FRb0NnZ0VCQUpFdnRFTDdMMGNuSTNuMDBhY3FTaU4rNitaVXJoQkFtSUZkdW1SL1BXSnBpdytEDQphQ0xkUWR2NUlqdG51MEF0bnFSZEtRa001amRSRGhRNXpNRTM5VFV2QzFLc0RWNERJQ0E5TFlxdXdoZVVQRGRVDQpzWjlqVE1BRHBmMzZxOFVzV2hWcnF3V3Y2VCt0VUhwa2Nrb1FnWnZ1YU5PTHdKMkhMVmNkaFVYUVVydFFkdjZVDQp0WEN1ZXZMR1lRNTA2bG84MElQNitIRjdna3Vka2ZmSmdXdFgrT3JMK1czcWIzaTF3cDB4cWxxam1WVW53U3ZjDQpzd1FtRUZPckNGSEk0NXpBSjdzWmVNNHBOVXBXc3lSa2VYQ3RLZG5BNzZ1MlZrU3dFU3l5MW5oUUZkemhEemRYDQpsUTVJa1ZHUWVJbkV5ek5TVi9lMHhRcFZrTVc5VUY5RlIyN0hhWFVDQXdFQUFUQU5CZ2txaGtpRzl3MEJBUVFGDQpBQU9DQVFFQWlUTzd2bWpDMUxZcDZDMzVNcVJOdkc2dkhDbjRwRjZodFBaRlFYSjlDT2wxaUlpYWZMWFRRNGlmDQpOM29rN0xpclpyRUlVdmhvZFlPTk4xcXRwdHAvcnhCUk0rdHBicjlpcGFrb0w3dnBpWFV1UFpDbHM4MC8vREtGDQpBUjNtUmtLdEpkQWx3cC9XTUVxd21rWHFEd1dycjUyYUZlYzZCTlhLd1FUTjRBYUpJbjNNdTJCSmM0VVVSdDRDDQpCclhndmswbzBYWHZ0YkQ1M2kxZUlSQ2FIUlBwbkhYaHhYdHE4aVY2MU53UU1nOWwvb0NGSXM1YzlDeFJUQXNNDQpRQjVkTktTRlhiTlZiMGlsM0JTaFp1K1czZG9qMitKMGJqdmJ1TEp6K01ZRnQ0N1RoVnp0WnlKb1JGV0lBNm1DDQpFa20rQ3BPalkxd0VwMnJrVjZLNkl4K3UwcStUTVE9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ0K&quot;]&#xd;
+    },&#xd;
+    &quot;idpIssuerName&quot;: &quot;${idpIssuerName}&quot;,&#xd;
+    &quot;alias&quot;: &quot;https://localhost:9443/oauth2/token&quot;,&#xd;
+    &quot;claims&quot;: {&#xd;
+        &quot;provisioningClaims&quot;: [],&#xd;
+        &quot;roleClaim&quot;: {&#xd;
+            &quot;uri&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;userIdClaim&quot;: {&#xd;
+            &quot;uri&quot;: &quot;&quot;&#xd;
+        }&#xd;
+    },&#xd;
+    &quot;description&quot;: &quot;Create a new Identity Provider with minimum configurations.&quot;,&#xd;
+    &quot;federatedAuthenticators&quot;: {&#xd;
+        &quot;authenticators&quot;: [],&#xd;
+        &quot;defaultAuthenticatorId&quot;: &quot;&quot;&#xd;
+    },&#xd;
+    &quot;homeRealmIdentifier&quot;: &quot;&quot;,&#xd;
+    &quot;image&quot;: &quot;https://localhost:9443/console/libs/themes/default/assets/images/identity-providers/expert.svg&quot;,&#xd;
+    &quot;isFederationHub&quot;: false,&#xd;
+    &quot;isPrimary&quot;: false,&#xd;
+    &quot;name&quot;: &quot;${idpNamePrefix}${idp_count_id}${tenantDomain}&quot;,&#xd;
+    &quot;provisioning&quot;: {},&#xd;
+    &quot;roles&quot;: {&#xd;
+        &quot;mappings&quot;: [],&#xd;
+        &quot;outboundProvisioningRoles&quot;: []&#xd;
+    },&#xd;
+    &quot;templateId&quot;: &quot;expert-mode-idp&quot;&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/t/${tenantDomain}.com/api/server/v1/identity-providers</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="103171776">HTTP/1.1 201</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import org.apache.jmeter.protocol.http.control.CookieManager;
+import org.apache.jmeter.protocol.http.control.Cookie;
+CookieManager cm = ctx.getCurrentSampler().getCookieManager();
+
+if (cm != null) {
+	cm.clear();
+}</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

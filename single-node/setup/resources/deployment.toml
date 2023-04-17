@@ -71,3 +71,6 @@ password = "wso2carbon"
 [truststore]
 name = "client-truststore.jks"
 password = "wso2carbon"
+
+[oauth.grant_type.jwt]
+iat_validity_period=1440

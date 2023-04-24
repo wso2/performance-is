@@ -26,17 +26,21 @@ function usage() {
     echo ""
     echo "-i: The IP of wso2is node 1."
     echo "-w: The IP of wso2is node 2."
+    echo "-j: The IP of wso2is node 3."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "i:w:h" opts; do
+while getopts "i:w:j:h" opts; do
     case $opts in
     i)
         wso2_is_1_ip=("${OPTARG}")
         ;;
     w)
         wso2_is_2_ip=("${OPTARG}")
+        ;;
+    j)
+        wso2_is_3_ip=("${OPTARG}")
         ;;
     h)
         usage
@@ -59,8 +63,14 @@ if [[ -z $wso2_is_2_ip ]]; then
     exit 1
 fi
 
+if [[ -z $wso2_is_3_ip ]]; then
+    echo "Please provide the WSO2 IS node 3 ip address."
+    exit 1
+fi
+
 echo $wso2_is_1_ip
 echo $wso2_is_2_ip
+echo $wso2_is_3_ip
 
 echo ""
 echo "Coping files..."
@@ -73,10 +83,11 @@ echo "Adding IS IPs to conf file..."
 echo "============================================"
 sudo sed -i 's$server xxx.xxx.xxx.1:9443$server '$wso2_is_1_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
 sudo sed -i 's$server xxx.xxx.xxx.2:9443$server '$wso2_is_2_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
+sudo sed -i 's$server xxx.xxx.xxx.3:9443$server '$wso2_is_3_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
 
 echo ""
 echo "Adding workerconnection to nginx.conf file"
 echo "============================================"
-sudo sed -i 's/worker_connections 768/worker_connections 1500/g' /etc/nginx/nginx.conf || echo "error 1"
+sudo sed -i 's/worker_connections 768/worker_connections 4500/g' /etc/nginx/nginx.conf || echo "error 1"
 
 sudo service nginx restart

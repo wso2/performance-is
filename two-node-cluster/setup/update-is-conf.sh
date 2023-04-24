@@ -24,20 +24,24 @@ function usage() {
     echo "Usage: "
     echo "$0 -i <IS_NODE_IP> -r <RDS_IP> -w <OTHER_IS_NODE_IP> "
     echo ""
-    echo "-i: The IP of wso2is node."
+    echo "-i: The IP of wso2is node 1."
+    echo "-j: The IP of wso2is node 3."
     echo "-r: The IP address of RDS."
-    echo "-w: The IP of other wso2is node."
+    echo "-w: The IP of wso2is node 2."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "w:i:r:h" opts; do
+while getopts "w:i:j:r:h" opts; do
     case $opts in
     w)
         wso2_is_1_ip=${OPTARG}
         ;;
     i)
         wso2_is_2_ip=${OPTARG}
+        ;;
+    j)
+        wso2_is_3_ip=${OPTARG}
         ;;
     r)
         db_instance_ip=${OPTARG}
@@ -65,6 +69,11 @@ fi
 
 if [[ -z $wso2_is_2_ip ]]; then
     echo "Please provide the WSO2 IS node 2 ip address."
+    exit 1
+fi
+
+if [[ -z $wso2_is_3_ip ]]; then
+    echo "Please provide the WSO2 IS node 3 ip address."
     exit 1
 fi
 
@@ -107,6 +116,7 @@ sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.co
 
 sed -i "s|member_ip_1|$wso2_is_1_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|member_ip_2|$wso2_is_2_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i "s|member_ip_3|$wso2_is_3_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 
 echo ""
 echo "Starting WSO2 IS server..."

@@ -25,9 +25,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>is-performance-twonode-cluster</artifactId>
+    <artifactId>is-performance-threenode-cluster</artifactId>
 
-    <name>IS Performance Two Node Cluster</name>
+    <name>IS Performance Three Node Cluster</name>
     <packaging>pom</packaging>
 
     <dependencies>

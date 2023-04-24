@@ -27,12 +27,13 @@ function usage() {
     echo "-a: Host alias of the IS node to be setup."
     echo "-i: The IP of wso2is node 1."
     echo "-w: The IP of wso2is node 2."
+    echo "-j: The IP of wso2is node 3."
     echo "-r: The IP address of RDS."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "a:w:i:r:h" opts; do
+while getopts "a:w:i:j:r:h" opts; do
     case $opts in
     a)
         is_host_alias=${OPTARG}
@@ -42,6 +43,9 @@ while getopts "a:w:i:r:h" opts; do
         ;;
     w)
         wso2_is_2_ip=${OPTARG}
+        ;;
+    j)
+        wso2_is_3_ip=${OPTARG}
         ;;
     r)
         db_instance_ip=${OPTARG}
@@ -72,6 +76,11 @@ if [[ -z $wso2_is_2_ip ]]; then
     exit 1
 fi
 
+if [[ -z $wso2_is_3_ip ]]; then
+    echo "Please provide the WSO2 IS node 3 IP address."
+    exit 1
+fi
+
 if [[ -z $db_instance_ip ]]; then
     echo "Please provide the db instance IP address."
     exit 1
@@ -93,7 +102,7 @@ sudo -u ubuntu scp workspace/is/restart-is.sh "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu ssh "$is_host_alias" sudo ./setup/setup-common.sh -p zip -p jq -p bc
 
 setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-  ./update-is-conf.sh -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
+  ./update-is-conf.sh -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
 
 echo ""
 echo "Running update-is-conf script: $setup_is_node_command"

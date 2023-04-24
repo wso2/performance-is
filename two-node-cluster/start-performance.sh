@@ -16,7 +16,7 @@
 # under the License.
 #
 # ----------------------------------------------------------------------------
-# Run Identity Server Performance tests for two node cluster deployment.
+# Run Identity Server Performance tests for three node cluster deployment.
 # ----------------------------------------------------------------------------
 
 source ../common/common-functions.sh
@@ -27,7 +27,7 @@ timestamp=$(date +%Y-%m-%d--%H-%M-%S)
 random_number=$RANDOM
 # random_number=21265
 
-stack_name="is-performance-two-node--$timestamp--$random_number"
+stack_name="is-performance-three-node--$timestamp--$random_number"
 
 key_file=""
 certificate_name=""
@@ -39,13 +39,15 @@ default_db_password="wso2carbon"
 db_password="$default_db_password"
 default_db_storage="100"
 db_storage=$default_db_storage
-default_db_instance_type=db.m4.xlarge
+default_db_instance_type=db.m4.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 mode=""
+jwt_token_client_secret=""
+jwt_token_user_password=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -76,7 +78,7 @@ function usage() {
     echo ""
 }
 
-while getopts "k:c:j:n:u:p:d:e:i:b:w:t:h" opts; do
+while getopts "k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
     case $opts in
     k)
         key_file=${OPTARG}
@@ -111,6 +113,12 @@ while getopts "k:c:j:n:u:p:d:e:i:b:w:t:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
+    y)
+        jwt_token_client_secret=${OPTARG}
+        ;;
+    g)
+        jwt_token_user_password=${OPTARG}
+        ;;
     t)
         mode=${OPTARG}
         ;;
@@ -128,7 +136,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -v $mode")
+run_performance_tests_options+=(" -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
 
 if [[ ! -f $key_file ]]; then
     echo "Please provide the key file."
@@ -206,7 +214,7 @@ echo "Results will be downloaded to $results_dir"
 
 echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
-tar -xf target/is-performance-twonode-cluster*.tar.gz -C "$results_dir"
+tar -xf target/is-performance-threenode-cluster*.tar.gz -C "$results_dir"
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
@@ -231,13 +239,13 @@ echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"
 echo "random_number: $random_number"
-cp 2-node-cluster.yml new-2-node-cluster.yml
-sed -i "s/suffix/$random_number/" new-2-node-cluster.yml
+cp 3-node-cluster.yml new-3-node-cluster.yml
+sed -i "s/suffix/$random_number/" new-3-node-cluster.yml
 
 echo ""
 echo "Validating stack..."
 echo "============================================"
-aws cloudformation validate-template --template-body file://new-2-node-cluster.yml
+aws cloudformation validate-template --template-body file://new-3-node-cluster.yml
 
 # Save metadata
 test_parameters_json='.'
@@ -250,7 +258,7 @@ jq -n \
 
 stack_create_start_time=$(date +%s)
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
-    --template-body file://new-2-node-cluster.yml --parameters \
+    --template-body file://new-3-node-cluster.yml --parameters \
         ParameterKey=CertificateName,ParameterValue=$certificate_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
@@ -273,7 +281,7 @@ trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
 
 echo ""
 echo "Created stack ID: $stack_id"
-rm new-2-node-cluster.yml
+rm new-3-node-cluster.yml
 
 echo ""
 echo "Waiting ${minimum_stack_creation_wait_time}m before polling for cloudformation stack's CREATE_COMPLETE status..."
@@ -311,6 +319,13 @@ wso2_is_2_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_2_instance" |
 echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
 
 echo ""
+echo "Getting WSO2 IS Node 3 Private IP..."
+wso2is_3_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode3AutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+wso2is_3_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_3_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+wso2_is_3_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_3_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
+
+echo ""
 echo "Getting RDS Hostname..."
 rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
@@ -330,6 +345,10 @@ if [[ -z $wso2_is_1_ip ]]; then
 fi
 if [[ -z $wso2_is_2_ip ]]; then
     echo "WSO2 node 2 IP could not be found. Exiting..."
+    exit 1
+fi
+if [[ -z $wso2_is_3_ip ]]; then
+    echo "WSO2 node 3 IP could not be found. Exiting..."
     exit 1
 fi
 if [[ -z $rds_host ]]; then
@@ -367,7 +386,7 @@ echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -r $rds_host -l $nginx_instance_ip"
+    sudo ./setup/setup-bastion.sh -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -r $rds_host -l $nginx_instance_ip"
 echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
@@ -386,7 +405,7 @@ echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -a wso2is1 -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
+    ./setup/setup-is.sh -a wso2is1 -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -r $rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
@@ -395,10 +414,19 @@ echo ""
 echo "Running IS node 2 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -a wso2is2 -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
+    ./setup/setup-is.sh -a wso2is2 -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -r $rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
+
+echo ""
+echo "Running IS node 3 setup script..."
+echo "============================================"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
+    ./setup/setup-is.sh -a wso2is3 -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -r $rds_host"
+echo "$setup_is_command"
+# Handle any error and let the script continue.
+$setup_is_command || echo "Remote ssh command to setup IS node 3 through bastion failed."
 
 echo ""
 echo "Running performance tests..."

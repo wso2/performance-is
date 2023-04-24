@@ -95,6 +95,14 @@ Resources:
         AvailabilityZone: !Select
           - '1'
           - !GetAZs ''
+  WSO2ISPublicSubnet3suffix:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        VpcId: !Ref WSO2ISVPCsuffix
+        CidrBlock: 10.0.250.0/24
+        AvailabilityZone: !Select
+          - '2'
+          - !GetAZs ''
   WSO2ISPublicInternetGatewaysuffix:
     Type: 'AWS::EC2::InternetGateway'
   WSO2ISPublicRouteTablesuffix:
@@ -111,6 +119,11 @@ Resources:
     Properties:
       RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
       SubnetId: !Ref WSO2ISPublicSubnet2suffix
+  WSO2ISPublicSubnet3RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      SubnetId: !Ref WSO2ISPublicSubnet3suffix
   WSO2ISPublicRoutesuffix:
     Type: 'AWS::EC2::Route'
     Properties:
@@ -139,6 +152,14 @@ Resources:
       AvailabilityZone: !Select
         - '1'
         - !GetAZs ''
+  WSO2ISPrivateSubnet3suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select
+        - '2'
+        - !GetAZs ''
   WSO2ISPrivateSubnetRouteTablesuffix:
     Type: 'AWS::EC2::RouteTable'
     Properties:
@@ -159,6 +180,11 @@ Resources:
     Properties:
       RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
       SubnetId: !Ref WSO2ISPrivateSubnet2suffix
+  WSO2ISPrivateSubnet3RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
+      SubnetId: !Ref WSO2ISPrivateSubnet3suffix
   WSO2ISNATGatewaysuffix:
     Type: 'AWS::EC2::NatGateway'
     Properties:
@@ -203,8 +229,9 @@ Resources:
       DBName: WSO2_IS_DB_2
       #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
-      EngineVersion: 5.7.22
+      EngineVersion: 5.7.41
       Engine: MySQL
+      EnablePerformanceInsights : 'true'
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
@@ -219,6 +246,7 @@ Resources:
       SubnetIds:
         - !Ref WSO2ISPrivateSubnet1suffix
         - !Ref WSO2ISPrivateSubnet2suffix
+        - !Ref WSO2ISPrivateSubnet3suffix
   # File system configurations
   WSO2ISEFSSecurityGroupsuffix:
     Type: 'AWS::EC2::SecurityGroup'
@@ -245,6 +273,13 @@ Resources:
     Type: 'AWS::EFS::MountTarget'
     Properties:
       SubnetId: !Ref WSO2ISPrivateSubnet2suffix
+      FileSystemId: !Ref WSO2ISEFSFileSystemsuffix
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroupsuffix
+  WSO2ISPrivateSubnet3EFSMountTargetsuffix:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet3suffix
       FileSystemId: !Ref WSO2ISEFSFileSystemsuffix
       SecurityGroups:
         - !Ref WSO2ISEFSSecurityGroupsuffix
@@ -321,6 +356,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2BastionInstance
+        - Key: User
+          Value: 'sachinm@wso2.com'
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -337,7 +374,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -368,6 +405,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2NGinxInstance
+        - Key: User
+          Value: 'sachinm@wso2.com'
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -415,7 +454,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -453,6 +492,9 @@ Resources:
         - Key: cluster
           Value: is
           PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
+          PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
 
@@ -473,6 +515,33 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2ISNodeLaunchConfigurationsuffix
+
+  WSO2ISNode3AutoScalingGroupsuffix:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfigurationsuffix
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      VPCZoneIdentifier:
+        # Uncomment public subnet to assign a public IP to the IS instance.
+        # - !Ref WSO2ISPublicSubnet1suffix
+        - !Ref WSO2ISPrivateSubnet1suffix
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2ISInstance_3
+          PropagateAtLaunch: 'true'
+        - Key: cluster
+          Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -523,7 +592,7 @@ Parameters:
     NoEcho: true
   DBInstanceType:
     Type: String
-    Default: db.m4.xlarge
+    Default: db.m4.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large
@@ -535,6 +604,7 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m4.2xlarge
       - db.m5.xlarge
       - db.m5.2xlarge
   DBAllocationStorage:

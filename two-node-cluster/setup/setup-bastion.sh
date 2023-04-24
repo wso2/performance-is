@@ -21,10 +21,12 @@
 
 wso2_is_1_ip=""
 wso2_is_2_ip=""
+wso2_is_3_ip=""
 lb_host=""
 rds_host=""
 wso2is_1_host_alias=wso2is1
 wso2is_2_host_alias=wso2is2
+wso2is_3_host_alias=wso2is3
 lb_alias=loadbalancer
 
 function usage() {
@@ -34,19 +36,23 @@ function usage() {
     echo ""
     echo "-w: The private IP of WSO2 IS node 1."
     echo "-i: The private IP of WSO2 IS node 2."
+    echo "-j: The private IP of WSO2 IS node 3."
     echo "-l: The private hostname of Load balancer instance."
     echo "-r: The private hostname of RDS instance."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "w:i:l:r:h" opts; do
+while getopts "w:i:j:l:r:h" opts; do
     case $opts in
     w)
         wso2_is_1_ip=${OPTARG}
         ;;
     i)
         wso2_is_2_ip=${OPTARG}
+        ;;
+    j)
+        wso2_is_3_ip=${OPTARG}
         ;;
     l)
         lb_host=${OPTARG}
@@ -72,6 +78,11 @@ fi
 
 if [[ -z $wso2_is_2_ip ]]; then
     echo "Please provide the private IP of WSO2 IS node 2."
+    exit 1
+fi
+
+if [[ -z $wso2_is_3_ip ]]; then
+    echo "Please provide the private IP of WSO2 IS node 3."
     exit 1
 fi
 
@@ -111,6 +122,7 @@ workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
             -f /home/ubuntu/apache-jmeter-*.tgz \
             -a $wso2is_1_host_alias -n "$wso2_is_1_ip" \
             -a $wso2is_2_host_alias -n "$wso2_is_2_ip" \
+            -a $wso2is_3_host_alias -n "$wso2_is_3_ip" \
             -a $lb_alias -n "$lb_host"\
             -a rds -n "$rds_host"
 sudo chown -R ubuntu:ubuntu workspace
@@ -127,4 +139,4 @@ sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/u
 echo ""
 echo "Setting up NGinx..."
 echo "============================================"
-sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -i "$wso2_is_1_ip" -w "$wso2_is_2_ip"
+sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -i "$wso2_is_1_ip" -w "$wso2_is_2_ip" -j "$wso2_is_3_ip"

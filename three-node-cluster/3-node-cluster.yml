@@ -1,0 +1,659 @@
+# Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# 'suffix' in each component name will be replaced by a random value to enable multiple stacks at the same time.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  WSO2 Identity Server 2-node cluster deployment.
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Cluster Configuration
+        Parameters:
+          - KeyPairName
+          - WSO2InstanceType
+          - BastionInstanceType
+          - OSType
+      - Label:
+          default: Network Configuration
+        Parameters:
+          - CertificateName
+      - Label:
+          default: Database Credentials
+        Parameters:
+          - DBUsername
+          - DBPassword
+          - DBEngine
+          - DBInstanceType
+          - DBAllocationStorage
+          - DBIops
+      - Label:
+          default: Other Configuration
+        Parameters:
+          - JDK
+    ParameterLabels:
+      CertificateName:
+        default: SSL Certificate Name
+      KeyPairName:
+        default: Key Pair Name
+      DBUsername:
+        default: Username
+      DBPassword:
+        default: Password
+      JDK:
+        default: JDK Version
+      WSO2InstanceType:
+        default: Instance Type
+      DBEngine:
+        default: DB Engine
+      DBAllocationStorage:
+        default: Allocation Storage
+      DBIops:
+        default: Allocation IOPS
+      DBInstanceType:
+        default: DB Instance Type
+      JDKVersion:
+        default: JDK Version
+      OSType:
+        default: OS Type
+      BastionInstanceType:
+        default: Bastion Instance Type
+Resources:
+  # networking configurations
+  WSO2ISVPCsuffix:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+  WSO2ISPublicSubnet1suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.254.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+  WSO2ISPublicSubnet2suffix:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        VpcId: !Ref WSO2ISVPCsuffix
+        CidrBlock: 10.0.252.0/24
+        AvailabilityZone: !Select
+          - '1'
+          - !GetAZs ''
+  WSO2ISPublicSubnet3suffix:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        VpcId: !Ref WSO2ISVPCsuffix
+        CidrBlock: 10.0.250.0/24
+        AvailabilityZone: !Select
+          - '2'
+          - !GetAZs ''
+  WSO2ISPublicInternetGatewaysuffix:
+    Type: 'AWS::EC2::InternetGateway'
+  WSO2ISPublicRouteTablesuffix:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+  WSO2ISPublicSubnet1suffixRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      SubnetId: !Ref WSO2ISPublicSubnet1suffix
+  WSO2ISPublicSubnet2RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      SubnetId: !Ref WSO2ISPublicSubnet2suffix
+  WSO2ISPublicSubnet3RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      SubnetId: !Ref WSO2ISPublicSubnet3suffix
+  WSO2ISPublicRoutesuffix:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref WSO2ISPublicRouteTablesuffix
+      GatewayId: !Ref WSO2ISPublicInternetGatewaysuffix
+      DestinationCidrBlock: 0.0.0.0/0
+    DependsOn: WSO2ISVPCInternetGatewayAttachmentsuffix
+  WSO2ISVPCInternetGatewayAttachmentsuffix:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      InternetGatewayId: !Ref WSO2ISPublicInternetGatewaysuffix
+      VpcId: !Ref WSO2ISVPCsuffix
+  WSO2ISPrivateSubnet1suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+  WSO2ISPrivateSubnet2suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select
+        - '1'
+        - !GetAZs ''
+  WSO2ISPrivateSubnet3suffix:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select
+        - '2'
+        - !GetAZs ''
+  WSO2ISPrivateSubnetRouteTablesuffix:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+  WSO2ISPrivateRoute2suffix:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref WSO2ISNATGatewaysuffix
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
+  WSO2ISPrivateSubnet1RouteTableAssociatiosuffixn:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
+      SubnetId: !Ref WSO2ISPrivateSubnet1suffix
+  WSO2ISPrivateSubnet2RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
+      SubnetId: !Ref WSO2ISPrivateSubnet2suffix
+  WSO2ISPrivateSubnet3RouteTableAssociationsuffix:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref WSO2ISPrivateSubnetRouteTablesuffix
+      SubnetId: !Ref WSO2ISPrivateSubnet3suffix
+  WSO2ISNATGatewaysuffix:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt
+        - WSO2ISEIPsuffix
+        - AllocationId
+      SubnetId: !Ref WSO2ISPublicSubnet1suffix
+  WSO2BastionEIPAssociationsuffix:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt WSO2BastionEIPsuffix.AllocationId
+      InstanceId: !Ref WSO2BastionInstancesuffix
+  WSO2ISEIPsuffix:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  WSO2BastionEIPsuffix:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  # database configurations
+  WSO2ISDBInstanceSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: DB Security Group2
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '3306'
+          ToPort: '3306'
+          CidrIp: 0.0.0.0/0
+  WSO2ISDBInstancesuffix:
+    Type: 'AWS::RDS::DBInstance'
+    DeletionPolicy: Delete
+    Properties:
+      VPCSecurityGroups:
+        - !Ref WSO2ISDBInstanceSecurityGroupsuffix
+      DBInstanceClass: !Ref DBInstanceType
+      AllocatedStorage: !Ref DBAllocationStorage
+      BackupRetentionPeriod: '0'
+      DBInstanceIdentifier: WSO2ISDBInstancesuffix
+      DBName: WSO2_IS_DB_2
+      #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
+      #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
+      EngineVersion: 5.7.41
+      Engine: MySQL
+      EnablePerformanceInsights : 'true'
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      MultiAZ: 'false'
+      Iops: !Ref DBIops
+      StorageType: io1
+      DBParameterGroupName: wso2is-db-param-grp
+      DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
+  WSO2ISDBSubnetGroupsuffix:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: DB Subnet Group
+      SubnetIds:
+        - !Ref WSO2ISPrivateSubnet1suffix
+        - !Ref WSO2ISPrivateSubnet2suffix
+        - !Ref WSO2ISPrivateSubnet3suffix
+  # File system configurations
+  WSO2ISEFSSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: EFS Security Group
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '2049'
+        ToPort: '2049'
+        CidrIp: 0.0.0.0/0
+  WSO2ISEFSFileSystemsuffix:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      PerformanceMode: generalPurpose
+  WSO2ISPrivateSubnet1EFSMountTargetsuffix:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet1suffix
+      FileSystemId: !Ref WSO2ISEFSFileSystemsuffix
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroupsuffix
+  WSO2ISPrivateSubnet2EFSMountTargetsuffix:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet2suffix
+      FileSystemId: !Ref WSO2ISEFSFileSystemsuffix
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroupsuffix
+  WSO2ISPrivateSubnet3EFSMountTargetsuffix:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref WSO2ISPrivateSubnet3suffix
+      FileSystemId: !Ref WSO2ISEFSFileSystemsuffix
+      SecurityGroups:
+        - !Ref WSO2ISEFSSecurityGroupsuffix
+  # Product configurations
+  BastionSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: WSO2 Bastion node Security Group for 5.3
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  WSO2ISSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: WSO2 Identity Manager Security Group
+      GroupName: WSO2SecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8280'
+          ToPort: '8280'
+          SourceSecurityGroupId: !Ref BastionSecurityGroupsuffix
+        - IpProtocol: tcp
+          FromPort: '9763'
+          ToPort: '9763'
+          SourceSecurityGroupId: !Ref BastionSecurityGroupsuffix
+        - IpProtocol: tcp
+          FromPort: '9443'
+          ToPort: '9443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8243'
+          ToPort: '8243'
+          SourceSecurityGroupId: !Ref BastionSecurityGroupsuffix
+        - IpProtocol: tcp
+          FromPort: '5672'
+          ToPort: '5672'
+          SourceSecurityGroupId: !Ref BastionSecurityGroupsuffix
+        - IpProtocol: tcp
+          FromPort: '5701'
+          ToPort: '5701'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8140'
+          ToPort: '8140'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '4000'
+          ToPort: '4000'
+          CidrIp: 0.0.0.0/0
+  WSO2BastionInstancesuffix:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMapsuffix
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref BastionInstanceType
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2BastionInstance
+        - Key: User
+          Value: 'sachinm@wso2.com'
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref WSO2ISPublicSubnet1suffix
+          GroupSet:
+            - !Ref BastionSecurityGroupsuffix
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            - sudo mkdir /usr/lib/jvm
+            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            - sudo chmod a+x /usr/bin/java
+            - sudo chmod a+x /usr/bin/javac
+            - sudo chmod a+x /usr/bin/javaws
+            - export JAVA_HOME=/usr/lib/jvm/jdk
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
+            - source /etc/environment
+            - exit
+
+  WSO2NGinxInstancesuffix:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMapsuffix
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref BastionInstanceType
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2NGinxInstance
+        - Key: User
+          Value: 'sachinm@wso2.com'
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          # Uncomment public subnet to assign a public IP to the IS instance.
+          # SubnetId: !Ref WSO2ISPublicSubnet1suffix
+          SubnetId: !Ref WSO2ISPrivateSubnet1suffix
+          GroupSet:
+            - !Ref BastionSecurityGroupsuffix
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq nginx
+            - mkdir -p /etc/nginx/ssl/is
+
+  WSO2ISNodeLaunchConfigurationsuffix:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      # Uncomment below to assign a public IP to the IS instance.
+      # AssociatePublicIpAddress: true
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMapsuffix
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref WSO2InstanceType
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: '20'
+            VolumeType: gp2
+            DeleteOnTermination: 'true'
+      KeyName: !Ref KeyPairName
+      SecurityGroups:
+        - !Ref WSO2ISSecurityGroupsuffix
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            - sudo mkdir /usr/lib/jvm
+            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            - sudo chmod a+x /usr/bin/java
+            - sudo chmod a+x /usr/bin/javac
+            - sudo chmod a+x /usr/bin/javaws
+            - export JAVA_HOME=/usr/lib/jvm/jdk
+            - sudo su
+            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
+            - source /etc/environment
+            - exit
+    DependsOn:
+      - WSO2ISSecurityGroupsuffix
+      - WSO2ISVPCInternetGatewayAttachmentsuffix
+      - WSO2ISDBInstancesuffix
+
+  WSO2ISNode1AutoScalingGroupsuffix:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfigurationsuffix
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      VPCZoneIdentifier:
+        # Use public subnet to assign a public IP to the IS instance.
+        # - !Ref WSO2ISPublicSubnet1suffix
+        - !Ref WSO2ISPrivateSubnet1suffix
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2ISInstance_1
+          PropagateAtLaunch: 'true'
+        - Key: cluster
+          Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2ISNodeLaunchConfigurationsuffix
+
+  WSO2ISNode2AutoScalingGroupsuffix:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfigurationsuffix
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      VPCZoneIdentifier:
+        # Uncomment public subnet to assign a public IP to the IS instance.
+        # - !Ref WSO2ISPublicSubnet1suffix
+        - !Ref WSO2ISPrivateSubnet1suffix
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2ISInstance_2
+          PropagateAtLaunch: 'true'
+        - Key: cluster
+          Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2ISNodeLaunchConfigurationsuffix
+
+  WSO2ISNode3AutoScalingGroupsuffix:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfigurationsuffix
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      VPCZoneIdentifier:
+        # Uncomment public subnet to assign a public IP to the IS instance.
+        # - !Ref WSO2ISPublicSubnet1suffix
+        - !Ref WSO2ISPrivateSubnet1suffix
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2ISInstance_3
+          PropagateAtLaunch: 'true'
+        - Key: cluster
+          Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: 'sachinm@wso2.com'
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2ISNodeLaunchConfigurationsuffix
+
+Outputs:
+  InstanceID:
+    Description: The Bastion ID
+    Value: !Ref WSO2BastionInstancesuffix
+
+Parameters:
+  KeyPairName:
+    Description: >-
+      The private key used to log in to instances through SSH
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  CertificateName:
+    Description: A valid SSL certificate used for HTTPS
+    Type: String
+    MinLength: 1
+  WSO2InstanceType:
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - t2.micro
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - c4.large
+      - c4.xlarge
+      - c5.large
+      - c5.xlarge
+    ConstraintDescription: Must be a valid EC2 instance type
+  DBUsername:
+    Type: String
+    MinLength: 4
+    AllowedPattern: '[A-Za-z0-9\-]+'
+  DBEngine:
+    Type: String
+    Default: MySQL_5.7
+  DBPassword:
+    Type: String
+    MinLength: 8
+    NoEcho: true
+  DBInstanceType:
+    Type: String
+    Default: db.m4.2xlarge
+    AllowedValues:
+      - db.t2.medium
+      - db.t2.large
+      - db.t2.xlarge
+      - db.t2.2xlarge
+      - db.m3.medium
+      - db.m3.large
+      - db.m3.xlarge
+      - db.m3.2xlarge
+      - db.m4.large
+      - db.m4.xlarge
+      - db.m4.2xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
+  DBAllocationStorage:
+    Description: Provide storage size in Gigabytes
+    Type: Number
+    Default: 100
+  DBIops:
+    Description: Provide IOps size in numbers
+    Type: Number
+    Default: 1000
+  JDKVersion:
+    Type: String
+    Default: Oracle_JDK_8
+    AllowedValues:
+      - Open_JDK_8
+      - Oracle_JDK_8
+  OSType:
+    Type: String
+    Default: Ubuntu_18.04
+    AllowedValues:
+      - Ubuntu_18.04
+      - CentOS_7
+  BastionInstanceType:
+    Type: String
+    Default: c5.xlarge
+    AllowedValues:
+      - t2.micro
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - c4.large
+      - c4.xlarge
+      - c5.large
+      - c5.xlarge
+    ConstraintDescription: Must be a valid EC2 instance type
+Mappings:
+  WSO2ISAMIRegionMapsuffix:
+    us-east-1:
+      AMI: ami-0b86cfbff176b7d3a
+    us-east-2:
+      AMI: ami-0125a7e5b2489477a
+    us-west-1:
+      AMI: ami-0e81aa4c57820bb57
+    us-west-2:
+      AMI: ami-03fa1f014b48fa6bd

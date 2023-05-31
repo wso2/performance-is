@@ -43,6 +43,7 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+no_of_nodes=1
 mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
@@ -126,7 +127,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
+run_performance_tests_options+=(" -g $no_of_nodes -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
 
 if [[ ! -f $key_file ]]; then
     echo "Please provide the key file."

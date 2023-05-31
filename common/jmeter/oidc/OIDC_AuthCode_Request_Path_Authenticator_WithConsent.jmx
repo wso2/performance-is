@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="OIDC- Authorization Code Request Path Authenticator With Consent" enabled="true">
       <stringProp name="TestPlan.comments">Login to </stringProp>
@@ -215,12 +215,18 @@ vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
-int y = x - (x/2)*2;
+          <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
+int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int y = x - (x/numOfNodes)*numOfNodes;
+
 if (y == 0) {
-	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+    vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else if (y == 1) {
+    vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+} else if (y == 2) {
+    vars.put(&quot;serverNode&quot;, &quot;node3&quot;);
 } else {
-	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+    vars.put(&quot;serverNode&quot;, &quot;node4&quot;);
 }</stringProp>
         </BeanShellPreProcessor>
         <hashTree/>

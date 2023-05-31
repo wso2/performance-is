@@ -50,11 +50,7 @@ password = "wso2carbon"
 [database.user.pool_options]
 maxActive = "300"
 
-[transport.http]
-maxThreads = "500"
-acceptCount = "500"
-
-[transport.https]
+[transport.https.properties]
 maxThreads = "500"
 acceptCount = "500"
 
@@ -72,6 +68,9 @@ password = "wso2carbon"
 name = "client-truststore.jks"
 password = "wso2carbon"
 
+[oauth.grant_type.jwt]
+iat_validity_period=1440
+
 [authentication_policy]
 disable_account_lock_handler=true
 
@@ -80,6 +79,3 @@ subscriptions=[]
 
 [authorization_manager.properties]
 GroupAndRoleSeparationEnabled=false
-
-[oauth.grant_type.jwt]
-iat_validity_period=1440

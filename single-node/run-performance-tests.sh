@@ -215,7 +215,7 @@ declare -A test_scenario9=(
 #    [display_name]="Device Code Grant Flow"
 #    [description]="Obtain an access token using the OAuth 2.0 device code grant type."
 #    [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
-#    [tenantMode]=false
+#    [tenantMode]=true
 #    [skip]=true
 #    [modes]="FULL DEVICE_FLOW"
 #)

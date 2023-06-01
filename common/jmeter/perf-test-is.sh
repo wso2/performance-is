@@ -54,7 +54,8 @@
 # Finally, execute test scenarios using the function test_scenarios
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
-default_concurrent_users="50 100 150 300 500"
+default_concurrent_users=""
+concurrency=""
 # Application heap Sizes
 default_heap_sizes="2G"
 
@@ -125,7 +126,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:n:s:q:u:t:p:k:v:o:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:o:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -138,6 +139,9 @@ while getopts "c:m:d:w:j:i:e:n:s:q:u:t:p:k:v:o:h" opts; do
         ;;
     w)
         warm_up_time=${OPTARG}
+        ;;
+    r)
+        concurrency=${OPTARG}
         ;;
     j)
         jmeter_client_heap_size=${OPTARG}
@@ -189,6 +193,15 @@ done
 # Validate options
 number_regex='^[0-9]+$'
 heap_regex='^[0-9]+[MG]$'
+
+# Check concurrency level
+if [ "$concurrency" = "50-500" ]; then
+    default_concurrent_users="50 100 150 300 500"
+elif [ "$concurrency" = "500-3000" ]; then
+    default_concurrent_users="500 1000 1500 2000 2500 3000"
+else
+    default_concurrent_users="50 100 150 300 500 1000 1500 2000 2500 3000"
+fi
 
 if [[ -z $test_duration ]]; then
     echo "Please provide the test duration."
@@ -365,7 +378,7 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_images.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_SAML_Apps.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
@@ -542,7 +555,7 @@ function test_scenarios() {
 
                 before_execute_test_scenario
 
-                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
+                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
 
                 local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
                 for param in "${jmeter_params[@]}"; do

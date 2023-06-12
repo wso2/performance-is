@@ -390,8 +390,6 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2BastionInstance
-        - Key: User
-          Value: 'sachinm@wso2.com'
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -439,8 +437,6 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2NGinxInstance
-        - Key: User
-          Value: 'sachinm@wso2.com'
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -526,9 +522,6 @@ Resources:
         - Key: cluster
           Value: is
           PropagateAtLaunch: 'true'
-        - Key: User
-          Value: 'sachinm@wso2.com'
-          PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
 
@@ -549,9 +542,6 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is
-          PropagateAtLaunch: 'true'
-        - Key: User
-          Value: 'sachinm@wso2.com'
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -574,9 +564,6 @@ Resources:
         - Key: cluster
           Value: is
           PropagateAtLaunch: 'true'
-        - Key: User
-          Value: 'sachinm@wso2.com'
-          PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
 
@@ -597,9 +584,6 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is
-          PropagateAtLaunch: 'true'
-        - Key: User
-          Value: 'sachinm@wso2.com'
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix

@@ -4,10 +4,12 @@ This script is used to install required software on the all nodes and setup ssh 
 
 See usage:
 ```
-./setup-bastion.sh -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host>
+./setup-bastion.sh -w <wso2_is_1_ip> -i <wso2_is_2_ip> -j <wso2_is_3_ip> -k <wso2_is_4_ip> -l <lb_host> -r <rds_host>
 
 -w: The private IP of WSO2 IS node 1.
 -i: The private IP of WSO2 IS node 2.
+-j: The private IP of WSO2 IS node 3.
+-k: The private IP of WSO2 IS node 4.
 -l: The private hostname of Load balancer instance.
 -r: The private hostname of RDS instance.
 -h: Display this help and exit.

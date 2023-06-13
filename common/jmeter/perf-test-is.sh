@@ -93,6 +93,10 @@ mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
 
+# Burst Traffic
+enable_burst=false
+burstTraffic=3000
+
 # Start time of the test
 test_start_time=$(date +%s)
 # Scenario specific counters
@@ -126,7 +130,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:o:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -175,6 +179,9 @@ while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:o:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    b)
+        enable_burst=${OPTARG}
         ;;
     k)
         jwt_token_client_secret=${OPTARG}
@@ -231,6 +238,13 @@ fi
 if ! [[ $jmeter_client_heap_size =~ $heap_regex ]]; then
     echo "Please specify a valid heap for JMeter Client."
     exit 1
+fi
+
+# Check if the variable is true
+if [ "$enable_burst" = true ]; then
+    burstTraffic=3000
+else
+    burstTraffic=0
 fi
 
 declare -ag heap_sizes_array
@@ -546,7 +560,7 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfBurst=$burstTraffic")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
@@ -555,7 +569,7 @@ function test_scenarios() {
 
                 before_execute_test_scenario
 
-                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
+                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size  -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
 
                 local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
                 for param in "${jmeter_params[@]}"; do

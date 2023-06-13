@@ -74,3 +74,12 @@ password = "wso2carbon"
 
 [oauth.grant_type.jwt]
 iat_validity_period=1440
+
+[authentication_policy]
+disable_account_lock_handler=true
+
+[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
+subscriptions=[]
+
+[authorization_manager.properties]
+GroupAndRoleSeparationEnabled=false

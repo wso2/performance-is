@@ -49,6 +49,7 @@ mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
 concurrency=""
+enable_burst=false
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -126,6 +127,9 @@ while getopts "k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:h" opts; do
     t)
         mode=${OPTARG}
         ;;
+    m)
+        enable_burst=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -140,7 +144,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -r $concurrency -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
+run_performance_tests_options+=(" -r $concurrency -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst")
 
 if [[ ! -f $key_file ]]; then
     echo "Please provide the key file."

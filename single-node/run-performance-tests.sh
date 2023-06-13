@@ -37,7 +37,7 @@ declare -A test_scenario0=(
     [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL QUICK"
 )
 declare -A test_scenario1=(
     [name]="01-oauth_auth_code_redirect_with_consent"
@@ -73,7 +73,7 @@ declare -A test_scenario4=(
     [jmx]="oauth/OAuth_Client_Credentials_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK"
+    [modes]="FULL"
 )
 declare -A test_scenario5=(
     [name]="05-oidc_auth_code_redirect_with_consent"
@@ -226,7 +226,7 @@ declare -A test_scenario21=(
     [jmx]="oauth/OAuth_Jwt_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK JWT_GRANT_FLOW"
+    [modes]="FULL JWT_GRANT_FLOW"
 )
 declare -A test_scenario22=(
     [name]="22-oauth_jwt_grant_tenant"

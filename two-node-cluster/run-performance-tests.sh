@@ -38,7 +38,7 @@ declare -A test_scenario0=(
     [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL QUICK"
 )
 declare -A test_scenario1=(
     [name]="01-oauth_auth_code_redirect_with_consent"
@@ -74,7 +74,7 @@ declare -A test_scenario4=(
     [jmx]="oauth/OAuth_Client_Credentials_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK"
+    [modes]="FULL"
 )
 declare -A test_scenario5=(
     [name]="05-oidc_auth_code_redirect_with_consent"
@@ -203,22 +203,22 @@ declare -A test_scenario18=(
     [modes]="FULL"
 )
 declare -A test_scenario19=(
-    [name]="19-oidc_device_code_grant"
-    [display_name]="Device Code Grant Flow"
-    [description]="Obtain an access token using the OAuth 2.0 device code grant type."
-    [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
-    [tenantMode]=false
-    [skip]=false
-    [modes]="FULL DEVICE_FLOW"
+  [name]="19-oidc_device_code_grant"
+  [display_name]="Device Code Grant Flow"
+  [description]="Obtain an access token using the OAuth 2.0 device code grant type."
+  [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
+  [tenantMode]=false
+  [skip]=false
+  [modes]="FULL DEVICE_FLOW"
 )
 declare -A test_scenario20=(
-    [name]="20-oidc_device_code_grant_tenant"
-    [display_name]="Device Code Grant Flow"
-    [description]="Obtain an access token using the OAuth 2.0 device code grant type."
-    [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
-    [tenantMode]=false
-    [skip]=true
-    [modes]="FULL DEVICE_FLOW"
+  [name]="20-oidc_device_code_grant_tenant"
+  [display_name]="Device Code Grant Flow"
+  [description]="Obtain an access token using the OAuth 2.0 device code grant type."
+  [jmx]="oauth/OAuth_DeviceCode_Grant.jmx"
+  [tenantMode]=true
+  [skip]=true
+  [modes]="FULL DEVICE_FLOW"
 )
 declare -A test_scenario21=(
     [name]="21-oauth_jwt_grant_tenant"
@@ -227,7 +227,7 @@ declare -A test_scenario21=(
     [jmx]="oauth/OAuth_Jwt_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK JWT_GRANT_FLOW"
+    [modes]="FULL JWT_GRANT_FLOW"
 )
 declare -A test_scenario22=(
     [name]="22-oauth_jwt_grant_tenant"

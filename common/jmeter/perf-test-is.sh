@@ -54,7 +54,8 @@
 # Finally, execute test scenarios using the function test_scenarios
 
 # Concurrent users (these will by multiplied by the number of JMeter servers)
-default_concurrent_users="50 100 150 300 500"
+default_concurrent_users=""
+concurrency=""
 # Application heap Sizes
 default_heap_sizes="2G"
 
@@ -129,7 +130,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -142,6 +143,9 @@ while getopts "c:m:d:w:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
         ;;
     w)
         warm_up_time=${OPTARG}
+        ;;
+    r)
+        concurrency=${OPTARG}
         ;;
     j)
         jmeter_client_heap_size=${OPTARG}
@@ -196,6 +200,15 @@ done
 # Validate options
 number_regex='^[0-9]+$'
 heap_regex='^[0-9]+[MG]$'
+
+# Check concurrency level
+if [ "$concurrency" = "50-500" ]; then
+    default_concurrent_users="50 100 150 300 500"
+elif [ "$concurrency" = "500-3000" ]; then
+    default_concurrent_users="500 1000 1500 2000 2500 3000"
+else
+    default_concurrent_users="50 100 150 300 500 1000 1500 2000 2500 3000"
+fi
 
 if [[ -z $test_duration ]]; then
     echo "Please provide the test duration."

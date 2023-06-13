@@ -29,6 +29,7 @@ random_number=$RANDOM
 
 stack_name="is-performance-two-node--$timestamp--$random_number"
 
+user_tag=""
 key_file=""
 certificate_name=""
 jmeter_setup=""
@@ -78,8 +79,11 @@ function usage() {
     echo ""
 }
 
-while getopts "k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
     case $opts in
+    q)
+        user_tag=${OPTARG}
+        ;;
     k)
         key_file=${OPTARG}
         ;;
@@ -137,6 +141,11 @@ shift "$((OPTIND - 1))"
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
 run_performance_tests_options+=(" -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
+
+if [[ -z $user_tag ]]; then
+    echo "Please provide the user tag."
+    exit 1
+fi
 
 if [[ ! -f $key_file ]]; then
     echo "Please provide the key file."
@@ -267,6 +276,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
+        ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
 
 echo ""

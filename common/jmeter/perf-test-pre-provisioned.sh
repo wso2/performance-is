@@ -284,11 +284,7 @@ fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    if [ "$mode" == "QUICK" ]; then
-        concurrent_users_array=( "200" )
-    else
-        concurrent_users_array=( $default_concurrent_users )
-    fi
+    concurrent_users_array=( $default_concurrent_users )
 else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi

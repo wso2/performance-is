@@ -49,6 +49,8 @@ bastion_instance_type="$default_bastion_instance_type"
 mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
+concurrency=""
+enable_burst=false
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -79,7 +81,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -117,6 +119,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
+    r)
+        concurrency=${OPTARG}
+        ;;
     y)
         jwt_token_client_secret=${OPTARG}
         ;;
@@ -125,6 +130,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:y:g:t:h" opts; do
         ;;
     t)
         mode=${OPTARG}
+        ;;
+    m)
+        enable_burst=${OPTARG}
         ;;
     h)
         usage
@@ -140,7 +148,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password")
+run_performance_tests_options+=(" -r $concurrency -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

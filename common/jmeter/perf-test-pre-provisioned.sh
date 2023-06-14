@@ -105,6 +105,10 @@ mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
 
+# Burst Traffic
+enable_burst=false
+burstTraffic=3000
+
 function get_ssh_hostname() {
     ssh -G "$1" | awk '/^hostname / { print $2 }'
 }
@@ -138,10 +142,13 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:x:y:g:z:tp:u:k:l:n:r:s:q:b:f:o:v:k:h" opts; do
+while getopts "c:a:m:d:w:j:i:e:x:y:g:z:t:p:u:k:l:n:r:s:q:b:f:o:v:k:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
+        ;;
+    a)
+        enable_burst=${OPTARG}
         ;;
     m)
         heap_sizes+=("${OPTARG}")
@@ -261,6 +268,13 @@ if ! [[ $jmeter_client_heap_size =~ $heap_regex ]]; then
     exit 1
 fi
 
+# Check if the variable is true
+if [ "$enable_burst" = true ]; then
+    burstTraffic=3000
+else
+    burstTraffic=0
+fi
+
 declare -ag heap_sizes_array
 if [ ${#heap_sizes[@]} -eq 0 ]; then
     heap_sizes_array=( $default_heap_sizes )
@@ -270,11 +284,7 @@ fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    if [ "$mode" == "QUICK" ]; then
-        concurrent_users_array=( "200" )
-    else
-        concurrent_users_array=( $default_concurrent_users )
-    fi
+    concurrent_users_array=( $default_concurrent_users )
 else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi
@@ -579,7 +589,7 @@ function test_scenarios() {
                 credentials="$superAdminUsername:$superAdminPassword"
                 base64EncodedCredentials=$(echo -n "$credentials" | base64)
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "adminCredentials=$base64EncodedCredentials")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "adminCredentials=$base64EncodedCredentials" "noOfBurst=$burstTraffic")
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
                       jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret"

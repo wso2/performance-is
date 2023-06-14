@@ -44,6 +44,7 @@ Metadata:
           default: Other Configuration
         Parameters:
           - JDK
+          - UserTag
     ParameterLabels:
       CertificateName:
         default: SSL Certificate Name
@@ -55,6 +56,8 @@ Metadata:
         default: Password
       JDK:
         default: JDK Version
+      UserTag:
+        default: User Tag
       WSO2InstanceType:
         default: Instance Type
       DBEngine:
@@ -321,6 +324,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2BastionInstance
+        - Key: User
+          Value: !Ref UserTag
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -368,6 +373,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2NGinxInstance
+        - Key: User
+          Value: !Ref UserTag
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -453,6 +460,9 @@ Resources:
         - Key: cluster
           Value: is
           PropagateAtLaunch: 'true'
+        - Key: User
+          Value: !Ref UserTag
+          PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
 
@@ -473,6 +483,9 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: !Ref UserTag
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -552,6 +565,10 @@ Parameters:
     AllowedValues:
       - Open_JDK_8
       - Oracle_JDK_8
+  UserTag:
+    Description: User tag to be used for tagging AWS resources
+    Type: String
+    Default: user@wso2.com
   OSType:
     Type: String
     Default: Ubuntu_18.04

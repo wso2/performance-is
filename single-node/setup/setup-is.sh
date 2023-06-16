@@ -30,9 +30,12 @@ function usage() {
     echo ""
 }
 
-while getopts "n:r:h" opts; do
+while getopts "n:p:r:h" opts; do
     case $opts in
     n)
+        no_of_nodes=${OPTARG}
+        ;;
+    p)
         wso2_is_ip=${OPTARG}
         ;;
     r)
@@ -75,7 +78,7 @@ $copy_is_server_command
 echo "$copy_mysql_connector_command"
 $copy_mysql_connector_command
 
-setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update-is-conf.sh -l $db_instance_ip"
+setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip"
 
 echo ""
 echo "Running IS node setup script: $setup_is_node_command"

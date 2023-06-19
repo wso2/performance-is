@@ -46,10 +46,28 @@
             <fileMode>0775</fileMode>
         </fileSet>
         <fileSet>
+            <directory>../common/deployment/setup</directory>
+            <outputDirectory>setup</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0775</fileMode>
+            <excludes>
+                <exclude>setup-nginx.sh</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../common/jmeter</directory>
             <outputDirectory>jmeter</outputDirectory>
             <filtered>true</filtered>
             <fileMode>0775</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>../common/deployment</directory>
+            <outputDirectory>jmeter</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0775</fileMode>
+            <includes>
+                <include>test_scenarios.sh</include>
+            </includes>
         </fileSet>
         <fileSet>
             <directory>../common/is</directory>

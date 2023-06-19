@@ -111,6 +111,12 @@ if [[ -z $no_of_nodes ]]; then
     exit 1
 fi
 
+if [[ $no_of_nodes -gt 0 ]]; then
+    echo ""
+    echo "Creating databases in RDS..."
+    echo "============================================"
+    mysql -h "$db_instance_ip" -u wso2carbon -pwso2carbon < resources/createDB.sql
+fi
 if [[ $no_of_nodes -gt 1 ]]; then
     sed -i "s|member_ip_1|$wso2_is_1_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
     sed -i "s|member_ip_2|$wso2_is_2_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"

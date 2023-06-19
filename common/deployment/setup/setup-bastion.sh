@@ -26,6 +26,7 @@ wso2_is_3_ip=""
 wso2_is_4_ip=""
 lb_host=""
 rds_host=""
+wso2is_host_alias=wso2is
 wso2is_1_host_alias=wso2is1
 wso2is_2_host_alias=wso2is2
 wso2is_3_host_alias=wso2is3
@@ -115,6 +116,14 @@ cd /home/ubuntu || exit 0
 if [[ -z $no_of_nodes ]]; then
     echo "Please provide the number of IS nodes in the deployment."
     exit 1
+elif [[ $no_of_nodes -eq 1 ]]; then
+    workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
+                -i /home/ubuntu \
+                -c /home/ubuntu \
+                -f /home/ubuntu/apache-jmeter-*.tgz \
+                -a $wso2is_host_alias -n "$wso2_is_1_ip" \
+                -a loadbalancer -n "$wso2_is_1_ip"\
+                -a rds -n "$rds_host"
 elif [[ $no_of_nodes -eq 2 ]]; then
     workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
                 -i /home/ubuntu \
@@ -165,7 +174,16 @@ echo ""
 echo "Setting up NGinx..."
 echo "============================================"
 
-if [[ $no_of_nodes -eq 2 ]]; then
+if [[ $no_of_nodes -eq 1 ]]; then
+    echo ""
+    echo "Setting up IS instance..."
+    echo "============================================"
+    sudo -u ubuntu ssh $wso2is_host_alias mkdir sar setup
+    sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_host_alias:/home/ubuntu/setup/
+    sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_host_alias:/home/ubuntu/sar/
+    sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_host_alias:/home/ubuntu/
+    sudo -u ubuntu ssh $wso2is_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
+elif [[ $no_of_nodes -eq 2 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip"
 elif [[ $no_of_nodes -eq 3 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip" -j "$wso2_is_3_ip"

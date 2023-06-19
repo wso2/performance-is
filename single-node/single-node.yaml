@@ -42,6 +42,7 @@ Metadata:
           default: Other Configuration
         Parameters:
           - JDK
+          - UserTag
     ParameterLabels:
       CertificateName:
         default: SSL Certificate Name
@@ -53,6 +54,8 @@ Metadata:
         default: Password
       JDK:
         default: JDK Version
+      UserTag:
+        default: User Tag
       WSO2InstanceType:
         default: Instance Type
       DBEngine:
@@ -311,6 +314,8 @@ Resources:
       Tags:
         - Key: Name
           Value: suffix_WSO2BastionInstance
+        - Key: User
+          Value: !Ref UserTag
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -327,7 +332,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -371,7 +376,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://s3.amazonaws.com/is-performance-test/java-setup/jdk-8u212-linux-x64.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
@@ -407,6 +412,9 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: is
+          PropagateAtLaunch: 'true'
+        - Key: User
+          Value: !Ref UserTag
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -457,7 +465,7 @@ Parameters:
     NoEcho: true
   DBInstanceType:
     Type: String
-    Default: db.m4.xlarge
+    Default: db.m4.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large
@@ -469,6 +477,7 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m4.2xlarge
       - db.m5.xlarge
       - db.m5.2xlarge
   DBAllocationStorage:
@@ -485,6 +494,10 @@ Parameters:
     AllowedValues:
       - Open_JDK_8
       - Oracle_JDK_8
+  UserTag:
+    Description: User tag to be used for tagging AWS resources
+    Type: String
+    Default: user@wso2.com
   OSType:
     Type: String
     Default: Ubuntu_18.04

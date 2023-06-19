@@ -72,7 +72,3 @@ After downloading or cloning the performance_analysis folder, the directory stru
     └── output
           └── [scenario_folders_with_plots]
    ```
-
-
-
-

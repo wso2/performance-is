@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add OAuth Apps" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -91,6 +91,11 @@
           <elementProp name="noOfTenants" elementType="Argument">
             <stringProp name="Argument.name">noOfTenants</stringProp>
             <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tokenIssuer" elementType="Argument">
+            <stringProp name="Argument.name">tokenIssuer</stringProp>
+            <stringProp name="Argument.value">${__P(tokenIssuer,Default)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -221,7 +226,7 @@ if (y == 0) {
   &quot;inboundProtocolConfiguration&quot;: {&#xd;
     &quot;oidc&quot;: {&#xd;
       &quot;accessToken&quot;: {&#xd;
-        &quot;type&quot;: &quot;Default&quot;,&#xd;
+        &quot;type&quot;: &quot;${tokenIssuer}&quot;,&#xd;
         &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;bindingType&quot;: &quot;sso-session&quot;,&#xd;

@@ -93,6 +93,9 @@ mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
 
+# Token Type
+token_issuer="Opaque"
+
 # Burst Traffic
 enable_burst=false
 burstTraffic=3000
@@ -130,7 +133,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:y:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -188,6 +191,9 @@ while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:h" opts; do
         ;;
     k)
         jwt_token_client_secret=${OPTARG}
+        ;;
+    y)
+        token_issuer=${OPTARG}
         ;;
     h)
         usage
@@ -248,6 +254,13 @@ if [ "$enable_burst" = true ]; then
     burstTraffic=3000
 else
     burstTraffic=0
+fi
+
+# Check token type
+if [ "$token_issuer" = "Opaque" ]; then
+    token_issuer="Default"
+else
+    token_issuer="JWT"
 fi
 
 declare -ag heap_sizes_array
@@ -401,7 +414,7 @@ function run_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
         echo "$command"
         echo ""
         $command
@@ -418,7 +431,7 @@ function run_tenant_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
         echo "$command"
         echo ""
         $command

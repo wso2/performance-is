@@ -50,6 +50,9 @@ jwt_token_user_password=""
 concurrency=""
 enable_burst=false
 
+# Token Type
+token_issuer="Opaque"
+
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
@@ -64,6 +67,10 @@ function usage() {
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
+    echo "-v: The token issuer type."
+    echo "-q: User tag who triggered the Jenkins build"
+    echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
+    echo "-m: Enable burst traffic"
     echo "-j: The path to JMeter setup."
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
@@ -79,7 +86,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:v:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -132,6 +139,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:h" opts; do
     m)
         enable_burst=${OPTARG}
         ;;
+    v)
+        token_issuer=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -146,7 +156,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -r $concurrency -g $no_of_nodes -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst")
+run_performance_tests_options+=(" -r $concurrency -g $no_of_nodes -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst -y $token_issuer")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

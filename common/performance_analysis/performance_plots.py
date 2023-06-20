@@ -143,9 +143,6 @@ def main():
         if (min_concurrency == 500 and max_concurrency == 3000) or (min_concurrency == 50 and max_concurrency == 3000):
             plot_and_save_graph(concurrency_ranges['500-3000'], scenario_folder, lines_data, scenario)
 
-        else:
-            print(f"No valid concurrency range found for scenario: {scenario}")
-
 
 if __name__ == '__main__':
     main()

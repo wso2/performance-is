@@ -99,3 +99,12 @@ See usage:
 8. Download the test results from the bastion node.
 9. Create summary CSV file and MD file.
 
+## Performance Analysis Graphs
+
+We have added a performance analysis feature to the project, which allows you to generate performance plots based on CSV data files. This feature provides insights into response times for different deployment types and scenarios. By analyzing these performance plots, you can identify performance bottlenecks and make informed optimizations.
+
+To use this feature, we have added the `performance_plots.py` script to the project. This script reads CSV data files, filters the data based on concurrency ranges, and generates performance plots using the matplotlib library. The generated plots are saved in the 'output' folder.
+
+Additionally, we have updated the README.md file in the `performance_analysis` directory to provide detailed instructions on how to use the script, customize the settings, and understand the input CSV data format.
+
+To get started with the performance analysis feature, please refer to the [performance_analysis/README.md](performance_analysis/README.md) file for instructions and examples.

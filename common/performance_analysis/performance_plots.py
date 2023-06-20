@@ -32,7 +32,7 @@ deployment_types = {
     },
     'Two Node 2 Core': {
         'csv_file': 'two_node_2_core.csv',
-        'color': 'black'
+        'color': 'cyan'
     },
     'Two Node 4 Core': {
         'csv_file': 'two_node_4_core.csv',

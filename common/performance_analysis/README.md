@@ -29,7 +29,7 @@ This script generates performance plots based on CSV data files for different de
 4. Install the required Python packages by running the following command:
 
    ```shell
-   pip install pandas matplotlib
+   pip install -r requirements.txt
    ```
 
 5. Run the script by executing the following command:

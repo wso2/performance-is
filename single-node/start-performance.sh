@@ -44,6 +44,7 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+no_of_nodes=1
 mode=""
 jwt_token_client_secret=""
 jwt_token_user_password=""
@@ -138,7 +139,7 @@ shift "$((OPTIND - 1))"
 
 echo "Run mode: $mode"
 run_performance_tests_options="$@"
-run_performance_tests_options+=(" -r $concurrency -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst")
+run_performance_tests_options+=(" -r $concurrency -g $no_of_nodes -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -351,7 +352,7 @@ $copy_connector_command
 echo ""
 echo "Running IS node setup script..."
 echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $wso2_is_ip -r $rds_host"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
@@ -360,7 +361,7 @@ echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
+    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
 echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."

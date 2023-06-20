@@ -50,11 +50,7 @@ password = "wso2carbon"
 [database.user.pool_options]
 maxActive = "300"
 
-[transport.http]
-maxThreads = "500"
-acceptCount = "500"
-
-[transport.https]
+[transport.https.properties]
 maxThreads = "500"
 acceptCount = "500"
 
@@ -79,6 +75,15 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_2:4000", "member_ip_1:4000"]
+
+[authentication_policy]
+disable_account_lock_handler=true
+
+[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
+subscriptions=[]
+
+[authorization_manager.properties]
+GroupAndRoleSeparationEnabled=false
 
 [oauth.grant_type.jwt]
 iat_validity_period=1440

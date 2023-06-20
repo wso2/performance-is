@@ -27,6 +27,8 @@
     <modules>
         <module>single-node</module>
         <module>two-node-cluster</module>
+        <module>three-node-cluster</module>
+        <module>four-node-cluster</module>
         <module>pre-provisioned</module>
     </modules>
 

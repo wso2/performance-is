@@ -130,7 +130,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -155,6 +155,9 @@ while getopts "c:m:d:w:r:j:i:e:n:s:q:u:t:p:k:v:b:o:h" opts; do
         ;;
     e)
         exclude_scenario_names+=("${OPTARG}")
+        ;;
+    g)
+        noOfNodes=("${OPTARG}")
         ;;
     n)
         noOfTenants=("${OPTARG}")
@@ -256,7 +259,11 @@ fi
 
 declare -ag concurrent_users_array
 if [ ${#concurrent_users[@]} -eq 0 ]; then
-    concurrent_users_array=( $default_concurrent_users )
+    if [ "$mode" == "QUICK" ]; then
+        concurrent_users_array=( "200" )
+    else
+        concurrent_users_array=( $default_concurrent_users )
+    fi
 else
     concurrent_users_array=( ${concurrent_users[@]} )
 fi
@@ -556,11 +563,11 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfBurst=$burstTraffic")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
-                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret"
+                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount"
                 fi
 
                 before_execute_test_scenario

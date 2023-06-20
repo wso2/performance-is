@@ -24,13 +24,28 @@ import matplotlib.pyplot as plt
 import os
 from collections import defaultdict
 
-# Define the deployment types and their respective CSV files
+# Define the deployment types and their respective CSV files and colors
 deployment_types = {
-    'Single Node 4 Core': 'single_node_4_core.csv',
-    'Two Node 2 Core': 'two_node_2_core.csv',
-    'Two Node 4 Core': 'two_node_4_core.csv',
-    'Three Node 4 Core': 'three_node_4_core.csv',
-    'Four Node 4 Core': 'four_node_4_core.csv',
+    'Single Node 4 Core': {
+        'csv_file': 'single_node_4_core.csv',
+        'color': 'blue'
+    },
+    'Two Node 2 Core': {
+        'csv_file': 'two_node_2_core.csv',
+        'color': 'cyan'
+    },
+    'Two Node 4 Core': {
+        'csv_file': 'two_node_4_core.csv',
+        'color': 'orange'
+    },
+    'Three Node 4 Core': {
+        'csv_file': 'three_node_4_core.csv',
+        'color': 'pink'
+    },
+    'Four Node 4 Core': {
+        'csv_file': 'four_node_4_core.csv',
+        'color': 'purple'
+    }
 }
 
 # Define the concurrency ranges and values
@@ -40,15 +55,26 @@ concurrency_ranges = {
     '50-3000': [50, 100, 150, 300, 500, 1000, 1500, 2000, 2500, 3000]
 }
 
-# Define the upper and lower limit values and labels
-upper_limit = 2000
-lower_limit = 500
+# Define the upper and lower limit values and colors
+limits = {
+    'upper': {
+        'value': 2000,
+        'color': 'red',
+        'label': 'Upper Limit: 2000 ms'
+    },
+    'lower': {
+        'value': 500,
+        'color': 'green',
+        'label': 'Lower Limit: 500 ms'
+    }
+}
 
 
 # Get unique scenario names from the deployment type CSV files
 def get_unique_scenarios():
     scenarios = set()
-    for csv_file in deployment_types.values():
+    for deployment_type in deployment_types.values():
+        csv_file = deployment_type['csv_file']
         if os.path.isfile(csv_file):
             data = pd.read_csv(csv_file)
             scenarios.update(data['Scenario Name'].unique())
@@ -72,7 +98,8 @@ def create_scenario_folder(output_folder, scenario):
 # Get the scenario data for each deployment type
 def get_scenario_data(scenario, deployment_types):
     lines_data = defaultdict(lambda: ([], []))
-    for deployment_type, csv_file in deployment_types.items():
+    for deployment_type, details in deployment_types.items():
+        csv_file = details['csv_file']
         if os.path.isfile(csv_file):
             deployment_data = pd.read_csv(csv_file)
             scenario_data = deployment_data[deployment_data['Scenario Name'] == scenario]
@@ -93,20 +120,23 @@ def plot_and_save_graph(concurrency_range, scenario_folder, lines_data, scenario
         filtered_concurrency = [concurrency for concurrency, response_time in zip(data[0], data[1]) if concurrency_range[0] <= concurrency <= concurrency_range[-1]]
         filtered_response_times = [response_time for concurrency, response_time in zip(data[0], data[1]) if concurrency_range[0] <= concurrency <= concurrency_range[-1]]
 
-        plt.plot(filtered_concurrency, filtered_response_times, label=deployment_type)
+        # Get the color for the deployment type
+        color = deployment_types[deployment_type]['color']
+
+        plt.plot(filtered_concurrency, filtered_response_times, label=deployment_type, color=color)
 
     plt.title(scenario)
     plt.xlabel('Concurrent Users')
     plt.ylabel('95th Percentile of Response Time (ms)')
 
     # Add upper and lower limit lines
-    plt.axhline(y=upper_limit, color='red', linestyle='--')
-    plt.axhline(y=lower_limit, color='green', linestyle='--')
+    plt.axhline(y=limits['upper']['value'], color=limits['upper']['color'], linestyle='--')
+    plt.axhline(y=limits['lower']['value'], color=limits['lower']['color'], linestyle='--')
 
     # Add legend with upper and lower bound labels
     legend_labels = list(lines_data.keys())
-    legend_labels.append(f'Upper Limit: {upper_limit} ms')
-    legend_labels.append(f'Lower Limit: {lower_limit} ms')
+    legend_labels.append(limits['upper']['label'])
+    legend_labels.append(limits['lower']['label'])
     plt.legend(legend_labels, loc='upper left')
 
     plt.grid(True)
@@ -136,11 +166,12 @@ def main():
 
         if min_concurrency == 50 and max_concurrency == 3000:
             plot_and_save_graph(concurrency_ranges['50-3000'], scenario_folder, lines_data, scenario)
+            plot_and_save_graph(concurrency_ranges['50-500'], scenario_folder, lines_data, scenario)
 
         if min_concurrency == 50 and max_concurrency == 500:
             plot_and_save_graph(concurrency_ranges['50-500'], scenario_folder, lines_data, scenario)
 
-        if (min_concurrency == 500 and max_concurrency == 3000) or (min_concurrency == 50 and max_concurrency == 3000):
+        if min_concurrency == 500 and max_concurrency == 3000:
             plot_and_save_graph(concurrency_ranges['500-3000'], scenario_folder, lines_data, scenario)
 
 

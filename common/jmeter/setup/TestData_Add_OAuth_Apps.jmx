@@ -93,6 +93,11 @@
             <stringProp name="Argument.value">${__P(tokenIssuer,Default)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="noOfNodes" elementType="Argument">
+            <stringProp name="Argument.name">noOfNodes</stringProp>
+            <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -235,7 +240,7 @@ if (y == 0) {
             &lt;xsd1:OAuthVersion&gt;OAuth-2.0&lt;/xsd1:OAuthVersion&gt;&#xd;
             &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt;&#xd;
             &lt;xsd1:callbackUrl&gt;${callbackUrlPrefix}${sp_count_id}&lt;/xsd1:callbackUrl&gt;&#xd;
-            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
+            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
             &lt;xsd1:oauthConsumerKey&gt;${consumerKeyPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerKey&gt;&#xd;
             &lt;xsd1:oauthConsumerSecret&gt;${consumerSecretPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerSecret&gt;&#xd;
             &lt;xsd1:pkceMandatory&gt;false&lt;/xsd1:pkceMandatory&gt;&#xd;

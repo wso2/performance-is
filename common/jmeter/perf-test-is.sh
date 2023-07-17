@@ -133,7 +133,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:y:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:x:o:y:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -160,7 +160,7 @@ while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:y:h" opts; do
         exclude_scenario_names+=("${OPTARG}")
         ;;
     g)
-        noOfNodes=("${OPTARG}")
+        noOfNodes=${OPTARG}
         ;;
     n)
         noOfTenants=("${OPTARG}")
@@ -186,7 +186,7 @@ while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:b:o:y:h" opts; do
     v)
         mode=${OPTARG}
         ;;
-    b)
+    x)
         enable_burst=${OPTARG}
         ;;
     k)
@@ -211,11 +211,14 @@ number_regex='^[0-9]+$'
 heap_regex='^[0-9]+[MG]$'
 
 # Check concurrency level
-if [ "$concurrency" = "50-500" ]; then
+if [ "$concurrency" == "50-500" ]; then
+    echo "Running tests for concurrency level 50-500"
     default_concurrent_users="50 100 150 300 500"
-elif [ "$concurrency" = "500-3000" ]; then
+elif [ "$concurrency" == "500-3000" ]; then
+    echo "Running tests for concurrency level 500-3000"
     default_concurrent_users="500 1000 1500 2000 2500 3000"
 else
+    echo "Running tests for concurrency level 50-3000"
     default_concurrent_users="50 100 150 300 500 1000 1500 2000 2500 3000"
 fi
 
@@ -257,7 +260,7 @@ else
 fi
 
 # Check token type
-if [ "$token_issuer" = "Opaque" ]; then
+if [ "$token_issuer" == "Opaque" ]; then
     token_issuer="Default"
 else
     token_issuer="JWT"
@@ -414,7 +417,7 @@ function run_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
         echo "$command"
         echo ""
         $command
@@ -431,7 +434,7 @@ function run_tenant_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
         echo "$command"
         echo ""
         $command

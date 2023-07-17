@@ -23,11 +23,12 @@
 import csv
 import os
 
-rows = []   # To store each row of the summary.csv file
+rows = []  # To store each row of the summary.csv file
 scenarioCount = []  # To keep scenario count orderly
+burst_keyword = "Burst"  # Keyword to identify burst scenarios
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
-scenarios = {"Authenticate Super Tenant User":  "Authenticate",
+scenarios = {"Authenticate Super Tenant User": "Authenticate",
              "Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
              "Implicit Grant Redirect With Consent": "Common Auth Login HTTP Request",
              "Password Grant Type": "GetToken_Password_Grant",
@@ -37,7 +38,7 @@ scenarios = {"Authenticate Super Tenant User":  "Authenticate",
              "OIDC Password Grant Type": "GetToken_Password_Grant",
              "OIDC Auth Code Request Path Authenticator With Consent": "Get tokens",
              "SAML2 SSO Redirect Binding": "Identity Provider Login",
-             "Jwt Grant Type": "Jwt Grant Type"}
+             "Jwt Grant Type": "GetToken_Jwt_Grant"}
 
 scenarios_critical_requests = scenarios.copy()
 
@@ -51,47 +52,57 @@ with open('summary.csv') as file:
     for row in reader:
         rows.append(row)
 
-scenario = rows[1][0]   # Assign first scenario
-count = 0   # Number of times each scenario appears
+scenario = rows[1][0]  # Assign first scenario
+count = 0  # Number of times each scenario appears
 for row in rows[1:]:
     if scenario == row[0]:
-        if scenarios.get(scenario) == row[3]:
+        if scenarios.get(scenario) == row[3] or (burst_keyword + " " + scenarios.get(scenario)) == row[3]:
             scenarios_critical_requests[scenario].append(row[14])
-        count += 1   # Increase the count when the same scenario appears
+        count += 1  # Increase the count when the same scenario appears
     else:
-        scenarioCount.append(count)    # Append the count to the array when a new scenario name appears
+        scenarioCount.append(count)  # Append the count to the array when a new scenario name appears
         scenario = row[0]
-        scenarios_critical_requests[scenario].append(row[14])
+        if scenarios.get(scenario) == row[3] or (burst_keyword + " " + scenarios.get(scenario)) == row[3]:
+            scenarios_critical_requests[scenario].append(row[14])
         count = 1
-scenarioCount.append(count)    # Append the count of the last scenario
+scenarioCount.append(count)  # Append the count of the last scenario
 
-concurrentUserCounts = 0    # Get number of different concurrent user counts
+concurrentUserCounts = 0  # Get number of different concurrent user counts
 userCount = ""  # Assign reading value from the file
 # Loop just for the first scenario to get the number of different concurrent user count
 for i in range(scenarioCount[0]):
     if userCount != rows[1 + i][2]:
-        concurrentUserCounts += 1   # Increase the count when a new number appears
+        concurrentUserCounts += 1  # Increase the count when a new number appears
         userCount = rows[1 + i][2]  # Assign the newly met count
 
 # Write Scenario name, Concurrent Users, Throughput (Requests/sec), Average Response Time (ms) into a new file
 with open('updated_summary.csv', 'w') as file:
     writer = csv.writer(file)
-    writer.writerow([rows[0][0], rows[0][2], rows[0][14]])   # Write column names
+    writer.writerow([rows[0][0], rows[0][2], rows[0][14]])  # Write column names
 
-    rowNumber = 1   # Row number of the original data file
-    print("scenarioCount", scenarioCount)
-    print("concurrentUserCounts", concurrentUserCounts)
+    rowNumber = 1  # Row number of the original data file
+
     for count in scenarioCount:
+        if burst_keyword in rows[rowNumber][3]:
+            concurrentUserCounts = concurrentUserCounts * 2  # If burst scenario, double the concurrent user count
         for i in range(concurrentUserCounts):
             stepsCount = int(count / concurrentUserCounts)  # Get the number of steps for each scenario
             # 0 - Scenario name, 2 - Concurrent users, 7 - Throughput (Requests/sec), 8 - Average Response Time (ms)
             # Throughput and response time are rounded to first two decimal places
             # Read column wise for getting average throughput and total of average response times using numpy nd arrays
-            writer.writerow(
-                [rows[rowNumber][0], rows[rowNumber][2],
-                 scenarios_critical_requests[rows[rowNumber][0]][i]])
-            rowNumber += stepsCount     # Increment the row number for the next write
+
+            # If burst enabled scenario, add another line for burst scenario
+            if burst_keyword in rows[rowNumber][3]:
+                writer.writerow(
+                    [rows[rowNumber][0] + " [" + burst_keyword + "]", rows[rowNumber][2],
+                     scenarios_critical_requests[rows[rowNumber][0]][i]])
+            else:
+                writer.writerow(
+                    [rows[rowNumber][0], rows[rowNumber][2],
+                     scenarios_critical_requests[rows[rowNumber][0]][i]])
+
+            rowNumber += stepsCount  # Increment the row number for the next write
 
 # Rename file to keep existing implementation as it is
 os.rename(r'summary.csv', r'summary-original.csv')  # Rename summary.csv to summary-original.csv
-os.rename(r'updated_summary.csv', r'summary.csv')   # Rename updated_summary.csv to summary.csv
+os.rename(r'updated_summary.csv', r'summary.csv')  # Rename updated_summary.csv to summary.csv

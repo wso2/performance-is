@@ -43,15 +43,7 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
-mode=""
 no_of_nodes=4
-jwt_token_client_secret=""
-jwt_token_user_password=""
-concurrency=""
-enable_burst=false
-
-# Token Type
-token_issuer="Opaque"
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -86,7 +78,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:v:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -124,39 +116,39 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:r:y:g:t:m:v:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
-    r)
-        concurrency=${OPTARG}
-        ;;
-    y)
-        jwt_token_client_secret=${OPTARG}
-        ;;
-    g)
-        jwt_token_user_password=${OPTARG}
-        ;;
-    t)
-        mode=${OPTARG}
-        ;;
-    m)
-        enable_burst=${OPTARG}
-        ;;
-    v)
-        token_issuer=${OPTARG}
-        ;;
     h)
         usage
         exit 0
         ;;
     \?)
-        usage
-        exit 1
+        echo "Invalid option: -$OPTARG"
+        echo "May be needed for the perf-test script."
         ;;
     esac
 done
 shift "$((OPTIND - 1))"
 
-echo "Run mode: $mode"
-run_performance_tests_options="$@"
-run_performance_tests_options+=(" -r $concurrency -g $no_of_nodes -v $mode -k $jwt_token_client_secret -o $jwt_token_user_password -b $enable_burst -y $token_issuer")
+# Define an associative array to store excluded options
+declare -A excluded_options=(
+  ["-i ${wso2_is_instance_type}"]=1
+  ["-q ${user_tag}"]=1
+)
+
+# Create a new array to store the modified options
+modified_options=()
+
+# Iterate over the options and add them to the modified options array,
+# excluding the options present in the excluded_options array
+while [[ $# -gt 0 ]]; do
+  option="$1"
+  if [[ -z "${excluded_options[$option]}" ]]; then
+    modified_options+=("$option")
+  fi
+  shift
+done
+
+# Pass the modified options to the command
+run_performance_tests_options=("-g ${no_of_nodes} -r ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

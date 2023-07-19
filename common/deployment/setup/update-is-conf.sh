@@ -111,7 +111,7 @@ if [[ -z $no_of_nodes ]]; then
     exit 1
 fi
 
-if [[ $no_of_nodes -gt 0 ]]; then
+if [[ $no_of_nodes -eq 1 ]]; then
     echo ""
     echo "Creating databases in RDS..."
     echo "============================================"

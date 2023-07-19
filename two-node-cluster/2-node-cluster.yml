@@ -91,13 +91,13 @@ Resources:
         - '0'
         - !GetAZs ''
   WSO2ISPublicSubnet2suffix:
-      Type: 'AWS::EC2::Subnet'
-      Properties:
-        VpcId: !Ref WSO2ISVPCsuffix
-        CidrBlock: 10.0.252.0/24
-        AvailabilityZone: !Select
-          - '1'
-          - !GetAZs ''
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.252.0/24
+      AvailabilityZone: !Select
+        - '1'
+        - !GetAZs ''
   WSO2ISPublicInternetGatewaysuffix:
     Type: 'AWS::EC2::InternetGateway'
   WSO2ISPublicRouteTablesuffix:
@@ -229,10 +229,10 @@ Resources:
       VpcId: !Ref WSO2ISVPCsuffix
       GroupDescription: EFS Security Group
       SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
-        CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '2049'
+          ToPort: '2049'
+          CidrIp: 0.0.0.0/0
   WSO2ISEFSFileSystemsuffix:
     Type: 'AWS::EFS::FileSystem'
     Properties:

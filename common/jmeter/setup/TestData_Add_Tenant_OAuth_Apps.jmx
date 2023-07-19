@@ -98,6 +98,11 @@
             <stringProp name="Argument.value">${__P(tokenIssuer,Default)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="noOfNodes" elementType="Argument">
+            <stringProp name="Argument.name">noOfNodes</stringProp>
+            <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -244,6 +249,7 @@ if (y == 0) {
         &quot;client_credentials&quot;,&#xd;
         &quot;refresh_token&quot;,&#xd;
         &quot;urn:ietf:params:oauth:grant-type:saml2-bearer&quot;,&#xd;
+        &quot;urn:ietf:params:oauth:grant-type:jwt-bearer&quot;&#xd;
         &quot;iwa:ntlm&quot;&#xd;
       ],&#xd;
       &quot;idToken&quot;: {&#xd;

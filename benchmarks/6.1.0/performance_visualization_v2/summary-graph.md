@@ -148,7 +148,7 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 #### Obtain a SAML 2 assertion response using redirect binding.
 
-Note: Response time is calculated only for the identity provider login request.
+Note: Response time is calculated only for the user credentials submission request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 

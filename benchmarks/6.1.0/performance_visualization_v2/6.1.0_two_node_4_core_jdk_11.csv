@@ -1,0 +1,41 @@
+Scenario Name,Concurrent Users,95th Percentile of Response Time (ms)
+Client Credentials Grant Type,50,117
+Client Credentials Grant Type,100,365
+Client Credentials Grant Type,150,539
+Client Credentials Grant Type,300,1471
+Client Credentials Grant Type,500,2463
+Client Credentials Grant Type,1000,3823
+Client Credentials Grant Type,1500,5151
+Client Credentials Grant Type,2000,6335
+Client Credentials Grant Type,2500,7711
+Client Credentials Grant Type,3000,8959
+OIDC Auth Code Grant Redirect With Consent,50,13
+OIDC Auth Code Grant Redirect With Consent,100,48
+OIDC Auth Code Grant Redirect With Consent,150,46
+OIDC Auth Code Grant Redirect With Consent,300,48
+OIDC Auth Code Grant Redirect With Consent,500,53
+OIDC Auth Code Grant Redirect With Consent,1000,60
+OIDC Auth Code Grant Redirect With Consent,1500,105
+OIDC Auth Code Grant Redirect With Consent,2000,583
+OIDC Auth Code Grant Redirect With Consent,2500,2847
+OIDC Auth Code Grant Redirect With Consent,3000,4927
+OIDC Password Grant Type,50,188
+OIDC Password Grant Type,100,463
+OIDC Password Grant Type,150,635
+OIDC Password Grant Type,300,1415
+OIDC Password Grant Type,500,2399
+OIDC Password Grant Type,1000,4575
+OIDC Password Grant Type,1500,6591
+OIDC Password Grant Type,2000,7775
+OIDC Password Grant Type,2500,10815
+OIDC Password Grant Type,3000,12927
+SAML2 SSO Redirect Binding,50,66
+SAML2 SSO Redirect Binding,100,62
+SAML2 SSO Redirect Binding,150,66
+SAML2 SSO Redirect Binding,300,65
+SAML2 SSO Redirect Binding,500,70
+SAML2 SSO Redirect Binding,1000,95
+SAML2 SSO Redirect Binding,1500,220
+SAML2 SSO Redirect Binding,2000,5151
+SAML2 SSO Redirect Binding,2500,6015
+SAML2 SSO Redirect Binding,3000,8831

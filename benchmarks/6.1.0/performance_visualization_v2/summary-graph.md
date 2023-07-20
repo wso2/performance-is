@@ -65,6 +65,21 @@ The following is the summary of performance test results collected for the measu
 
 #### Obtain an access token using the OAuth 2.0 client credential grant type.
 
+Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
+
+| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+|---|---:|---:|---:|---:|---:|
+| 50 | 88 | 307 | 117 | 59 | 48 |
+| 100 | 192 | 687 | 365 | 195 | 154 |
+| 150 | 307 | 1215 | 539 | 341 | 285 |
+| 300 | 631 | 2543 | 1471 | 1127 | 855 |
+| 500 | 1015 | 3551 | 2463 | 1983 | 1711 |
+| 1000 | 1679 | 6207 | 3823 | 3391 | 3295 |
+| 1500 | 2335 | 8639 | 5151 | 4479 | 4639 |
+| 2000 | 2911 | 11839 | 6335 | 5983 | 6047 |
+| 2500 | 3551 | 15103 | 7711 | 7551 | 6367 |
+| 3000 | 4047 | 18303 | 8959 | 8447 | 9023 |
+
 <ins> Concurrency: 50 - 500 </ins>
 
 ![image info](./graphs/Client_Credentials_Grant_Type/50_500_lines.png)
@@ -76,6 +91,21 @@ The following is the summary of performance test results collected for the measu
 ### 2. OIDC Auth Code Grant Redirect With Consent
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.
+
+Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
+
+| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+|---|---:|---:|---:|---:|---:|
+| 50 | 12 | 14 | 13 | 81 | 72 |
+| 100 | 51 | 51 | 48 | 77 | 68 |
+| 150 | 50 | 50 | 46 | 72 | 64 |
+| 300 | 50 | 53 | 48 | 73 | 81 |
+| 500 | 52 | 67 | 53 | 82 | 142 |
+| 1000 | 56 | 110 | 60 | 95 | 176 |
+| 1500 | 118 | 3375 | 105 | 163 | 214 |
+| 2000 | 1807 | 7231 | 583 | 363 | 317 |
+| 2500 | 2703 | 10943 | 2847 | 1711 | 555 |
+| 3000 | 3679 | 15551 | 4927 | 3183 | 1175 |
 
 <ins> Concurrency: 50 - 500 </ins>
 
@@ -89,6 +119,21 @@ The following is the summary of performance test results collected for the measu
 
 #### Obtain an access token and an id token using the OAuth 2.0 password grant type.
 
+Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
+
+| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+|---|---:|---:|---:|---:|---:|
+| 50 | 176 | 449 | 188 | 82 | 70 |
+| 100 | 391 | 911 | 463 | 244 | 151 |
+| 150 | 599 | 1423 | 635 | 501 | 283 |
+| 300 | 1255 | 2847 | 1415 | 935 | 863 |
+| 500 | 2079 | 4607 | 2399 | 1903 | 1927 |
+| 1000 | 4127 | 9215 | 4575 | 4799 | 3279 |
+| 1500 | 5183 | 13631 | 6591 | 5983 | 6571 |
+| 2000 | 6559 | 17791 | 7775 | 8703 | 7615 |
+| 2500 | 8127 | 23167 | 10815 | 11583 | 10559 |
+| 3000 | 9791 | 27903 | 12927 | 12671 | 12223 |
+
 <ins> Concurrency: 50 - 500 </ins>
 
 ![image info](./graphs/OIDC_Password_Grant_Type/50_500_lines.png)
@@ -100,6 +145,21 @@ The following is the summary of performance test results collected for the measu
 ### 4. SAML2 SSO Redirect Binding
 
 #### Obtain a SAML 2 assertion response using redirect binding.
+
+Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
+
+| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+|---|---:|---:|---:|---:|---:|
+| 50 | 58 | 92 | 66 | 98 | 103 |
+| 100 | 52 | 82 | 62 | 90 | 98 |
+| 150 | 55 | 86 | 66 | 86 | 96 |
+| 300 | 57 | 106 | 65 | 83 | 90 |
+| 500 | 67 | 130 | 70 | 89 | 93 |
+| 1000 | 1927 | 6271 | 95 | 172 | 161 |
+| 1500 | 5951 | 18431 | 220 | 219 | 222 |
+| 2000 | 9919 | 26751 | 5151 | 361 | 341 |
+| 2500 | 13631 | 31743 | 6015 | 819 | 547 |
+| 3000 | 19199 | 36351 | 8831 | 4991 | 1263 |
 
 <ins> Concurrency: 50 - 500 </ins>
 

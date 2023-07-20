@@ -92,6 +92,8 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.
 
+Note: Response time is calculated only for the common-auth login HTTP request path.
+
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
 | Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
@@ -145,6 +147,8 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 ### 4. SAML2 SSO Redirect Binding
 
 #### Obtain a SAML 2 assertion response using redirect binding.
+
+Note: Response time is calculated only for the identity provider login path.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 

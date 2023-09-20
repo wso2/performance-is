@@ -2,12 +2,19 @@
 
 During each release, we execute various automated performance test scenarios and publish the results.
 
-| Test Scenarios | Description |
-| --- | --- |
-| Client Credentials Grant Type | Obtain an access token using the OAuth 2.0 client credential grant type. |
-| OIDC Auth Code Grant Redirect With Consent | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. |
-| OIDC Password Grant Type | Obtain an access token and an id token using the OAuth 2.0 password grant type. |
-| SAML2 SSO Redirect Binding | Obtain a SAML 2 assertion response using redirect binding. |
+| Test Scenarios                                                                              | Description                                                                                                                                                                    |
+|---------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Client Credentials Grant Type                                                               | Obtain an access token using the OAuth 2.0 client credential grant type.                                                                                                       |
+| OIDC Auth Code Grant Redirect With Consent                                                  | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.                                                                                      |
+| OIDC Auth Code Grant Redirect Without Consent                                               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent.                                                                      |
+| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes                    | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
+| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes and Groups         | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
+| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles  | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
+| OIDC Password Grant Type                                                                    | Obtain an access token and an id token using the OAuth 2.0 password grant type.                                                                                                |
+| OIDC Password Grant Type Retrieving User Attributes.                                        | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
+| OIDC Password Grant Type Retrieving User Attributes and Groups                              | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
+| OIDC Password Grant Type Retrieving User Attributes, Groups and Roles                       | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
+| SAML2 SSO Redirect Binding                                                                  | Obtain a SAML 2 assertion response using redirect binding.                                                                                                                     |
 
 Our test client is [Apache JMeter](https://jmeter.apache.org/index.html). We test each scenario for a fixed duration of
 time and split the test results into warm-up and measurement parts and use the measurement part to compute the
@@ -18,6 +25,15 @@ We run the performance tests under different numbers of concurrent users and hea
 The main performance metrics:
 
 1. **Response Time**: The end-to-end latency for a given operation of the WSO2 Identity Server. The complete distribution of response times was recorded.
+
+The following are the test specifications.
+
+| Test Specification       | Description                                                 | Values                                                          |
+|--------------------------|-------------------------------------------------------------|-----------------------------------------------------------------|
+| No of Users              | The number of users created for the test cases              | 1000                                                            |
+| No of OAuth Applications | The number of OAuth applications created for the test cases | 1000                                                            |
+| No of SAML Applications  | The number of SAML applications created for the test cases  | 1000                                                            |
+| Token Issuer             | Token issuer type                                           | JWT                                                             |
 
 The following are the test parameters.
 
@@ -48,21 +64,7 @@ maxThreads = "500"
 acceptCount = "500"
 ```
 
-The following are the measurements collected from each performance test conducted for a given combination of
-test parameters.
-
-| Measurement | Description |
-| --- | --- |
-| Error % | Percentage of requests with errors |
-| Average Response Time (ms) | The average response time of a set of results |
-| Standard Deviation of Response Time (ms) | The Standard Deviation of the response time. |
-| 99th Percentile of Response Time (ms) | 99% of the requests took no more than this time. The remaining samples took at least as long as this |
-| Throughput (Requests/sec) | The throughput measured in requests per second. |
-| Average Memory Footprint After Full GC (M) | The average memory consumed by the application after a full garbage collection event. |
-
 The following is the summary of performance test results collected for the measurement period.
-
-
 
 ### 1. Client Credentials Grant Type
 

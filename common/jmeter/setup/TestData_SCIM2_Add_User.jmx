@@ -49,6 +49,26 @@
             <stringProp name="Argument.value">isTestUserRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="groupname" elementType="Argument">
+            <stringProp name="Argument.name">groupname</stringProp>
+            <stringProp name="Argument.value">isTestUserGroup</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userFirstNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">userFirstNamePrefix</stringProp>
+            <stringProp name="Argument.value">isTestUserFirstName_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userLastNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">userLastNamePrefix</stringProp>
+            <stringProp name="Argument.value">isTestUserLastName_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="useremailPrefix" elementType="Argument">
+            <stringProp name="Argument.name">useremailPrefix</stringProp>
+            <stringProp name="Argument.value">istestuser_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -83,7 +103,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Role Request" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Group Request" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -91,41 +111,42 @@
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1439374326000</longProp>
-        <longProp name="ThreadGroup.end_time">1439374326000</longProp>
+        <longProp name="ThreadGroup.start_time">1468998322000</longProp>
+        <longProp name="ThreadGroup.end_time">1468998322000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration">3600</stringProp>
-        <stringProp name="ThreadGroup.delay">10</stringProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Role" enabled="true">
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="X-Server-Select" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
+            <elementProp name="Authorization" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Group" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://service.ws.um.carbon.wso2.org&quot; xmlns:xsd=&quot;http://dao.service.ws.um.carbon.wso2.org/xsd&quot;&gt;&#xd;
-   &lt;soapenv:Header/&gt;&#xd;
-   &lt;soapenv:Body&gt;&#xd;
-      &lt;ser:addRole&gt;&#xd;
-         &lt;ser:roleName&gt;${rolename}&lt;/ser:roleName&gt;       &#xd;
-           &lt;ser:permissions&gt;&#xd;
-            &lt;xsd:action&gt;ui.execute&lt;/xsd:action&gt;&#xd;
-            &lt;xsd:resourceId&gt;/permission/admin/login&lt;/xsd:resourceId&gt;&#xd;
-         &lt;/ser:permissions&gt;&#xd;
-          &lt;ser:permissions&gt;&#xd;
-            &lt;xsd:action&gt;ui.execute&lt;/xsd:action&gt;&#xd;
-            &lt;xsd:resourceId&gt;/permission/admin/configure/&lt;/xsd:resourceId&gt;&#xd;
-         &lt;/ser:permissions&gt;&#xd;
-           &lt;ser:permissions&gt;&#xd;
-            &lt;xsd:action&gt;ui.execute&lt;/xsd:action&gt;&#xd;
-             &lt;xsd:resourceId&gt;/permission/admin/manage/&lt;/xsd:resourceId&gt;&#xd;
-         &lt;/ser:permissions&gt;        &#xd;
-      &lt;/ser:addRole&gt; &#xd;
-&#xd;
-   &lt;/soapenv:Body&gt;&#xd;
-&lt;/soapenv:Envelope&gt;</stringProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;displayName&quot;:&quot;primary/${groupname}&quot;,&#xd;
+	&quot;members&quot;:[],&#xd;
+	&quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:Group&quot;]&#xd;
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -134,38 +155,23 @@
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/services/RemoteUserStoreManagerService</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Groups</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="TestPlan.comments">.RemoteUserStoreManagerServiceHttpsSoap11Endpoint</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">SOAPAction</stringProp>
-                <stringProp name="Header.value">urn:addRole</stringProp>
-              </elementProp>
-              <elementProp name="Content-Type" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">text/xml</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="103171777">HTTP/1.1 202</stringProp>
+              <stringProp name="103171776">HTTP/1.1 201</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -173,42 +179,119 @@
             <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-            <stringProp name="ConstantTimer.delay">5000</stringProp>
-          </ConstantTimer>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - GROUP ID" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">groupID</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">FALSE</stringProp>
+            <stringProp name="RegexExtractor.match_number">0</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="true">
+            <stringProp name="BeanShellAssertion.query">${__setProperty(groupID,${groupID})};</stringProp>
+            <stringProp name="BeanShellAssertion.filename"></stringProp>
+            <stringProp name="BeanShellAssertion.parameters"></stringProp>
+            <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+          </BeanShellAssertion>
           <hashTree/>
         </hashTree>
-        <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
-          <stringProp name="TestPlan.comments">Write string &apos;scim_id&apos; to the csv</stringProp>
-          <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="parameters"></stringProp>
-          <stringProp name="filename"></stringProp>
-          <stringProp name="script">import java.io.FileWriter;
-import java.io.BufferedReader;
-import java.io.File;
-
-try {
-	String filePath = vars.get(&quot;scimIdCsvPath&quot;);
-
-	// Delete file if exists
-	File file = new File(filePath);
-	if (file.exists()) {
-		file.delete();
-	}
-
-	FileWriter fstream = new FileWriter(filePath, true);
-	BufferedWriter out = new BufferedWriter(fstream);
-	out.write(&quot;scim_id&quot;);
-	out.write(&quot;\n&quot;);
-	out.close();
-	fstream.close();
-}
-catch (Throwable ex) {
-   log.info(&quot;Error in Beanshell&quot;, ex);
-   throw ex;
-}</stringProp>
-        </BeanShellPostProcessor>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Role Request" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1468998322000</longProp>
+        <longProp name="ThreadGroup.end_time">1468998322000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="X-Server-Select" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
+            <elementProp name="Authorization" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
         <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Role" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;displayName&quot;:&quot;${rolename}&quot;,&#xd;
+	&quot;groups&quot;:[],&#xd;
+	&quot;permissions&quot;:[&quot;/permission/&quot;],&#xd;
+	&quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:extension:2.0:Role&quot;],&#xd;
+	&quot;users&quot;:[]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Roles</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171776">HTTP/1.1 201</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - ROLE ID" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">roleID</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">FALSE</stringProp>
+            <stringProp name="RegexExtractor.match_number">0</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="true">
+            <stringProp name="BeanShellAssertion.query">${__setProperty(roleID,${roleID})};</stringProp>
+            <stringProp name="BeanShellAssertion.filename"></stringProp>
+            <stringProp name="BeanShellAssertion.parameters"></stringProp>
+            <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+          </BeanShellAssertion>
+          <hashTree/>
+        </hashTree>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="SCIM2 Add User Request" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -222,7 +305,7 @@ catch (Throwable ex) {
         <longProp name="ThreadGroup.end_time">1468998322000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
@@ -259,34 +342,29 @@ catch (Throwable ex) {
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-   &quot;schemas&quot;:[],&#xd;
+   &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
    &quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
    &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
    &quot;name&quot;:{&#xd;
-      &quot;familyName&quot;:&quot;testFamily&quot;,&#xd;
-      &quot;givenName&quot;:&quot;testgivenName&quot;&#xd;
+      &quot;familyName&quot;:&quot;${userFirstNamePrefix}${user_index}&quot;,&#xd;
+      &quot;givenName&quot;:&quot;${userLastNamePrefix}${user_index}&quot;&#xd;
    },&#xd;
    &quot;wso2Extension&quot;:{&#xd;
       &quot;accountLocked&quot;:&quot;false&quot;&#xd;
    },&#xd;
-   &quot;emails&quot;:[&#xd;
-      {&#xd;
-         &quot;primary&quot;:true,&#xd;
-         &quot;value&quot;:&quot;mail_home.com&quot;,&#xd;
-         &quot;type&quot;:&quot;home&quot;&#xd;
-      },&#xd;
-      {&#xd;
-         &quot;value&quot;:&quot;mail_work.com&quot;,&#xd;
-         &quot;type&quot;:&quot;work&quot;&#xd;
-      }&#xd;
-   ],&#xd;
+   &quot;emails&quot;:[&quot;${useremailPrefix}${user_index}@test.com&quot;],&#xd;
+   &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: &#xd;
+   {&#xd;
+   		&quot;country&quot;:&quot;Sri Lanka&quot;&#xd;
+   },&#xd;
    &quot;roles&quot;:[  &#xd;
       {  &#xd;
          &quot;type&quot;:&quot;default&quot;,&#xd;
          &quot;value&quot;:&quot;${rolename}&quot;&#xd;
       }&#xd;
    ]&#xd;
-}</stringProp>
+}&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -295,7 +373,7 @@ catch (Throwable ex) {
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/wso2/scim/Users</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Users</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -353,44 +431,114 @@ catch (Throwable ex) {
           </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
-          <boolProp name="ResultCollector.error_logging">false</boolProp>
-          <objProp>
-            <name>saveConfig</name>
-            <value class="SampleSaveConfiguration">
-              <time>true</time>
-              <latency>true</latency>
-              <timestamp>true</timestamp>
-              <success>true</success>
-              <label>true</label>
-              <code>true</code>
-              <message>true</message>
-              <threadName>true</threadName>
-              <dataType>true</dataType>
-              <encoding>false</encoding>
-              <assertions>true</assertions>
-              <subresults>true</subresults>
-              <responseData>false</responseData>
-              <samplerData>false</samplerData>
-              <xml>false</xml>
-              <fieldNames>true</fieldNames>
-              <responseHeaders>false</responseHeaders>
-              <requestHeaders>false</requestHeaders>
-              <responseDataOnError>false</responseDataOnError>
-              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-              <assertionsResultsToSave>0</assertionsResultsToSave>
-              <bytes>true</bytes>
-              <sentBytes>true</sentBytes>
-              <threadCounts>true</threadCounts>
-              <idleTime>true</idleTime>
-              <connectTime>true</connectTime>
-            </value>
-          </objProp>
-          <stringProp name="filename"></stringProp>
-        </ResultCollector>
-        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;Operations&quot;:[&#xd;
+			{	&quot;op&quot;:&quot;add&quot;,&#xd;
+				&quot;value&quot;:{&quot;users&quot;:[{&quot;display&quot;:&quot;${usernamePrefix}${user_index}&quot;,&quot;value&quot;:&quot;${scimID}&quot;}]}&#xd;
+			}&#xd;
+		],&#xd;
+	&quot;schemas&quot;:[&quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;]&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Roles/${__property(roleID)}</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Group" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;Operations&quot;:&#xd;
+		[&#xd;
+			{&#xd;
+				&quot;op&quot;:&quot;add&quot;,&#xd;
+				&quot;value&quot;:&#xd;
+					{&#xd;
+						&quot;members&quot;:&#xd;
+							[&#xd;
+								{&#xd;
+									&quot;display&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
+									&quot;value&quot;:&quot;${scimID}&quot;&#xd;
+								}&#xd;
+							]&#xd;
+					}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;schemas&quot;:[&quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Groups/${__property(groupID)}</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>

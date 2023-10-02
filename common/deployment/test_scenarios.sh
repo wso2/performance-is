@@ -24,7 +24,7 @@ declare -A test_scenario0=(
     [jmx]="authenticate/Authenticate_Super_Tenant_User.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK"
+    [modes]="FULL QUICK VERSION_01"
 )
 declare -A test_scenario1=(
     [name]="01-oauth_auth_code_redirect_with_consent"
@@ -33,7 +33,7 @@ declare -A test_scenario1=(
     [jmx]="oauth/OAuth_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL VERSION_01"
 )
 declare -A test_scenario2=(
     [name]="02-oauth_implicit_redirect_with_consent"
@@ -42,7 +42,7 @@ declare -A test_scenario2=(
     [jmx]="oauth/OAuth_Implicit_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL VERSION_01"
 )
 declare -A test_scenario3=(
     [name]="03-oauth_password_grant"
@@ -51,7 +51,7 @@ declare -A test_scenario3=(
     [jmx]="oauth/OAuth_Password_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL VERSION_01"
 )
 declare -A test_scenario4=(
     [name]="04-oauth_client_credential_grant"
@@ -60,7 +60,7 @@ declare -A test_scenario4=(
     [jmx]="oauth/OAuth_Client_Credentials_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL PUBLISH"
+    [modes]="FULL PUBLISH VERSION_01"
 )
 declare -A test_scenario5=(
     [name]="05-oidc_auth_code_redirect_with_consent"
@@ -69,7 +69,7 @@ declare -A test_scenario5=(
     [jmx]="oidc/OIDC_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK PUBLISH"
+    [modes]="FULL QUICK PUBLISH VERSION_01"
 )
 declare -A test_scenario6=(
     [name]="06-oidc_implicit_redirect_with_consent"
@@ -78,7 +78,7 @@ declare -A test_scenario6=(
     [jmx]="oidc/OIDC_Implicit_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL VERSION_01"
 )
 declare -A test_scenario7=(
     [name]="07-oidc_password_grant"
@@ -87,7 +87,7 @@ declare -A test_scenario7=(
     [jmx]="oidc/OIDC_Password_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK PUBLISH"
+    [modes]="FULL QUICK PUBLISH VERSION_01"
 )
 declare -A test_scenario8=(
     [name]="08-oidc_request_path_authenticator"
@@ -96,7 +96,7 @@ declare -A test_scenario8=(
     [jmx]="oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL VERSION_01"
 )
 declare -A test_scenario9=(
     [name]="09-saml2_sso_redirect_binding"
@@ -105,7 +105,7 @@ declare -A test_scenario9=(
     [jmx]="saml/SAML2_SSO_Redirect_Binding.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK PUBLISH"
+    [modes]="FULL QUICK PUBLISH VERSION_01"
 )
 #declare -A test_scenario10=(
 #    [name]="10-oauth_auth_code_redirect_with_consent_tenant"
@@ -213,7 +213,7 @@ declare -A test_scenario21=(
     [jmx]="oauth/OAuth_Jwt_Grant.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL JWT_GRANT_FLOW PUBLISH"
+    [modes]="FULL JWT_GRANT_FLOW"
 )
 #declare -A test_scenario22=(
 #    [name]="22-oauth_jwt_grant_tenant"

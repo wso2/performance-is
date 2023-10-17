@@ -23,16 +23,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from collections import defaultdict
+import textwrap
 
 # Define the deployment types and their respective CSV files and colors
 deployment_types = {
     'Single Node 4 Core': {
         'csv_file': 'single_node_4_core.csv',
-        'color': 'blue'
+        'color': 'royalblue'
     },
     'Two Node 2 Core': {
         'csv_file': 'two_node_2_core.csv',
-        'color': 'cyan'
+        'color': 'darkcyan'
     },
     'Two Node 4 Core': {
         'csv_file': 'two_node_4_core.csv',
@@ -40,7 +41,7 @@ deployment_types = {
     },
     'Three Node 4 Core': {
         'csv_file': 'three_node_4_core.csv',
-        'color': 'pink'
+        'color': 'rosybrown'
     },
     'Four Node 4 Core': {
         'csv_file': 'four_node_4_core.csv',
@@ -125,18 +126,14 @@ def plot_and_save_graph(concurrency_range, scenario_folder, lines_data, scenario
 
         plt.plot(filtered_concurrency, filtered_response_times, label=deployment_type, color=color)
 
-    plt.title(scenario)
+    # Wrap the title text if it's long
+    wrapped_title = '\n'.join(textwrap.wrap(scenario, width=50))  # Adjust width as needed
+    plt.title(wrapped_title)
     plt.xlabel('Concurrent Users')
     plt.ylabel('95th Percentile of Response Time (ms)')
 
-    # Add upper and lower limit lines
-    plt.axhline(y=limits['upper']['value'], color=limits['upper']['color'], linestyle='--')
-    plt.axhline(y=limits['lower']['value'], color=limits['lower']['color'], linestyle='--')
-
     # Add legend with upper and lower bound labels
     legend_labels = list(lines_data.keys())
-    legend_labels.append(limits['upper']['label'])
-    legend_labels.append(limits['lower']['label'])
     plt.legend(legend_labels, loc='upper left')
 
     plt.grid(True)

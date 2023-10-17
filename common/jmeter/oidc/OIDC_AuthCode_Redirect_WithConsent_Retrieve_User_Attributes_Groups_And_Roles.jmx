@@ -45,12 +45,12 @@
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">rc_consumerKey_</stringProp>
+            <stringProp name="Argument.value">requestClaimsWithConsentConsumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">rc_consumerSecret_</stringProp>
+            <stringProp name="Argument.value">requestClaimsWithConsentConsumerSecret_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callback_url_prefix" elementType="Argument">

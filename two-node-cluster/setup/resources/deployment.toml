@@ -11,6 +11,11 @@ create_admin_account = true
 [user_store]
 type = "database_unique_id"
 
+[user_store.properties]
+CaseInsensitiveUsername = false
+SCIMEnabled=true
+IsBulkImportSupported=false
+
 [database.identity_db]
 driver = "com.mysql.jdbc.Driver"
 url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/IDENTITY_DB?useSSL=false&amp;rewriteBatchedStatements=true"
@@ -18,7 +23,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.identity_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.shared_db]
 driver = "com.mysql.jdbc.Driver"
@@ -27,7 +32,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.shared_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.user]
 driver = "com.mysql.jdbc.Driver"
@@ -36,11 +41,11 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.user.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [transport.https.properties]
-maxThreads = "500"
-acceptCount = "500"
+maxThreads = "400"
+acceptCount = "400"
 
 [clustering]
 #membership_scheme = true

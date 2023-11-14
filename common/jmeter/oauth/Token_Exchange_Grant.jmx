@@ -109,6 +109,11 @@
             <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -225,11 +230,12 @@ vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
 int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
-if (y == 0) {
+if (y == 0 || deploymentType == &quot;active-passive&quot;) {
     vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else if (y == 1) {
     vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
@@ -432,11 +438,12 @@ vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
 int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
-if (y == 0) {
+if (y == 0 || deploymentType == &quot;active-passive&quot;) {
     vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else if (y == 1) {
     vars.put(&quot;serverNode&quot;, &quot;node2&quot;);

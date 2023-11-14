@@ -75,7 +75,7 @@ The following is the summary of performance test results collected for the measu
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 88 | 307 | 117 | 59 | 48 |
 | 100 | 192 | 687 | 365 | 195 | 154 |
@@ -104,7 +104,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 12 | 14 | 13 | 81 | 72 |
 | 100 | 51 | 51 | 48 | 77 | 68 |
@@ -133,7 +133,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 12 | 14 | 13 | 81 | 72 |
 | 100 | 51 | 51 | 48 | 77 | 68 |
@@ -162,7 +162,7 @@ Note: Response time is calculated only for the access token endpoint request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 39  | 46  | 43  | 61  | 63  |
 | 100 | 40  | 50  | 48  | 65  | 62  |
@@ -192,7 +192,7 @@ Note: Response time is calculated only for the access token endpoint request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 44  | 53  | 42  | 40  | 42  |
 | 100 | 45  | 58  | 46  | 42  | 42  |
@@ -222,7 +222,7 @@ Note: Response time is calculated only for the access token endpoint request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 3567  | 7615  | 2239  | 307  | 235  |
 | 100 | 4255  | 7359  | 1623  | 207  | 301  |
@@ -250,7 +250,7 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 176 | 449 | 188 | 82 | 70 |
 | 100 | 391 | 911 | 463 | 244 | 151 |
@@ -278,7 +278,7 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 108 | 335 | 92 | 89 | 68 |
 | 100 | 223 | 739 | 247 | 236 | 144 |
@@ -308,7 +308,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 232 | 551  | 207  | 234  | 257  |
 | 100 | 489 | 1327 | 591  | 445  | 495  |

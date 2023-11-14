@@ -15,10 +15,6 @@ type = "database_unique_id"
 #connection_name = "uid=admin,ou=system"
 #connection_password = "admin"
 #base_dn = "dc=wso2,dc=org"
-[user_store.properties]
-CaseInsensitiveUsername = false
-SCIMEnabled=true
-IsBulkImportSupported=false
 
 #[realm_manager]
 #data_source = "WSO2USER_DB"
@@ -30,7 +26,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.identity_db.pool_options]
-maxActive = "300"
+maxActive = "500"
 
 [database.shared_db]
 driver = "com.mysql.jdbc.Driver"
@@ -39,7 +35,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.shared_db.pool_options]
-maxActive = "300"
+maxActive = "500"
 
 [database.user]
 driver = "com.mysql.jdbc.Driver"
@@ -48,34 +44,29 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.user.pool_options]
-maxActive = "300"
+maxActive = "500"
 
 [transport.https.properties]
 maxThreads = "500"
 acceptCount = "500"
 
-[authentication.consent]
-prompt = true
-
 [admin_service]
 wsdl.enable=false
 
-[keystore.tls]
-name = "wso2carbon.jks"
+[keystore.primary]
+file_name = "wso2carbon.jks"
 password = "wso2carbon"
 
 [truststore]
-name = "client-truststore.jks"
-password = "wso2carbon"
+file_name="client-truststore.jks"
+password="wso2carbon"
+type="JKS"
+
+[account_recovery.endpoint.auth]
+hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
+
+[identity.auth_framework.endpoint]
+app_password= "dashboard"
 
 [oauth.grant_type.jwt]
 iat_validity_period=1440
-
-[authentication_policy]
-disable_account_lock_handler=true
-
-[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
-subscriptions=[]
-
-[authorization_manager.properties]
-GroupAndRoleSeparationEnabled=false

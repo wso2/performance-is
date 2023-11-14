@@ -40,7 +40,7 @@ default_db_password="wso2carbon"
 db_password="$default_db_password"
 default_db_storage="100"
 db_storage=$default_db_storage
-default_db_instance_type=db.m4.xlarge
+default_db_instance_type=db.m4.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
@@ -465,15 +465,9 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
 
 echo "Creating summary results markdown file..."
 
-if [ "$mode" == "PUBLISH" ]; then
-    ./summary/summary-modifier.py
-    ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-        "Concurrent Users" "95th Percentile of Response Time (ms)"
-else
-    ./summary/summary-modifier-v1.py
-    ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
-        "Concurrent Users" "Throughput (Requests/sec)" "Average Response Time (ms)"
-fi
+./summary/summary-modifier.py
+./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
+    "Concurrent Users" "95th Percentile of Response Time (ms)"
 
 rm -rf cf-test-metadata.json cloudformation/ common/ gcviewer.jar is/ jmeter/ jtl-splitter/ netty-service/ payloads/ results/ sar/ setup/
 

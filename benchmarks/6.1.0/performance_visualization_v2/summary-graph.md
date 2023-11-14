@@ -2,19 +2,16 @@
 
 During each release, we execute various automated performance test scenarios and publish the results.
 
-| Test Scenarios                                                                              | Description                                                                                                                                                                    |
-|---------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Client Credentials Grant Type                                                               | Obtain an access token using the OAuth 2.0 client credential grant type.                                                                                                       |
-| OIDC Auth Code Grant Redirect With Consent                                                  | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.                                                                                      |
-| OIDC Auth Code Grant Redirect Without Consent                                               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent.                                                                      |
-| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes                    | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
-| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes and Groups         | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
-| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles  | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. |
-| OIDC Password Grant Type                                                                    | Obtain an access token and an id token using the OAuth 2.0 password grant type.                                                                                                |
-| OIDC Password Grant Type Retrieving User Attributes.                                        | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
-| OIDC Password Grant Type Retrieving User Attributes and Groups                              | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
-| OIDC Password Grant Type Retrieving User Attributes, Groups and Roles                       | Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.                          |
-| SAML2 SSO Redirect Binding                                                                  | Obtain a SAML 2 assertion response using redirect binding.                                                                                                                     |
+| Test Scenarios                                                                                           | Description                                                                                                                                                                                                       |
+|----------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Client Credentials Grant Type                                                                            | Obtain an access token using the OAuth 2.0 client credential grant type.                                                                                                                                          |
+| OIDC Auth Code Grant Redirect With Consent                                                               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.                                                                                                                         |
+| OIDC Auth Code Grant Redirect Without Consent                                                            | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent.                                                                                                         |
+| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes                                 | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes.                                   |
+| OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes.                                   |
+| Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent while 3000 burst one time traffic. Retrieve country, email, first name and last name as user attributes. |
+| Token Exchange Grant Type                                                                                | Obtain an access token and an id token using the token exchange grant type.                                                                                                                                       |
+| SAML2 SSO Redirect Binding                                                                               | Obtain a SAML 2 assertion response using redirect binding.                                                                                                                                                        |
 
 Our test client is [Apache JMeter](https://jmeter.apache.org/index.html). We test each scenario for a fixed duration of
 time and split the test results into warm-up and measurement parts and use the measurement part to compute the
@@ -37,31 +34,37 @@ The following are the test specifications.
 
 The following are the test parameters.
 
-| Test Parameter           | Description                                                     | Values                                                         |
-|--------------------------|-----------------------------------------------------------------|----------------------------------------------------------------|
-| Scenario Name            | The name of the test scenario.                                  | Refer to the above table.                                      |
-| Heap Size                | The amount of memory allocated to the application               | 2G                                                             |
-| Concurrent Users         | The number of users accessing the application at the same time. | 50, 100, 150, 300, 500, 1000, 1500, 2000, 2500, 3000           |
-| IS Instance Type 2 Cores | The AWS EC2 instance type used to run the Identity Server.      | [**c5.large**](https://aws.amazon.com/ec2/instance-types/)     |
-| IS Instance Type 4 Cores | The AWS EC2 instance type used to run the Identity Server.      | [**c5.xlarge**](https://aws.amazon.com/ec2/instance-types/)    |
-| RDS Instance Type        | The AWS RDS instance type used to run the Identity Server.      | [**db.m4.2xlarge**](https://aws.amazon.com/rds/instance-types/) |
-| JDK version              | The JDK version used to run the Identity Server.                | JDK 11.0.15.1                                                  |
+| Test Parameter                    | Description                                                                                                       | Values                                                          |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| Scenario Name                     | The name of the test scenario.                                                                                    | Refer to the above table.                                       |
+| Heap Size                         | The amount of memory allocated to the application                                                                 | 2G                                                              |
+| Concurrent Users                  | The number of users accessing the application at the same time.                                                   | 50, 100, 150, 300, 500, 1000, 1500, 2000, 2500, 3000            |
+| IS Instance Type 2 Cores          | The AWS EC2 instance type used to run the Identity Server.                                                        | [**c5.large**](https://aws.amazon.com/ec2/instance-types/)      |
+| IS Instance Type 4 Cores          | The AWS EC2 instance type used to run the Identity Server.                                                        | [**c5.xlarge**](https://aws.amazon.com/ec2/instance-types/)     |
+| RDS Instance Type                 | The AWS RDS instance type used to run the Identity Server.                                                        | [**db.m4.2xlarge**](https://aws.amazon.com/rds/instance-types/) |
+| RDS Instance max_connections      | The AWS RDS max_connections metric monitors the set maximum number of (allowed) simultaneous client connections.  | 2500                                                            |
+| JDK version                       | The JDK version used to run the Identity Server.                                                                  | JDK 11.0.15.1                                                   |
 
 Product Configurations: deployment.toml
 
 ```
+[user_store.properties]
+CaseInsensitiveUsername = false
+SCIMEnabled=true
+IsBulkImportSupported=false
+
 [database.identity_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.shared_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.user.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [transport.https]
-maxThreads = "500"
-acceptCount = "500"
+maxThreads = "400"
+acceptCount = "400"
 ```
 
 The following is the summary of performance test results collected for the measurement period.
@@ -72,7 +75,7 @@ The following is the summary of performance test results collected for the measu
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 88 | 307 | 117 | 59 | 48 |
 | 100 | 192 | 687 | 365 | 195 | 154 |
@@ -87,11 +90,11 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/Client_Credentials_Grant_Type/50_500_lines.png)
+![image info](graphs/Client_Credentials_Grant_Type/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/Client_Credentials_Grant_Type/50_3000_lines.png)
+![image info](graphs/Client_Credentials_Grant_Type/50_3000_lines.png)
 
 ### 2. OIDC Auth Code Grant Redirect With Consent
 
@@ -101,7 +104,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 12 | 14 | 13 | 81 | 72 |
 | 100 | 51 | 51 | 48 | 77 | 68 |
@@ -116,11 +119,11 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_With_Consent/50_500_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_With_Consent/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_With_Consent/50_3000_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_With_Consent/50_3000_lines.png)
 
 ### 3. OIDC Auth Code Grant Redirect Without Consent (Sample Data)
 
@@ -130,7 +133,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 12 | 14 | 13 | 81 | 72 |
 | 100 | 51 | 51 | 48 | 77 | 68 |
@@ -145,11 +148,11 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent/50_500_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent/50_3000_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent/50_3000_lines.png)
 
 ### 3.1. OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes
 
@@ -159,7 +162,7 @@ Note: Response time is calculated only for the access token endpoint request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 39  | 46  | 43  | 61  | 63  |
 | 100 | 40  | 50  | 48  | 65  | 62  |
@@ -174,13 +177,14 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes/50_500_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes/50_3000_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes/50_3000_lines.png)
 
-### 3.2. OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes and Groups
+
+### 3.2. OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes.
 
@@ -188,37 +192,7 @@ Note: Response time is calculated only for the access token endpoint request.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
-|---|---:|---:|---:|---:|---:|
-| 50  | 33  | 55  | 44  | 65  | 64  |
-| 100 | 35  | 53  | 45  | 66  | 64  |
-| 150 | 36  | 59  | 51  | 66  | 65  |
-| 300 | 44  | 83  | 54  | 95  | 88  |
-| 500 | 83  | 655 | 64  | 120 | 130 |
-| 1000| 1535| 4991| 135 | 191 | 189 |
-| 1500| 3183| 8703| 2095| 551 | 411 |
-| 2000| 4575| 13119| 4351| 1359| 1783|
-| 2500| 6303| 16895| 6143| 3023| 3599|
-| 3000| 7199| 25215| 8095| 6303| 4447|
-
-<ins> Concurrency: 50 - 500 </ins>
-
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_And_Groups/50_500_lines.png)
-
-<ins> Concurrency: 50 - 3000 </ins>
-
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_And_Groups/50_3000_lines.png)
-
-
-### 3.3. OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles
-
-#### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes.
-
-Note: Response time is calculated only for the access token endpoint request.
-
-Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
-
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 44  | 53  | 42  | 40  | 42  |
 | 100 | 45  | 58  | 46  | 42  | 42  |
@@ -233,11 +207,42 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_Groups_And_Roles/50_500_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_Groups_And_Roles/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_Groups_And_Roles/50_3000_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_User_Attributes_Groups_And_Roles/50_3000_lines.png)
+
+
+### 3.2.1. Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles
+
+#### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes. Further, the 6th minute of the test 3000 one time burst of concurrent requests are sent.
+
+Note: Response time is calculated only for the access token endpoint request.
+
+Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
+
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+|---|---:|---:|---:|---:|---:|
+| 50  | 3567  | 7615  | 2239  | 307  | 235  |
+| 100 | 4255  | 7359  | 1623  | 207  | 301  |
+| 150 | 4015  | 7007  | 1935  | 655  | 429  |
+| 300 | 3935  | 7743  | 2047  | 429  | 421  |
+| 500 | 3775  | 9279 | 2319  | 503  | 935  |
+| 1000| 5759| 18303| 2975 | 639 | 467 |
+| 1500| 7103| 17151| 6527| 2143 | 2383 |
+| 2000| 10431| 29183| 7519| 2319| 6655|
+| 2500| 8383| 21119| 9535| 4863| 9087|
+| 3000| 10879| 34815| 12351| 7359| 11775|
+
+<ins> Concurrency: 50 - 500 </ins>
+
+![image info](graphs/3000_Burst_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_500_lines.png)
+
+<ins> Concurrency: 50 - 3000 </ins>
+
+![image info](graphs/3000_Burst_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_3000_lines.png)
+
 
 ### 4. OIDC Password Grant Type
 
@@ -245,7 +250,7 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50 | 176 | 449 | 188 | 82 | 70 |
 | 100 | 391 | 911 | 463 | 244 | 151 |
@@ -260,94 +265,42 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Password_Grant_Type/50_500_lines.png)
+![image info](graphs/OIDC_Password_Grant_Type/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Password_Grant_Type/50_3000_lines.png)
+![image info](graphs/OIDC_Password_Grant_Type/50_3000_lines.png)
 
-### 4.1. OIDC Password Grant Type Retrieving User Attributes.
 
-#### Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.
+### 5. Token Exchange Grant Type
+
+#### Obtain an access token and an id token using the token exchange grant type.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
-| 50  | 229  | 519  | 182  | 234  | 247  |
-| 100  | 495  | 1207  | 555  | 441  | 491  |
-| 150  | 767  | 1943  | 891  | 839  | 739  |
-| 300  | 1615  | 5023  | 1863  | 1367  | 1943  |
-| 500  | 2863  | 6911  | 3087  | 2383  | 2687  |
-| 1000  | 5215  | 14207  | 6015  | 5503  | 7295  |
-| 1500  | 7551  | 19327  | 8575  | 9215  | 10495  |
-| 2000  | 10943  | 22527  | 11775  | 14271  | 9343  |
-| 2500  | 12287  | 29439  | 15871  | 17407  | 15295  |
-| 3000  | 17023  | 75775  | 18175  | 19839  | 19199  |
+| 50 | 108 | 335 | 92 | 89 | 68 |
+| 100 | 223 | 739 | 247 | 236 | 144 |
+| 150 | 347 | 1111 | 455 | 377 | 251 |
+| 300 | 799 | 2191 | 967 | 831 | 787 |
+| 500 | 1399 | 3903 | 1639 | 1511 | 1487 |
+| 1000 | 2239 | 7487 | 2927 | 3215 | 2815 |
+| 1500 | 3247 | 11327 | 4415 | 4639 | 4351 |
+| 2000 | 3711 | 15935 | 5503 | 6207 | 6239 |
+| 2500 | 4543 | 18047 | 7423 | 7263 | 7647 |
+| 3000 | 5663 | 23935 | 8703 | 9151 | 9151 |
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes/50_500_lines.png)
+![image info](graphs/Token_Exchange_Grant/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes/50_3000_lines.png)
+![image info](graphs/Token_Exchange_Grant/50_3000_lines.png)
 
-### 4.2. OIDC Password Grant Type Retrieving User Attributes and Groups.
 
-#### Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.
-
-Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
-
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
-|---|---:|---:|---:|---:|---:|
-| 50  | 232 | 527 | 197 | 219 | 267 |
-| 100 | 497 | 1231 | 567 | 433 | 519 |
-| 150 | 783 | 2015 | 867 | 655 | 775 |
-| 300 | 1735 | 4447 | 1855 | 1703 | 1639 |
-| 500 | 3039 | 7359 | 3135 | 2559 | 3567 |
-| 1000 | 5823 | 16383 | 6047 | 6431 | 7615 |
-| 1500 | 8319 | 25215 | 8447 | 9215 | 11199 |
-| 2000 | 12863 | 29055 | 11903 | 14527 | 10175 |
-| 2500 | 13951 | 27519 | 12543 | 14207 | 14527 |
-| 3000 | 16191 | 66559 | 17919 | 19071 | 19199 |
-
-<ins> Concurrency: 50 - 500 </ins>
-
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes_And_Groups/50_500_lines.png)
-
-<ins> Concurrency: 50 - 3000 </ins>
-
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes_And_Groups/50_3000_lines.png)
-
-### 4.3. OIDC Password Grant Type Retrieving User Attributes, Groups and Roles.
-
-#### Obtain an access token and an id token using the OAuth 2.0 password grant type. Retrieve country, email, first name and last name as user attributes.
-
-Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
-
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
-|---|---:|---:|---:|---:|---:|
-| 50 | 232 | 527 | 197 | 219 | 267 |
-| 100 | 497 | 1231| 567 | 433 | 519 |
-| 150 | 783 | 2015| 867 | 655 | 775 |
-| 300 | 1735| 4447| 1855| 1703| 1639|
-| 500 | 3039| 7359| 3135| 2559| 3567|
-| 1000 | 5823| 16383|6047 | 6431| 7615|
-| 1500 | 8319| 25215|8447 | 9215| 11199|
-| 2000 | 12863|29055|11903| 14527|10175|
-| 2500 | 13951|27519|12543| 14207|14527|
-| 3000 | 16191|66559|17919| 19071|19199|
-
-<ins> Concurrency: 50 - 500 </ins>
-
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes_Groups_And_Roles/50_500_lines.png)
-
-<ins> Concurrency: 50 - 3000 </ins>
-
-![image info](./graphs/OIDC_Password_Grant_Type_User_Attributes_Groups_And_Roles/50_3000_lines.png)
-
-### 5. SAML2 SSO Redirect Binding
+### 6. SAML2 SSO Redirect Binding
 
 #### Obtain a SAML 2 assertion response using redirect binding.
 
@@ -355,7 +308,7 @@ Note: Response time is calculated only for the user credentials submission reque
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
-| Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
+| Concurrent Users | Active-Passive 4 Core | Two Node 2 Core | Two Node 4 Core | Three Node 4 Core | Four Node 4 Core |
 |---|---:|---:|---:|---:|---:|
 | 50  | 232 | 551  | 207  | 234  | 257  |
 | 100 | 489 | 1327 | 591  | 445  | 495  |
@@ -370,8 +323,8 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](./graphs/SAML2_SSO_Redirect_Binding/50_500_lines.png)
+![image info](graphs/SAML2_SSO_Redirect_Binding/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](./graphs/SAML2_SSO_Redirect_Binding/50_3000_lines.png)
+![image info](graphs/SAML2_SSO_Redirect_Binding/50_3000_lines.png)

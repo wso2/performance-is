@@ -44,6 +44,7 @@ Metadata:
           default: Other Configuration
         Parameters:
           - JDK
+          - UserTag
     ParameterLabels:
       CertificateName:
         default: SSL Certificate Name
@@ -55,6 +56,8 @@ Metadata:
         default: Password
       JDK:
         default: JDK Version
+      UserTag:
+        default: User Tag
       WSO2InstanceType:
         default: Instance Type
       DBEngine:
@@ -211,7 +214,7 @@ Resources:
       MultiAZ: 'false'
       Iops: !Ref DBIops
       StorageType: io1
-      DBParameterGroupName: wso2is-db-param-grp
+      DBParameterGroupName: wso2is-legacy-db-param-grp
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISDBSubnetGroupsuffix:
     Type: 'AWS::RDS::DBSubnetGroup'
@@ -323,7 +326,7 @@ Resources:
         - Key: Name
           Value: suffix_WSO2BastionInstance
         - Key: User
-          Value: 'sachinm@wso2.com'
+          Value: !Ref UserTag
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -372,7 +375,7 @@ Resources:
         - Key: Name
           Value: suffix_WSO2NGinxInstance
         - Key: User
-          Value: 'sachinm@wso2.com'
+          Value: !Ref UserTag
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
@@ -459,7 +462,7 @@ Resources:
           Value: is
           PropagateAtLaunch: 'true'
         - Key: User
-          Value: 'sachinm@wso2.com'
+          Value: !Ref UserTag
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -483,7 +486,7 @@ Resources:
           Value: is
           PropagateAtLaunch: 'true'
         - Key: User
-          Value: 'sachinm@wso2.com'
+          Value: !Ref UserTag
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2ISNodeLaunchConfigurationsuffix
@@ -563,6 +566,10 @@ Parameters:
     AllowedValues:
       - Open_JDK_8
       - Oracle_JDK_8
+  UserTag:
+    Description: User tag to be used for tagging AWS resources
+    Type: String
+    Default: user@wso2.com
   OSType:
     Type: String
     Default: Ubuntu_18.04

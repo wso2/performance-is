@@ -56,21 +56,6 @@ concurrency_ranges = {
     '50-3000': [50, 100, 150, 300, 500, 1000, 1500, 2000, 2500, 3000]
 }
 
-# Define the upper and lower limit values and colors
-limits = {
-    'upper': {
-        'value': 2000,
-        'color': 'red',
-        'label': 'Upper Limit: 2000 ms'
-    },
-    'lower': {
-        'value': 500,
-        'color': 'green',
-        'label': 'Lower Limit: 500 ms'
-    }
-}
-
-
 # Get unique scenario names from the deployment type CSV files
 def get_unique_scenarios():
     scenarios = set()

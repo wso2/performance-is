@@ -40,7 +40,7 @@ default_db_password="wso2carbon"
 db_password="$default_db_password"
 default_db_storage="100"
 db_storage=$default_db_storage
-default_db_instance_type=db.m4.xlarge
+default_db_instance_type=db.m4.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
@@ -81,7 +81,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:v:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -118,6 +118,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:h" opts; do
         ;;
     w)
         minimum_stack_creation_wait_time=${OPTARG}
+        ;;
+    v)
+        mode=${OPTARG}
         ;;
     h)
         usage
@@ -461,6 +464,7 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
     -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
+
 ./summary/summary-modifier.py
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
     "Concurrent Users" "95th Percentile of Response Time (ms)"

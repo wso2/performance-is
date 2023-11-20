@@ -45,6 +45,7 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c5.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 no_of_nodes=1
+deployment="single-node"
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -77,7 +78,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:i:b:w:h" opts; do
+while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -108,6 +109,9 @@ while getopts "q:k:c:j:n:u:p:i:b:w:h" opts; do
         ;;
     w)
         minimum_stack_creation_wait_time=${OPTARG}
+        ;;
+    v)
+        mode=${OPTARG}
         ;;
     h)
         usage
@@ -404,6 +408,7 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
     -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
 
 echo "Creating summary results markdown file..."
+
 ./summary/summary-modifier.py
 ./jmeter/create-summary-markdown.py --json-files cf-test-metadata.json results/test-metadata.json --column-names \
     "Concurrent Users" "95th Percentile of Response Time (ms)"

@@ -28,9 +28,7 @@ scenarioCount = []  # To keep scenario count orderly
 burst_keyword = "Burst"  # Keyword to identify burst scenarios
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
-scenarios = {"Authenticate Super Tenant User": "Authenticate",
-             "Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
-             "Implicit Grant Redirect With Consent": "Common Auth Login HTTP Request",
+scenarios = {"Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
              "Password Grant Type": "GetToken_Password_Grant",
              "Client Credentials Grant Type": "Get Token Client Credential Grant",
              "OIDC Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
@@ -41,14 +39,12 @@ scenarios = {"Authenticate Super Tenant User": "Authenticate",
              "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes": "Get tokens",
              "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes and Groups": "Get tokens",
              "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles": "Get tokens",
-             "OIDC Implicit Grant Redirect With Consent": "Common Auth Login HTTP Request",
              "OIDC Password Grant Type": "GetToken_Password_Grant",
              "OIDC Password Grant Type Retrieve User Attributes": "GetToken_Password_Grant",
              "OIDC Password Grant Type Retrieve User Attributes and Groups": "GetToken_Password_Grant",
              "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": "GetToken_Password_Grant",
-             "OIDC Auth Code Request Path Authenticator With Consent": "Get tokens",
-             "SAML2 SSO Redirect Binding": "Identity Provider Login",
-             "Jwt Grant Type": "GetToken_Jwt_Grant"}
+             "SAML2 SSO Redirect Binding": "Identity Provider Login"
+             "OAuth 2 - Token Exchange Grant Type": "GetToken_Token_Exchange_Grant"}
 
 scenarios_critical_requests = scenarios.copy()
 

@@ -15,6 +15,10 @@ type = "database_unique_id"
 #connection_name = "uid=admin,ou=system"
 #connection_password = "admin"
 #base_dn = "dc=wso2,dc=org"
+[user_store.properties]
+CaseInsensitiveUsername = false
+SCIMEnabled=true
+IsBulkImportSupported=false
 
 #[realm_manager]
 #data_source = "WSO2USER_DB"
@@ -26,7 +30,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.identity_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.shared_db]
 driver = "com.mysql.jdbc.Driver"
@@ -35,7 +39,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.shared_db.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [database.user]
 driver = "com.mysql.jdbc.Driver"
@@ -44,11 +48,11 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.user.pool_options]
-maxActive = "500"
+maxActive = "400"
 
 [transport.https.properties]
-maxThreads = "500"
-acceptCount = "500"
+maxThreads = "400"
+acceptCount = "400"
 
 [admin_service]
 wsdl.enable=false

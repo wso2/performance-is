@@ -88,6 +88,7 @@ spCount=10
 idpCount=1
 userCount=1000
 mode=""
+deployment=""
 
 # JWT Bearer Grant Flow
 jwt_token_client_secret=""
@@ -133,7 +134,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:x:o:y:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:t:p:k:v:x:o:y:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -161,6 +162,9 @@ while getopts "c:m:d:w:r:j:i:e:g:n:s:q:u:t:p:k:v:x:o:y:h" opts; do
         ;;
     g)
         noOfNodes=${OPTARG}
+        ;;
+    f)
+        deployment=${OPTARG}
         ;;
     n)
         noOfTenants=("${OPTARG}")
@@ -579,7 +583,7 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then

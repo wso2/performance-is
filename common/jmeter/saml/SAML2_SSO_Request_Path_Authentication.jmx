@@ -95,6 +95,11 @@
             <stringProp name="Argument.desc">samples per minute.</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.value">${__P(deployment,&quot;2-node-cluster&quot;)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -111,6 +116,7 @@
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
         <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
@@ -163,9 +169,10 @@ vars.put(&quot;newSAML&quot;, out);
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;spId&quot;));
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int x = Integer.parseInt(vars.get(&quot;spId&quot;));
 int y = x - (x/2)*2;
-if (y == 0) {
+if (y == 0 || deploymentType == &quot;active-passive&quot;) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else {
 	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
@@ -188,6 +195,7 @@ vars.put(&quot;sectoken&quot;, new String(encodeCredentials));
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
           <collectionProp name="CookieManager.cookies"/>
           <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
         </CookieManager>
         <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -239,7 +247,7 @@ vars.put(&quot;sectoken&quot;, new String(encodeCredentials));
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1606201635">HTTP/1.1 200</stringProp>
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>

@@ -86,6 +86,11 @@
             <stringProp name="Argument.desc">samples per minute.</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.value">${__P(deployment,&quot;2-node-cluster&quot;)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -102,6 +107,7 @@
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${timeToRun}</stringProp>
         <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random User Counter" enabled="true">
@@ -126,9 +132,10 @@
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;user_count_id&quot;));
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int x = Integer.parseInt(vars.get(&quot;user_count_id&quot;));
 int y = x - (x/2)*2;
-if (y == 0) {
+if (y == 0 || deploymentType == &quot;active-passive&quot;) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else {
 	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);

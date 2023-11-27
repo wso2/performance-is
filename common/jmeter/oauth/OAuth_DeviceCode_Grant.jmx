@@ -109,6 +109,11 @@
             <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.value">${__P(deployment,&quot;2-node-cluster&quot;)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -228,9 +233,10 @@ vars.put(&quot;deviceDoEndpoint&quot;,new String(deviceDoEndpoint));
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
 int y = x - (x/2)*2;
-if (y == 0) {
+if (y == 0 || deploymentType == &quot;active-passive&quot;) {
 	vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
 } else {
 	vars.put(&quot;serverNode&quot;, &quot;node2&quot;);

@@ -86,6 +86,7 @@ noOfTenants=100
 spCount=10
 userCount=1000
 mode=""
+deployment=""
 
 # Start time of the test
 test_start_time=$(date +%s)
@@ -120,7 +121,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:j:i:e:n:s:u:tp:v:h" opts; do
+while getopts "c:m:d:w:j:i:e:f:n:s:u:tp:v:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -142,6 +143,9 @@ while getopts "c:m:d:w:j:i:e:n:s:u:tp:v:h" opts; do
         ;;
     e)
         exclude_scenario_names+=("${OPTARG}")
+        ;;
+    f)
+        deployment=${OPTARG}
         ;;
     n)
         noOfTenants=("${OPTARG}")
@@ -519,7 +523,7 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port")
+                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "deployment=$deployment")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then

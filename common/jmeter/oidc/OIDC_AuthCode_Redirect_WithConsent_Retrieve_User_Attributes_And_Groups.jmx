@@ -282,7 +282,7 @@ if (y == 0 || deploymentType == &quot;active-passive&quot;) {
               </elementProp>
               <elementProp name="scope" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${scope}%20${__Random(1,10000000)}</stringProp>
+                <stringProp name="Argument.value">${scope}%20device_${__Random(1,10000000)}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 <stringProp name="Argument.name">scope</stringProp>
@@ -865,7 +865,7 @@ if (y == 0 || deploymentType == &quot;active-passive&quot;) {
                 </elementProp>
                 <elementProp name="scope" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">${scope}%20${__Random(1,10000000)}</stringProp>
+                  <stringProp name="Argument.value">${scope}%20device_${__Random(1,10000000)}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                   <stringProp name="Argument.name">scope</stringProp>

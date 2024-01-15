@@ -121,17 +121,3 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_4:4000", "member_ip_3:4000", "member_ip_2:4000", "member_ip_1:4000"]
-
-[authentication_policy]
-disable_account_lock_handler=true
-
-[identity_mgt.events.schemes.WorkflowPendingUserAuthnHandler]
-subscriptions=[]
-
-[session_data.session_data_persist.session_and_temp_data_separation_enabled]
-enable=true
-
-[session_data.cleanup]
-enable_expired_data_cleanup = true
-clean_logged_out_sessions_at_immediate_cycle = true
-enable_pre_session_data_cleanup = true

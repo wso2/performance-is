@@ -35,7 +35,7 @@ declare -A test_scenario1=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
-declare -A test_scenario1=(
+declare -A test_scenario2=(
     [name]="02-oidc_auth_code_redirect_without_consent"
     [display_name]="OIDC Auth Code Grant Redirect Without Consent"
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code redirect without consent."
@@ -44,7 +44,7 @@ declare -A test_scenario1=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
-declare -A test_scenario10=(
+declare -A test_scenario3=(
     [name]="03-oidc_auth_code_redirect_without_consent_retrieve_user_attributes"
     [display_name]="OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes"
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
@@ -53,7 +53,7 @@ declare -A test_scenario10=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
-declare -A test_scenario12=(
+declare -A test_scenario4=(
     [name]="04-oidc_auth_code_redirect_without_consent_retrieve_user_attributes_groups_and_roles"
     [display_name]="OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles"
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
@@ -62,7 +62,7 @@ declare -A test_scenario12=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH OIDC_AUTH_CODE_REDIRECT_WITHOUT_CONSENT_UA_GROUPS_ROLES_FLOW"
 )
-declare -A test_scenario2=(
+declare -A test_scenario5=(
     [name]="05-oidc_password_grant"
     [display_name]="OIDC Password Grant Type"
     [description]="Obtain an access token and an id token using the OAuth 2.0 password grant type."
@@ -71,7 +71,7 @@ declare -A test_scenario2=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
-declare -A test_scenario3=(
+declare -A test_scenario6=(
     [name]="06-saml2_sso_redirect_binding"
     [display_name]="SAML2 SSO Redirect Binding"
     [description]="Obtain a SAML 2 assertion response using redirect binding."
@@ -80,7 +80,7 @@ declare -A test_scenario3=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
-declare -A test_scenario13=(
+declare -A test_scenario7=(
     [name]="07-Token_Exchange_Grant"
     [display_name]="Token Exchange Grant"
     [description]="Obtain an access token and an id token using the OAuth Token Exchange grant type."

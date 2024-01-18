@@ -50,10 +50,6 @@ password = "wso2carbon"
 [database.user.pool_options]
 maxActive = "400"
 
-[transport.http]
-maxThreads = "400"
-acceptCount = "400"
-
 [transport.https]
 maxThreads = "400"
 acceptCount = "400"

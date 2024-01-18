@@ -117,3 +117,14 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_3:4000", "member_ip_2:4000", "member_ip_1:4000"]
+
+[oauth.grant_type.jwt]
+iat_validity_period=86400
+
+[[oauth.custom_grant_type]]
+name="urn:ietf:params:oauth:grant-type:token-exchange"
+grant_handler="org.wso2.carbon.identity.oauth2.grant.token.exchange.TokenExchangeGrantHandler"
+grant_validator="org.wso2.carbon.identity.oauth2.grant.token.exchange.TokenExchangeGrantValidator"
+[oauth.custom_grant_type.properties]
+IdTokenAllowed=true
+IATValidityPeriod="86400"

@@ -111,7 +111,7 @@ app_password= "dashboard"
 #port= 587
 
 [oauth.grant_type.jwt]
-iat_validity_period=86400
+iat_validity_period=1440
 
 [[oauth.custom_grant_type]]
 name="urn:ietf:params:oauth:grant-type:token-exchange"

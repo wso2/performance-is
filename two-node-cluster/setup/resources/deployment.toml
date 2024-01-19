@@ -119,7 +119,7 @@ localMemberPort = "4000"
 members = ["member_ip_2:4000", "member_ip_1:4000"]
 
 [oauth.grant_type.jwt]
-iat_validity_period=86400
+iat_validity_period=1440
 
 [[oauth.custom_grant_type]]
 name="urn:ietf:params:oauth:grant-type:token-exchange"

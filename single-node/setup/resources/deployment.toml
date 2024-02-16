@@ -64,10 +64,12 @@ prompt = true
 [admin_service]
 wsdl.enable=false
 
-[keystore.tls]
-name = "wso2carbon.jks"
+[keystore.primary]
+file_name = "wso2carbon.jks"
 password = "wso2carbon"
+type="JKS"
 
 [truststore]
-name = "client-truststore.jks"
-password = "wso2carbon"
+file_name="client-truststore.jks"
+password="wso2carbon"
+type="JKS"

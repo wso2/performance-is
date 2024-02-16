@@ -64,13 +64,15 @@ prompt = true
 [admin_service]
 wsdl.enable=false
 
-[keystore.tls]
-name = "wso2carbon.jks"
+[keystore.primary]
+file_name = "wso2carbon.jks"
 password = "wso2carbon"
+type="JKS"
 
 [truststore]
-name = "client-truststore.jks"
-password = "wso2carbon"
+file_name="client-truststore.jks"
+password="wso2carbon"
+type="JKS"
 
 [clustering]
 #membership_scheme = true
@@ -79,7 +81,3 @@ membership_scheme = "wka"
 local_member_host = "member_ip_1"
 localMemberPort = "4000"
 members = ["member_ip_2:4000", "member_ip_1:4000"]
-
-[database.identity_db.pool_options]
-maxActive = 60
-

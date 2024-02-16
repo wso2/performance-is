@@ -15,3 +15,7 @@ truncate_non_empty_table IDN_AUTH_SESSION_APP_INFO;
 GO
 truncate_non_empty_table IDN_AUTH_USER_SESSION_MAPPING;
 GO
+truncate_non_empty_table IDN_OAUTH2_AUTHZ_CODE_SCOPE;
+GO
+truncate_non_empty_table IDN_OAUTH2_TOKEN_BINDING;
+GO

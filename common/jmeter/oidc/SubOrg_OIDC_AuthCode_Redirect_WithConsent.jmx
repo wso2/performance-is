@@ -78,9 +78,24 @@
             <stringProp name="Argument.value">${__P(concurrency,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="noOfSubOrgs" elementType="Argument">
+            <stringProp name="Argument.name">noOfSubOrgs</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgCount,1000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="noOfUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfUsers</stringProp>
-            <stringProp name="Argument.value">${__P(userCount,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(userCount,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfSPs" elementType="Argument">
+            <stringProp name="Argument.name">noOfSPs</stringProp>
+            <stringProp name="Argument.value">${__P(spCount,5)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfTenants" elementType="Argument">
+            <stringProp name="Argument.name">noOfTenants</stringProp>
+            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="timeToRun" elementType="Argument">
@@ -93,20 +108,10 @@
             <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="noOfSPs" elementType="Argument">
-            <stringProp name="Argument.name">noOfSPs</stringProp>
-            <stringProp name="Argument.value">${__P(spCount,10)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="constantTPS" elementType="Argument">
             <stringProp name="Argument.name">constantTPS</stringProp>
             <stringProp name="Argument.value">${__P(constantTPS,10000000)}</stringProp>
             <stringProp name="Argument.desc">samples per minute.</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="noOfTenants" elementType="Argument">
-            <stringProp name="Argument.name">noOfTenants</stringProp>
-            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tenantMode" elementType="Argument">
@@ -127,11 +132,6 @@
           <elementProp name="deployment" elementType="Argument">
             <stringProp name="Argument.name">deployment</stringProp>
             <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="sub_org_" elementType="Argument">
-            <stringProp name="Argument.name">sub_org_</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

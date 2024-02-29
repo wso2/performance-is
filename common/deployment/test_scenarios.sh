@@ -159,5 +159,5 @@ declare -A test_scenario15=(
     [jmx]="oidc/SubOrg_OIDC_AuthCode_Redirect_WithConsent.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL QUICK PUBLISH"
+    [modes]="B2B"
 )

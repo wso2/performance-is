@@ -411,11 +411,28 @@ function print_durations() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$test_start_time"))"
 }
 
+function run_b2b_test_data_scripts() {
+
+    echo "Running b2b test data setup scripts"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
+    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+
+    for script in "${scripts[@]}"; do
+        script_file="$setup_dir/$script"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
+        echo "$command"
+        echo ""
+        $command
+        echo ""
+    done
+}
+
 function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_Sub_Orgs.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_images.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_images.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
@@ -536,8 +553,12 @@ function initiailize_test() {
         cp "$0" results
         mv test-metadata.json results/
 
-        run_test_data_scripts
-        #run_tenant_test_data_scripts
+        if [ $mode == "B2B" ]; then
+            run_b2b_test_data_scripts
+        else
+            run_test_data_scripts
+            #run_tenant_test_data_scripts
+        fi
     fi
 }
 

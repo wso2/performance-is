@@ -150,7 +150,15 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get All Sub Organisations Request" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="limit" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">limit</stringProp>
+                <stringProp name="Argument.value">${noOfSubOrgs}</stringProp>
+              </elementProp>
+            </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
@@ -210,19 +218,6 @@
             <stringProp name="CounterConfig.end">${noOfSubOrgs}</stringProp>
             <stringProp name="CounterConfig.incr">1</stringProp>
             <stringProp name="CounterConfig.name">orgIdx</stringProp>
-            <stringProp name="CounterConfig.format"></stringProp>
-            <boolProp name="CounterConfig.per_user">false</boolProp>
-          </CounterConfig>
-          <hashTree/>
-          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop For All SPs" enabled="true">
-            <stringProp name="LoopController.loops">${noOfSPs}</stringProp>
-          </LoopController>
-          <hashTree>
-            <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
-              <stringProp name="CounterConfig.start">1</stringProp>
-              <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
-              <stringProp name="CounterConfig.incr">1</stringProp>
-              <stringProp name="CounterConfig.name">spIdx</stringProp>
               <stringProp name="CounterConfig.format"></stringProp>
               <boolProp name="CounterConfig.per_user">false</boolProp>
             </CounterConfig>
@@ -241,13 +236,10 @@ vars.put(&quot;orgIdxVariable&quot;, new String(orgIdxVariable));
 vars.put(&quot;sub_org_id&quot;, new String(subOrgId));
 
 // Resolve client id and client secret.
-String spIdx = vars.get(&quot;spIdx&quot;);
-
-
 String consumerKeyPrefix = vars.get(&quot;consumerKeyPrefix&quot;);
 String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
-String client_id = &quot;${consumerKeyPrefix}${spIdx}&quot;;
-String client_secret = &quot;${consumerSecretPrefix}${spIdx}&quot;;
+String client_id = &quot;${consumerKeyPrefix}1&quot;;
+String client_secret = &quot;${consumerSecretPrefix}1&quot;;
 vars.put(&quot;client_id&quot;, new String(client_id));
 vars.put(&quot;client_secret&quot;, new String(client_secret));
 

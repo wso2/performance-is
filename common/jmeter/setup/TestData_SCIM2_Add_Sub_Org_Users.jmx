@@ -105,7 +105,7 @@
           </elementProp>
           <elementProp name="noOfSubOrgs" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgs</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgsCount,5)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgsCount,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampUpPeriod" elementType="Argument">

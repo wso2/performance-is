@@ -28,23 +28,23 @@ scenarioCount = []  # To keep scenario count orderly
 burst_keyword = "Burst"  # Keyword to identify burst scenarios
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
-scenarios = {"Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
-             "Password Grant Type": "GetToken_Password_Grant",
-             "Client Credentials Grant Type": "Get Token Client Credential Grant",
-             "OIDC Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Request",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes": "Get tokens",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes and Groups": "Get tokens",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes Groups and Roles": "Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent": "Common Auth Login HTTP Request",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes": "Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes and Groups": "Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles": "Get tokens",
-             "OIDC Password Grant Type": "GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes": "GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes and Groups": "GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": "GetToken_Password_Grant",
-             "SAML2 SSO Redirect Binding": "Identity Provider Login",
-             "Token Exchange Grant": "GetToken_Token_Exchange_Grant"}
+scenarios = {"Auth Code Grant Redirect With Consent": "2 Common Auth Login HTTP Request",
+             "Password Grant Type": "1 GetToken_Password_Grant",
+             "Client Credentials Grant Type": "1 Get Token Client Credential Grant",
+             "OIDC Auth Code Grant Redirect With Consent": "2 Common Auth Login HTTP Request",
+             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes": "5 Get tokens",
+             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes and Groups": "5 Get tokens",
+             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes Groups and Roles": "5 Get tokens",
+             "OIDC Auth Code Grant Redirect Without Consent": "2 Common Auth Login HTTP Request",
+             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes": "4 Get tokens",
+             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes and Groups": "4 Get tokens",
+             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles": "4 Get tokens",
+             "OIDC Password Grant Type": "1 GetToken_Password_Grant",
+             "OIDC Password Grant Type Retrieve User Attributes": "1 GetToken_Password_Grant",
+             "OIDC Password Grant Type Retrieve User Attributes and Groups": "1 GetToken_Password_Grant",
+             "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": "1 GetToken_Password_Grant",
+             "SAML2 SSO Redirect Binding": "2 Identity Provider Login",
+             "Token Exchange Grant": "1 GetToken_Token_Exchange_Grant"}
 
 scenarios_critical_requests = scenarios.copy()
 

@@ -494,8 +494,7 @@ if (y == 0) {
   &quot;provisioningConfigurations&quot;: {&#xd;
     &quot;inboundProvisioning&quot;: {&#xd;
       &quot;provisioningUserstoreDomain&quot;: &quot;PRIMARY&quot;&#xd;
-    },&#xd;
-    &quot;outboundProvisioningIdps&quot;: []&#xd;
+    }&#xd;
   }&#xd;
 }&#xd;
 </stringProp>

@@ -117,8 +117,8 @@ if (y == 0) {
 String subOrgName = &quot;${subOrgNamePrefix}${sub_org_idx}&quot;;
 String description = &quot;This is the sub organization ${subOrgNamePrefix}${sub_org_idx}.&quot;;
 
-vars.put(&quot;name&quot;, new String(subOrgName));
-vars.put(&quot;description&quot;, new String(description));
+vars.put(&quot;subOrgName&quot;, new String(subOrgName));
+vars.put(&quot;suOrgDescription&quot;, new String(description));
 </stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
@@ -152,8 +152,8 @@ vars.put(&quot;description&quot;, new String(description));
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;name&quot;: &quot;${name}&quot;,&#xd;
-	&quot;description&quot;: &quot;${description}&quot;,&#xd;
+	&quot;name&quot;: &quot;${subOrgName}&quot;,&#xd;
+	&quot;description&quot;: &quot;${suOrgDescription}&quot;,&#xd;
 	&quot;attributes&quot;: []&#xd;
 }&#xd;
 </stringProp>
@@ -166,7 +166,7 @@ vars.put(&quot;description&quot;, new String(description));
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.path">${org_end_point}</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>

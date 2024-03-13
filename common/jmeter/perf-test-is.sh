@@ -226,6 +226,8 @@ else
     default_concurrent_users="50 100 150 300 500 1000 1500 2000 2500 3000"
 fi
 
+default_concurrent_users="50"
+
 if [[ -z $test_duration ]]; then
     echo "Please provide the test duration."
     exit 1

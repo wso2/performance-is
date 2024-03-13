@@ -45,7 +45,7 @@ scenarios = {"Auth Code Grant Redirect With Consent": "Common Auth Login HTTP Re
              "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": "GetToken_Password_Grant",
              "SAML2 SSO Redirect Binding": "Identity Provider Login",
              "Token Exchange Grant": "GetToken_Token_Exchange_Grant",
-             "B2B OIDC Auth Code Grant Redirect With Consent": "Common Auth Login Request to Sub Org"}
+             "B2B OIDC Auth Code Grant Redirect With Consent": "4. Common Auth Login Request to Sub Org"}
 
 scenarios_critical_requests = scenarios.copy()
 

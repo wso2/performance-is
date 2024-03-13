@@ -80,12 +80,12 @@
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">consumerKey_</stringProp>
+            <stringProp name="Argument.value">b2b_consumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">consumerSecret_</stringProp>
+            <stringProp name="Argument.value">b2b_consumerSecret_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -100,12 +100,12 @@
           </elementProp>
           <elementProp name="noOfSubOrgUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgUsers</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgUserCount,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgUserCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfSubOrgs" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgs</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgsCount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgsCount,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfSPs" elementType="Argument">

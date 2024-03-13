@@ -45,12 +45,12 @@
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">consumerKey_</stringProp>
+            <stringProp name="Argument.value">b2b_consumerKey_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">consumerSecret_</stringProp>
+            <stringProp name="Argument.value">b2b_consumerSecret_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callback_url_prefix" elementType="Argument">
@@ -80,12 +80,12 @@
           </elementProp>
           <elementProp name="noOfSubOrgs" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgs</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgCount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfUsers</stringProp>
-            <stringProp name="Argument.value">${__P(userCount,100)}</stringProp>
+            <stringProp name="Argument.value">${__P(userCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfSPs" elementType="Argument">
@@ -677,12 +677,30 @@ if (y == 0 || deploymentType == &quot;active-passive&quot;) {
             <stringProp name="RegexExtractor.useHeaders">true</stringProp>
             <stringProp name="RegexExtractor.refname">commonauthRedirectURL</stringProp>
             <stringProp name="RegexExtractor.regex">Location:\s*(https?://[^/]+(/[^?]+(?:\?.*)))</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
             <stringProp name="RegexExtractor.default">NF</stringProp>
             <stringProp name="RegexExtractor.match_number">1</stringProp>
             <stringProp name="Sample.scope">all</stringProp>
             <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
           </RegexExtractor>
+          <hashTree/>
+          <DebugPostProcessor guiclass="TestBeanGUI" testclass="DebugPostProcessor" testname="Debug PostProcessor" enabled="true">
+            <boolProp name="displayJMeterProperties">false</boolProp>
+            <boolProp name="displayJMeterVariables">true</boolProp>
+            <boolProp name="displaySamplerProperties">true</boolProp>
+            <boolProp name="displaySystemProperties">false</boolProp>
+          </DebugPostProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">String commonauthRedirectURL_g = vars.get(&quot;commonauthRedirectURL_g&quot;);
+String commonauthRedirectURL_g2 = vars.get(&quot;commonauthRedirectURL_g2&quot;);
+
+if (commonauthRedirectURL_g.equals(&quot;2&quot;)) {
+	vars.put(&quot;commonauthRedirectURL&quot;, new String(commonauthRedirectURL_g2));
+}</stringProp>
+          </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="6. Common Auth Redirect call to the Parent Org" enabled="true">

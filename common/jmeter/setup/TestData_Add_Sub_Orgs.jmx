@@ -55,7 +55,7 @@
           </elementProp>
           <elementProp name="noOfSubOrgs" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgs</stringProp>
-            <stringProp name="Argument.value">${__P(noOfSubOrgs,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(noOfSubOrgs,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="rampUpPeriod" elementType="Argument">
@@ -95,7 +95,7 @@
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
-int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int x = Integer.parseInt(vars.get(&quot;sub_org_idx&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
 if (y == 0) {

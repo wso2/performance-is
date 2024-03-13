@@ -415,12 +415,15 @@ function run_b2b_test_data_scripts() {
 
     echo "Running b2b test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
+    declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_B2B_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
+        test_data_store="test-data/$script"
+        mkdir -p $test_data_store
         command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
+        command+=" -l test_data_store/results.jtl"
         echo "$command"
         echo ""
         $command

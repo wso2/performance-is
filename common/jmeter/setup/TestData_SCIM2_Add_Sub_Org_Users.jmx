@@ -100,12 +100,12 @@
           </elementProp>
           <elementProp name="noOfSubOrgUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgUsers</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgUserCount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgUserCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfSubOrgs" elementType="Argument">
             <stringProp name="Argument.name">noOfSubOrgs</stringProp>
-            <stringProp name="Argument.value">${__P(subOrgsCount,1000)}</stringProp>
+            <stringProp name="Argument.value">${__P(subOrgsCount,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfSPs" elementType="Argument">

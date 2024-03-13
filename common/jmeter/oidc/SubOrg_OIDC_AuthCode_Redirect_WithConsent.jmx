@@ -757,7 +757,7 @@ if (commonauthRedirectURL_g.equals(&quot;2&quot;)) {
             <stringProp name="script">String federatedIDPRedirectURL_g = vars.get(&quot;federatedIDPRedirectURL_g&quot;);
 String federatedIDPRedirectURL_g2 = vars.get(&quot;federatedIDPRedirectURL_g2&quot;);
 
-if (commonauthRedirectURL_g.equals(&quot;2&quot;)) {
+if (federatedIDPRedirectURL_g.equals(&quot;2&quot;)) {
 	vars.put(&quot;federatedIDPRedirectURL&quot;, new String(federatedIDPRedirectURL_g2));
 }</stringProp>
           </BeanShellPostProcessor>

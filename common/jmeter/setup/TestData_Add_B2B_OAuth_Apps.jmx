@@ -52,6 +52,11 @@
             <stringProp name="Argument.value">${__P(api_resource_end_point,/t/carbon.super/api/server/v1/api-resources)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="serverNode" elementType="Argument">
+            <stringProp name="Argument.name">serverNode</stringProp>
+            <stringProp name="Argument.value">${__P(serverNode,node1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -153,15 +158,6 @@ if (y == 0) {
     vars.put(&quot;serverNode&quot;, &quot;node4&quot;);
 }</stringProp>
         </BeanShellPreProcessor>
-        <hashTree/>
-        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-          <collectionProp name="HeaderManager.headers">
-            <elementProp name="X-Server-Select" elementType="Header">
-              <stringProp name="Header.name">X-Server-Select</stringProp>
-              <stringProp name="Header.value">${serverNode}</stringProp>
-            </elementProp>
-          </collectionProp>
-        </HeaderManager>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get SCIM2 API Resource Request" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>

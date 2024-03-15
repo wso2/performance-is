@@ -15,4 +15,4 @@ GroupAndRoleSeparationEnabled=false
 
 In order to see the performance results with the with above features enabled, please refer the [v2 results](https://github.com/wso2/performance-is/tree/master/benchmarks/6.1.0/v2/README.md) which use the default pack without enabling or disabling any additional features.
 
-Please note that in both cases, [performance tuning parameters](https://is.docs.wso2.com/en/latest/deploy/performance/performance-tuning-recommendations/) has been fine tuned as needed.
+Please note that in both cases, [performance tuning parameters](https://is.docs.wso2.com/en/6.1.0/deploy/performance/performance-tuning-recommendations/) has been fine tuned as needed.

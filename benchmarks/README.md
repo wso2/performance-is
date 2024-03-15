@@ -33,14 +33,14 @@
 | 6.0.0 GA                   | Single node    | 2022/09/25 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.0.0/6.0.0_single-node_4-core_jdk-11.md)              |
 | 6.0.0 GA                   | 2-node cluster | 2022/09/27 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.0.0/6.0.0_two-node_2-core_jdk-11.md)                 |
 | 6.0.0 GA                   | 2-node cluster | 2022/09/28 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.0.0/6.0.0_two-node_4-core_jdk-11.md)                 |
-| 6.1.0 GA - V1                  | Single node    | 2023/02/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_single-node_2-core_jdk-11.md)              |
-| 6.1.0 GA - V1                   | Single node    | 2023/02/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_single-node_4-core_jdk-11.md)              |
-| 6.1.0 GA - V1                   | 2-node cluster | 2023/02/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_two-node_2-core_jdk-11.md)                 |
-| 6.1.0 GA - V1                   | 2-node cluster | 2023/02/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_two-node_4-core_jdk-11.md)                 |               |
-| 6.1.0 GA - V2                  | Single node    | 2024/03/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_single-node_2-core_jdk-11.md)              |
-| 6.1.0 GA - V2                   | Single node    | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_single-node_4-core_jdk-11.md)              |
-| 6.1.0 GA - V2                   | 2-node cluster | 2024/03/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_two-node_2-core_jdk-11.md)                 |
-| 6.1.0 GA - V2                   | 2-node cluster | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/6.1.0_two-node_4-core_jdk-11.md)                 |
+| 6.1.0 GA - V1                  | Single node    | 2023/02/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v1/6.1.0_single-node_2-core_jdk-11.md)              |
+| 6.1.0 GA - V1                   | Single node    | 2023/02/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v1/6.1.0_single-node_4-core_jdk-11.md)              |
+| 6.1.0 GA - V1                   | 2-node cluster | 2023/02/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v1/6.1.0_two-node_2-core_jdk-11.md)                 |
+| 6.1.0 GA - V1                   | 2-node cluster | 2023/02/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v1/6.1.0_two-node_4-core_jdk-11.md)                 |               |
+| 6.1.0 GA - V2                  | Single node    | 2024/03/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v2/6.1.0_single-node_2-core_jdk-11.md)              |
+| 6.1.0 GA - V2                   | Single node    | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v2/6.1.0_single-node_4-core_jdk-11.md)              |
+| 6.1.0 GA - V2                   | 2-node cluster | 2024/03/01 | c5.large (2 core)  | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v2/6.1.0_two-node_2-core_jdk-11.md)                 |
+| 6.1.0 GA - V2                   | 2-node cluster | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge     | JDK 11      | [:arrow_upper_right:](6.1.0/v2/6.1.0_two-node_4-core_jdk-11.md)                 |
 
 ### Deployment Diagram - Single node
 ![Deployment Diagram - Single node](https://github.com/wso2/performance-is/blob/master/common/images/deployment-diagram-singlenode.png)

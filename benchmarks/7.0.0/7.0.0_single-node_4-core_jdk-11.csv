@@ -1,0 +1,51 @@
+Scenario Name,Concurrent Users,Throughput (Requests/sec),Average Response Time (ms)
+Authenticate Super Tenant User,50,2220.83,22.31
+Authenticate Super Tenant User,100,2050.29,48.56
+Authenticate Super Tenant User,150,1925.43,77.67
+Authenticate Super Tenant User,300,1790.61,167.29
+Authenticate Super Tenant User,500,1897.39,263.41
+Auth Code Grant Redirect With Consent,50,168.96,292.22
+Auth Code Grant Redirect With Consent,100,160.14,620.69
+Auth Code Grant Redirect With Consent,150,117.79,1270.28
+Auth Code Grant Redirect With Consent,300,120.27,2490.66
+Auth Code Grant Redirect With Consent,500,139.22,3585.56
+Implicit Grant Redirect With Consent,50,224.9,219.63
+Implicit Grant Redirect With Consent,100,210.71,471.73
+Implicit Grant Redirect With Consent,150,200.41,745.55
+Implicit Grant Redirect With Consent,300,191.56,1561.72
+Implicit Grant Redirect With Consent,500,196.87,2531.62
+Password Grant Type,50,1139.68,43.22
+Password Grant Type,100,1102.48,90.07
+Password Grant Type,150,969.1,154.16
+Password Grant Type,300,970.2,308.8
+Password Grant Type,500,920.31,542.6
+Client Credentials Grant Type,50,4611.21,9.91
+Client Credentials Grant Type,100,4461.23,20.94
+Client Credentials Grant Type,150,4398.64,31.72
+Client Credentials Grant Type,300,4238.45,62.52
+Client Credentials Grant Type,500,4076.2,88.95
+OIDC Auth Code Grant Redirect With Consent,50,165.32,299.05
+OIDC Auth Code Grant Redirect With Consent,100,159.33,624.2
+OIDC Auth Code Grant Redirect With Consent,150,151.02,990.2
+OIDC Auth Code Grant Redirect With Consent,300,145.41,2059.92
+OIDC Auth Code Grant Redirect With Consent,500,146.02,3419.01
+OIDC Implicit Grant Redirect With Consent,50,189.18,261.57
+OIDC Implicit Grant Redirect With Consent,100,176.83,562.52
+OIDC Implicit Grant Redirect With Consent,150,174.74,855.55
+OIDC Implicit Grant Redirect With Consent,300,161.26,1855.29
+OIDC Implicit Grant Redirect With Consent,500,171.1,2913.32
+OIDC Password Grant Type,50,573.46,86.65
+OIDC Password Grant Type,100,542.61,183.7
+OIDC Password Grant Type,150,518.04,289.24
+OIDC Password Grant Type,300,482.35,621.08
+OIDC Password Grant Type,500,487.77,1023.1
+OIDC Auth Code Request Path Authenticator With Consent,50,188.94,262.48
+OIDC Auth Code Request Path Authenticator With Consent,100,183.42,543.17
+OIDC Auth Code Request Path Authenticator With Consent,150,174.04,860.09
+OIDC Auth Code Request Path Authenticator With Consent,300,165.81,1806.26
+OIDC Auth Code Request Path Authenticator With Consent,500,165.41,3016.7
+SAML2 SSO Redirect Binding,50,210.07,236.32
+SAML2 SSO Redirect Binding,100,195.18,510.5
+SAML2 SSO Redirect Binding,150,183.81,813.77
+SAML2 SSO Redirect Binding,300,175.47,1702.6
+SAML2 SSO Redirect Binding,500,171.23,2902.21

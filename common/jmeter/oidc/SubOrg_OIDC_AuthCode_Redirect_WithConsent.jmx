@@ -30,7 +30,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUser_</stringProp>
+            <stringProp name="Argument.value">isB2BTestUser_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="password" elementType="Argument">

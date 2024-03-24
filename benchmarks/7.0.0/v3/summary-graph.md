@@ -8,7 +8,7 @@ During each release, we execute various automated performance test scenarios and
 | OIDC Auth Code Grant Redirect With Consent                                                               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.                                                                                                                                       |
 | OIDC Auth Code Grant Redirect Without Consent                                                            | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent.                                                                                                                       |
 | OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles               | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent. Retrieve country, email, first name and last name as user attributes. Additionally retrieve groups and roles as well. |
-| Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent while 3000 burst one time traffic. Retrieve country, email, first name and last name as user attributes.               |
+| Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes, Groups and Roles | Obtain an access token and an id token using the OAuth 2.0 authorization code grant type without consent while 3000 burst one time traffic. Retrieve country, email, first name and last name as user attributes.               |
 | Token Exchange Grant Type                                                                                | Obtain an access token and an id token using the token exchange grant type.                                                                                                                                                     |
 | SAML2 SSO Redirect Binding                                                                               | Obtain a SAML 2 assertion response using redirect binding.                                                                                                                                                                      |
 
@@ -155,7 +155,7 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 ![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent/50_3000_lines.png)
 
 
-### 3.1. OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles
+### 3.1. OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes, Groups and Roles
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes.
 
@@ -179,14 +179,14 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieving_User_Attributes_Groups_and_Roles/50_500_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieving_User_Attributes_Groups_and_Roles/50_3000_lines.png)
+![image info](graphs/OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_3000_lines.png)
 
 
-### 3.1.1. Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles
+### 3.1.1. Burst Traffic OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes, Groups and Roles
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes. Further, the 6th minute of the test 3000 one time burst of concurrent requests are sent.
 
@@ -210,11 +210,11 @@ Performance Comparison of Different Node Configurations with 95th Percentile of 
 
 <ins> Concurrency: 50 - 500 </ins>
 
-![image info](graphs/Burst_Traffic_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieving_User_Attributes_Groups_and_Roles/50_500_lines.png)
+![image info](graphs/Burst_Traffic_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_500_lines.png)
 
 <ins> Concurrency: 50 - 3000 </ins>
 
-![image info](graphs/Burst_Traffic_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieving_User_Attributes_Groups_and_Roles/50_3000_lines.png)
+![image info](graphs/Burst_Traffic_OIDC_Auth_Code_Grant_Redirect_Without_Consent_Retrieve_User_Attributes_Groups_and_Roles/50_3000_lines.png)
 
 
 ### 4. OIDC Password Grant Type

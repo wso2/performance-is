@@ -69,13 +69,13 @@ SAML2 SSO Redirect Binding,1500,363
 SAML2 SSO Redirect Binding,2000,5791
 SAML2 SSO Redirect Binding,2500,8703
 SAML2 SSO Redirect Binding,3000,14911
-Token Exchange Grant,50,99
-Token Exchange Grant,100,191
-Token Exchange Grant,150,327
-Token Exchange Grant,300,915
-Token Exchange Grant,500,1423
-Token Exchange Grant,1000,2991
-Token Exchange Grant,1500,4479
-Token Exchange Grant,2000,6239
-Token Exchange Grant,2500,7935
-Token Exchange Grant,3000,8159
+Token Exchange Grant Type,50,99
+Token Exchange Grant Type,100,191
+Token Exchange Grant Type,150,327
+Token Exchange Grant Type,300,915
+Token Exchange Grant Type,500,1423
+Token Exchange Grant Type,1000,2991
+Token Exchange Grant Type,1500,4479
+Token Exchange Grant Type,2000,6239
+Token Exchange Grant Type,2500,7935
+Token Exchange Grant Type,3000,8159

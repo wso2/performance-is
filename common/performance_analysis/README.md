@@ -16,7 +16,7 @@ This script generates performance plots based on CSV data files for different de
    2. Define the deployment types and their respective CSV files. If a CSV file is not present, it'll ignore it and continue with the rest of the CSVs.
     ```shell
     deployment_types = {
-    'Single Node 4 Core': 'single_node_4_core.csv',
+    'Active Passive 4 Core': 'active_passive_4_core.csv',
     'Two Node 2 Core': 'two_node_2_core.csv',
     'Two Node 4 Core': 'two_node_4_core.csv',
     'Three Node 4 Core': 'three_node_4_core.csv',

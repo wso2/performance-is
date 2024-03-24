@@ -145,7 +145,7 @@ declare -A test_scenario13=(
 )
 declare -A test_scenario14=(
     [name]="14-Token_Exchange_Grant"
-    [display_name]="Token Exchange Grant"
+    [display_name]="Token Exchange Grant Type"
     [description]="Obtain an access token and an id token using the OAuth Token Exchange grant type."
     [jmx]="oauth/Token_Exchange_Grant.jmx"
     [tenantMode]=false

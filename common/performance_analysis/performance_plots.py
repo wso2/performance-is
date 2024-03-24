@@ -27,8 +27,8 @@ import textwrap
 
 # Define the deployment types and their respective CSV files and colors
 deployment_types = {
-    'Single Node 4 Core': {
-        'csv_file': 'single_node_4_core.csv',
+    'Active Passive 4 Core': {
+        'csv_file': 'active_passive_4_core.csv',
         'color': 'royalblue'
     },
     'Two Node 2 Core': {

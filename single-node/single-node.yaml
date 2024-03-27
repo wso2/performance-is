@@ -204,14 +204,14 @@ Resources:
       DBName: WSO2_IS_DB_2
       #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
-      EngineVersion: 5.7.41
+      EngineVersion: 8.0.28
       Engine: MySQL
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
       Iops: !Ref DBIops
       StorageType: io1
-      DBParameterGroupName: wso2is-db-param-grp
+      DBParameterGroupName: perf-test-param-group
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISDBSubnetGroupsuffix:
     Type: 'AWS::RDS::DBSubnetGroup'
@@ -458,7 +458,7 @@ Parameters:
     AllowedPattern: '[A-Za-z0-9\-]+'
   DBEngine:
     Type: String
-    Default: MySQL_5.7
+    Default: MySQL_8.0
   DBPassword:
     Type: String
     MinLength: 8

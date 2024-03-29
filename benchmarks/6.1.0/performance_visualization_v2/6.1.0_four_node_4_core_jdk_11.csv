@@ -19,16 +19,16 @@ OIDC Auth Code Grant Redirect With Consent,1500,214
 OIDC Auth Code Grant Redirect With Consent,2000,317
 OIDC Auth Code Grant Redirect With Consent,2500,555
 OIDC Auth Code Grant Redirect With Consent,3000,1175
-OIDC Auth Code Grant Redirect Without Consent,50,107
-OIDC Auth Code Grant Redirect Without Consent,100,104
-OIDC Auth Code Grant Redirect Without Consent,150,104
-OIDC Auth Code Grant Redirect Without Consent,300,143
-OIDC Auth Code Grant Redirect Without Consent,500,197
-OIDC Auth Code Grant Redirect Without Consent,1000,1599
-OIDC Auth Code Grant Redirect Without Consent,1500,5951
-OIDC Auth Code Grant Redirect Without Consent,2000,8031
-OIDC Auth Code Grant Redirect Without Consent,2500,10175
-OIDC Auth Code Grant Redirect Without Consent,3000,10815
+OIDC Auth Code Grant Redirect Without Consent,50,85
+OIDC Auth Code Grant Redirect Without Consent,100,81
+OIDC Auth Code Grant Redirect Without Consent,150,80
+OIDC Auth Code Grant Redirect Without Consent,300,172
+OIDC Auth Code Grant Redirect Without Consent,500,252
+OIDC Auth Code Grant Redirect Without Consent,1000,421
+OIDC Auth Code Grant Redirect Without Consent,1500,695
+OIDC Auth Code Grant Redirect Without Consent,2000,2991
+OIDC Auth Code Grant Redirect Without Consent,2500,5823
+OIDC Auth Code Grant Redirect Without Consent,3000,7295
 OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes Groups and Roles,50,42
 OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes Groups and Roles,100,42
 OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes Groups and Roles,150,48

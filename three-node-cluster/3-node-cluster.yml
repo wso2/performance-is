@@ -233,7 +233,7 @@ Resources:
       DBName: WSO2_IS_DB_2
       #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
-      EngineVersion: 8.0.28
+      EngineVersion: 8.0.36
       Engine: MySQL
       EnablePerformanceInsights : 'true'
       MasterUsername: !Ref DBUsername

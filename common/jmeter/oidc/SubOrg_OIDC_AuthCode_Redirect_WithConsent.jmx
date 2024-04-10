@@ -58,11 +58,6 @@
             <stringProp name="Argument.value">https://localhost/callback</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="tenantDomainPrefix" elementType="Argument">
-            <stringProp name="Argument.name">tenantDomainPrefix</stringProp>
-            <stringProp name="Argument.value">dummytenant_</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="subOrgNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">subOrgNamePrefix</stringProp>
             <stringProp name="Argument.value">sub_org_</stringProp>
@@ -93,11 +88,6 @@
             <stringProp name="Argument.value">${__P(spCount,5)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="noOfTenants" elementType="Argument">
-            <stringProp name="Argument.name">noOfTenants</stringProp>
-            <stringProp name="Argument.value">${__P(noOfTenants,100)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="timeToRun" elementType="Argument">
             <stringProp name="Argument.name">timeToRun</stringProp>
             <stringProp name="Argument.value">${__P(time,300)}</stringProp>
@@ -112,11 +102,6 @@
             <stringProp name="Argument.name">constantTPS</stringProp>
             <stringProp name="Argument.value">${__P(constantTPS,10000000)}</stringProp>
             <stringProp name="Argument.desc">samples per minute.</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="tenantMode" elementType="Argument">
-            <stringProp name="Argument.name">tenantMode</stringProp>
-            <stringProp name="Argument.value">${__P(tenantMode,false)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="noOfBurst" elementType="Argument">
@@ -154,15 +139,6 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Tenant Counter" enabled="true">
-          <stringProp name="CounterConfig.start">1</stringProp>
-          <stringProp name="CounterConfig.end">${noOfTenants}</stringProp>
-          <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">tenant_idx</stringProp>
-          <stringProp name="CounterConfig.format"></stringProp>
-          <boolProp name="CounterConfig.per_user">false</boolProp>
-        </CounterConfig>
-        <hashTree/>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
@@ -206,11 +182,8 @@
           <stringProp name="script">// Resolve Org index.
 String sub_org_name = &quot;${subOrgNamePrefix}${sub_org_count_id_random}&quot;;
 
-String tenantMode = vars.get(&quot;tenantMode&quot;);
 String consumerKeyPrefix = vars.get(&quot;consumerKeyPrefix&quot;);
 String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
-String tenantDomainPrefix = vars.get(&quot;tenantDomainPrefix&quot;);
-String tenantIndex = vars.get(&quot;tenant_idx&quot;);
 String sp_count_id_random = vars.get(&quot;sp_count_id_random&quot;);
 String tokenEndpoint = &quot;/oauth2/token&quot;;
 String authEndpoint = &quot;/oauth2/authorize&quot;;
@@ -220,28 +193,16 @@ String client_secret = &quot;&quot;;
 String client_id = &quot;&quot;;
 String redirect_uri = &quot;&quot;;
 
-if (new String(tenantMode).equals(&quot;true&quot;)) {
-
-username = &quot;${usernamePrefix}${user_count_id}@${tenantDomainPrefix}${tenant_idx}.com&quot;;
-client_secret = &quot;${consumerSecretPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-client_id = &quot;${consumerKeyPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-redirect_uri = &quot;${callback_url_prefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-tokenEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/token&quot;;
-authEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/authorize&quot;;
-
-} else {
-
 username = &quot;${usernamePrefix}${user_count_id}&quot;;
 client_secret = &quot;${consumerSecretPrefix}${sp_count_id}&quot;;
 client_id = &quot;${consumerKeyPrefix}${sp_count_id}&quot;;
 redirect_uri = &quot;${callback_url_prefix}${sp_count_id}&quot;;
 
-}
-
 vars.put(&quot;username&quot;, new String(username));
 vars.put(&quot;client_secret&quot;, new String(client_secret));
 vars.put(&quot;client_id&quot;, new String(client_id));
 vars.put(&quot;redirect_uri&quot;,new String(redirect_uri));
+
 vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));
 vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
 vars.put(&quot;sub_org_name&quot;,new String(sub_org_name));
@@ -1026,15 +987,6 @@ if (federatedIDPRedirectURL_g.equals(&quot;2&quot;)) {
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Tenant Counter" enabled="true">
-          <stringProp name="CounterConfig.start">1</stringProp>
-          <stringProp name="CounterConfig.end">${noOfTenants}</stringProp>
-          <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">tenant_idx</stringProp>
-          <stringProp name="CounterConfig.format"></stringProp>
-          <boolProp name="CounterConfig.per_user">false</boolProp>
-        </CounterConfig>
-        <hashTree/>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${noOfSPs}</stringProp>
@@ -1078,12 +1030,8 @@ if (federatedIDPRedirectURL_g.equals(&quot;2&quot;)) {
           <stringProp name="script">// Resolve Org index.
 String sub_org_name = &quot;${subOrgNamePrefix}${sub_org_count_id_random}&quot;;
 
-
-String tenantMode = vars.get(&quot;tenantMode&quot;);
 String consumerKeyPrefix = vars.get(&quot;consumerKeyPrefix&quot;);
 String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
-String tenantDomainPrefix = vars.get(&quot;tenantDomainPrefix&quot;);
-String tenantIndex = vars.get(&quot;tenant_idx&quot;);
 String sp_count_id_random = vars.get(&quot;sp_count_id_random&quot;);
 String tokenEndpoint = &quot;/oauth2/token&quot;;
 String authEndpoint = &quot;/oauth2/authorize&quot;;
@@ -1093,28 +1041,16 @@ String client_secret = &quot;&quot;;
 String client_id = &quot;&quot;;
 String redirect_uri = &quot;&quot;;
 
-if (new String(tenantMode).equals(&quot;true&quot;)) {
-
-username = &quot;${usernamePrefix}${user_count_id}@${tenantDomainPrefix}${tenant_idx}.com&quot;;
-client_secret = &quot;${consumerSecretPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-client_id = &quot;${consumerKeyPrefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-redirect_uri = &quot;${callback_url_prefix}${sp_count_id_random}${tenantDomainPrefix}${tenant_idx}&quot;;
-tokenEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/token&quot;;
-authEndpoint = &quot;/t/${tenantDomainPrefix}${tenant_idx}.com/oauth2/authorize&quot;;
-
-} else {
-
 username = &quot;${usernamePrefix}${user_count_id}&quot;;
 client_secret = &quot;${consumerSecretPrefix}${sp_count_id}&quot;;
 client_id = &quot;${consumerKeyPrefix}${sp_count_id}&quot;;
 redirect_uri = &quot;${callback_url_prefix}${sp_count_id}&quot;;
 
-}
-
 vars.put(&quot;username&quot;, new String(username));
 vars.put(&quot;client_secret&quot;, new String(client_secret));
 vars.put(&quot;client_id&quot;, new String(client_id));
 vars.put(&quot;redirect_uri&quot;,new String(redirect_uri));
+
 vars.put(&quot;tokenEndpoint&quot;,new String(tokenEndpoint));
 vars.put(&quot;authEndpoint&quot;,new String(authEndpoint));
 vars.put(&quot;sub_org_name&quot;,new String(sub_org_name));

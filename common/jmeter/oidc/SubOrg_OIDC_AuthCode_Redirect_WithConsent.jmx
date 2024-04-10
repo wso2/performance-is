@@ -23,6 +23,16 @@
             <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfNodes" elementType="Argument">
+            <stringProp name="Argument.name">noOfNodes</stringProp>
+            <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -112,11 +122,6 @@
           <elementProp name="noOfNodes" elementType="Argument">
             <stringProp name="Argument.name">noOfNodes</stringProp>
             <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="deployment" elementType="Argument">
-            <stringProp name="Argument.name">deployment</stringProp>
-            <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

@@ -104,8 +104,8 @@
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${loopCount}</stringProp>
+                    <boolProp name="LoopController.continue_forever">false</boolProp>
+<stringProp name="LoopController.loops">${loopCount}</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
@@ -115,7 +115,7 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
-      </ThreadGroup>
+              </ThreadGroup>
       <hashTree>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter" enabled="true">
           <stringProp name="CounterConfig.start">1</stringProp>
@@ -190,7 +190,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+<stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/services/AuthenticationAdmin.AuthenticationAdminHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -240,7 +240,7 @@ if (y == 0) {
             &lt;xsd1:OAuthVersion&gt;OAuth-2.0&lt;/xsd1:OAuthVersion&gt;&#xd;
             &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt;&#xd;
             &lt;xsd1:callbackUrl&gt;${callbackUrlPrefix}${sp_count_id}&lt;/xsd1:callbackUrl&gt;&#xd;
-            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:token-exchange urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
+            &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
             &lt;xsd1:oauthConsumerKey&gt;${consumerKeyPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerKey&gt;&#xd;
             &lt;xsd1:oauthConsumerSecret&gt;${consumerSecretPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerSecret&gt;&#xd;
             &lt;xsd1:pkceMandatory&gt;false&lt;/xsd1:pkceMandatory&gt;&#xd;
@@ -257,7 +257,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+<stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/services/OAuthAdminService.OAuthAdminServiceHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -316,7 +316,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+<stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService.IdentityApplicationManagementServiceHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -374,7 +374,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+<stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService.IdentityApplicationManagementServiceHttpsSoap11Endpoint/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -404,7 +404,7 @@ if (y == 0) {
             <stringProp name="RegexExtractor.default">NP_AppID</stringProp>
             <stringProp name="RegexExtractor.match_number">1</stringProp>
             <stringProp name="Sample.scope">all</stringProp>
-          </RegexExtractor>
+                      </RegexExtractor>
           <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
@@ -489,7 +489,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+<stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/services/IdentityApplicationManagementService</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>

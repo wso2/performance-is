@@ -152,3 +152,12 @@ declare -A test_scenario14=(
     [skip]=false
     [modes]="FULL QUICK PUBLISH"
 )
+declare -A test_scenario15=(
+    [name]="15-B2B_oidc_auth_code_redirect_with_consent"
+    [display_name]="B2B OIDC Auth Code Grant Redirect With Consent"
+    [description]="Obtain an access token using the OAuth 2.0 authorization code grant type as a Sub org user to a Shared App."
+    [jmx]="oidc/B2B_OIDC_AuthCode_Redirect_WithConsent.jmx"
+    [tenantMode]=false
+    [skip]=false
+    [modes]="B2B"
+)

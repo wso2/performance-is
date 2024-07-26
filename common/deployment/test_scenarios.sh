@@ -91,7 +91,7 @@ declare -A test_scenario05=(
 # )
 declare -A test_scenario08=(
     [name]="08-oidc_auth_code_redirect_without_consent_retrieve_user_attributes_groups_and_roles"
-    [display_name]="OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles"
+    [display_name]="OIDC Auth Code Grant Redirect Without Consent Retrieving User Attributes, Groups and Roles"
     [description]="Obtain an access token and an id token using the OAuth 2.0 authorization code grant type."
     [jmx]="oidc/OIDC_AuthCode_Redirect_WithoutConsent_Retrieve_User_Attributes_Groups_And_Roles.jmx"
     [tenantMode]=false

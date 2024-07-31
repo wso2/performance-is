@@ -214,7 +214,7 @@ Resources:
       MultiAZ: 'false'
       Iops: !Ref DBIops
       StorageType: io1
-      DBParameterGroupName: wso2is-legacy-db-param-grp
+      DBParameterGroupName: mysql8-wso2is-legacy-db-param-grp
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISDBSubnetGroupsuffix:
     Type: 'AWS::RDS::DBSubnetGroup'

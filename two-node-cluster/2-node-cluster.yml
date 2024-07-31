@@ -206,7 +206,7 @@ Resources:
       DBName: WSO2_IS_DB_2
       #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
-      EngineVersion: 5.7.41
+      EngineVersion: 8.0.36
       Engine: MySQL
       EnablePerformanceInsights : 'true'
       MasterUsername: !Ref DBUsername
@@ -530,14 +530,14 @@ Parameters:
     AllowedPattern: '[A-Za-z0-9\-]+'
   DBEngine:
     Type: String
-    Default: MySQL_5.7
+    Default: MySQL_8.0
   DBPassword:
     Type: String
     MinLength: 8
     NoEcho: true
   DBInstanceType:
     Type: String
-    Default: db.m4.2xlarge
+    Default: db.m5.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large

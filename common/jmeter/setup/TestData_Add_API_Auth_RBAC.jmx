@@ -47,22 +47,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="spNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">spNamePrefix</stringProp>
-            <stringProp name="Argument.value">rbac_app_</stringProp>
+            <stringProp name="Argument.value">rbacApp</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="roleNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">roleNamePrefix</stringProp>
-            <stringProp name="Argument.value">rbac_AppRole__</stringProp>
+            <stringProp name="Argument.value">rbacAppRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">rbac_consumerKey_</stringProp>
+            <stringProp name="Argument.value">rbacConsumerKey</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">rbac_consumerSecret_</stringProp>
+            <stringProp name="Argument.value">rbacConsumerSecret</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callbackUrlPrefix" elementType="Argument">
@@ -72,7 +72,7 @@
           </elementProp>
           <elementProp name="apiResourceName" elementType="Argument">
             <stringProp name="Argument.name">apiResourceName</stringProp>
-            <stringProp name="Argument.value">test_Api</stringProp>
+            <stringProp name="Argument.value">testApi</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="apiIdentifier" elementType="Argument">
@@ -82,42 +82,42 @@
           </elementProp>
           <elementProp name="scopeName" elementType="Argument">
             <stringProp name="Argument.name">scopeName</stringProp>
-            <stringProp name="Argument.value">testScope_</stringProp>
+            <stringProp name="Argument.value">testScope</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="scopeDisplayName" elementType="Argument">
             <stringProp name="Argument.name">scopeDisplayName</stringProp>
-            <stringProp name="Argument.value">Test Scope_</stringProp>
+            <stringProp name="Argument.value">testScope</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="roleDisplayName" elementType="Argument">
             <stringProp name="Argument.name">roleDisplayName</stringProp>
-            <stringProp name="Argument.value">testRole_</stringProp>
+            <stringProp name="Argument.value">testRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
-            <stringProp name="Argument.value">testUser_</stringProp>
+            <stringProp name="Argument.value">testUser</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userPassword" elementType="Argument">
             <stringProp name="Argument.name">userPassword</stringProp>
-            <stringProp name="Argument.value">testPassword@_</stringProp>
+            <stringProp name="Argument.value">testPassword@</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userFirstNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">userFirstNamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUserFirstName_</stringProp>
+            <stringProp name="Argument.value">isTestUserFirstName</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userLastNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">userLastNamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUserLastName_</stringProp>
+            <stringProp name="Argument.value">isTestUserLastName</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="useremailPrefix" elementType="Argument">
             <stringProp name="Argument.name">useremailPrefix</stringProp>
-            <stringProp name="Argument.value">istestuser_</stringProp>
+            <stringProp name="Argument.value">isTestUser</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -190,7 +190,7 @@
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
 int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
-int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int x = Integer.parseInt(vars.get(&quot;spCountId&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
 if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
@@ -296,7 +296,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${spCount}</stringProp>
           <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">sp_count_id</stringProp>
+          <stringProp name="CounterConfig.name">spCountId</stringProp>
           <stringProp name="CounterConfig.format"></stringProp>
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
@@ -305,7 +305,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end">${spCount}</stringProp>
           <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">role_count_id</stringProp>
+          <stringProp name="CounterConfig.name">roleCountId</stringProp>
           <stringProp name="CounterConfig.format"></stringProp>
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
@@ -314,7 +314,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <stringProp name="CounterConfig.start">1</stringProp>
           <stringProp name="CounterConfig.end"></stringProp>
           <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">user_index</stringProp>
+          <stringProp name="CounterConfig.name">userIndex</stringProp>
           <stringProp name="CounterConfig.format"></stringProp>
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
@@ -347,7 +347,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
-int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int x = Integer.parseInt(vars.get(&quot;spCountId&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
 if (y == 0) {
@@ -375,7 +375,7 @@ if (y == 0) {
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;name&quot;: &quot;${spNamePrefix}${sp_count_id}&quot;,&#xd;
+  &quot;name&quot;: &quot;${spNamePrefix}${spCountId}&quot;,&#xd;
   &quot;description&quot;: &quot;appDesc&quot;,&#xd;
   &quot;claimConfiguration&quot;: {&#xd;
         &quot;dialect&quot;: &quot;LOCAL&quot;,&#xd;
@@ -479,7 +479,7 @@ if (y == 0) {
       },&#xd;
       &quot;allowedOrigins&quot;: [],&#xd;
       &quot;callbackURLs&quot;: [&#xd;
-       &quot;${callbackUrlPrefix}${sp_count_id}&quot;&#xd;
+       &quot;${callbackUrlPrefix}${spCountId}&quot;&#xd;
       ],&#xd;
       &quot;grantTypes&quot;: [&#xd;
         &quot;authorization_code&quot;,&#xd;
@@ -515,8 +515,8 @@ if (y == 0) {
       },&#xd;
       &quot;scopeValidators&quot;: [],&#xd;
       &quot;validateRequestObjectSignature&quot;: false,&#xd;
-      &quot;clientId&quot;: &quot;${consumerKeyPrefix}${sp_count_id}&quot;,&#xd;
-      &quot;clientSecret&quot;: &quot;${consumerSecretPrefix}${sp_count_id}&quot;&#xd;
+      &quot;clientId&quot;: &quot;${consumerKeyPrefix}${spCountId}&quot;,&#xd;
+      &quot;clientSecret&quot;: &quot;${consumerSecretPrefix}${spCountId}&quot;&#xd;
     }&#xd;
   },&#xd;
   &quot;authenticationSequence&quot;: {&#xd;
@@ -682,7 +682,7 @@ vars.put(&quot;scopeName&quot;, new String(scopeName));</stringProp>
   &quot;schemas&quot;: [&#xd;
     &quot;urn:ietf:params:scim:schemas:extension:2.0:Role&quot;&#xd;
   ],&#xd;
-  &quot;displayName&quot;: &quot;${roleDisplayName}${role_count_id}&quot;,&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}${roleCountId}&quot;,&#xd;
   &quot;audience&quot;: {&#xd;
     &quot;value&quot;: &quot;${applicationId}&quot;,&#xd;
     &quot;type&quot;: &quot;application&quot;&#xd;
@@ -762,16 +762,16 @@ vars.put(scopeDisplayName, new String(scopeDisplayName));</stringProp>
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
    &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
-   &quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
-   &quot;password&quot;:&quot;${userPassword}${user_index}&quot;,&#xd;
+   &quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;,&#xd;
+   &quot;password&quot;:&quot;${userPassword}${userIndex}&quot;,&#xd;
    &quot;name&quot;:{&#xd;
-      &quot;familyName&quot;:&quot;${userFirstNamePrefix}${user_index}&quot;,&#xd;
-      &quot;givenName&quot;:&quot;${userLastNamePrefix}${user_index}&quot;&#xd;
+      &quot;familyName&quot;:&quot;${userFirstNamePrefix}${userIndex}&quot;,&#xd;
+      &quot;givenName&quot;:&quot;${userLastNamePrefix}${userIndex}&quot;&#xd;
    },&#xd;
    &quot;wso2Extension&quot;:{&#xd;
       &quot;accountLocked&quot;:&quot;false&quot;&#xd;
    },&#xd;
-   &quot;emails&quot;:[&quot;${useremailPrefix}${user_index}@test.com&quot;],&#xd;
+   &quot;emails&quot;:[&quot;${useremailPrefix}${userIndex}@test.com&quot;],&#xd;
    &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: &#xd;
    {&#xd;
    		&quot;country&quot;:&quot;Sri Lanka&quot;&#xd;
@@ -779,7 +779,7 @@ vars.put(scopeDisplayName, new String(scopeDisplayName));</stringProp>
    &quot;roles&quot;:[  &#xd;
       {  &#xd;
          &quot;type&quot;:&quot;default&quot;,&#xd;
-         &quot;value&quot;:&quot;${roleDisplayName}${user_index}&quot;&#xd;
+         &quot;value&quot;:&quot;${roleDisplayName}${roleCountId}&quot;&#xd;
       }&#xd;
    ]&#xd;
 }&#xd;
@@ -793,7 +793,7 @@ vars.put(scopeDisplayName, new String(scopeDisplayName));</stringProp>
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-465808698">&quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;</stringProp>
+              <stringProp name="-2087731895">&quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -861,7 +861,7 @@ catch (Throwable ex) {
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;displayName&quot;: &quot;${roleDisplayName}${role_count_id}&quot;,&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}${roleCountId}&quot;,&#xd;
   &quot;users&quot;: [&#xd;
     {&#xd;
       &quot;value&quot;: &quot;${userId}&quot;&#xd;

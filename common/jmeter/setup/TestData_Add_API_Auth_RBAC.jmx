@@ -50,19 +50,14 @@
             <stringProp name="Argument.value">rbacApp</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="roleNamePrefix" elementType="Argument">
-            <stringProp name="Argument.name">roleNamePrefix</stringProp>
-            <stringProp name="Argument.value">rbacAppRole</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">rbacConsumerKey</stringProp>
+            <stringProp name="Argument.value">consumerKey</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">rbacConsumerSecret</stringProp>
+            <stringProp name="Argument.value">consumerSecret</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callbackUrlPrefix" elementType="Argument">
@@ -90,19 +85,19 @@
             <stringProp name="Argument.value">testScope</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="roleDisplayName" elementType="Argument">
-            <stringProp name="Argument.name">roleDisplayName</stringProp>
+          <elementProp name="roleDisplayNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">roleDisplayNamePrefix</stringProp>
             <stringProp name="Argument.value">testRole</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
-            <stringProp name="Argument.value">testUser</stringProp>
+            <stringProp name="Argument.value">isTestUser</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userPassword" elementType="Argument">
             <stringProp name="Argument.name">userPassword</stringProp>
-            <stringProp name="Argument.value">testPassword@</stringProp>
+            <stringProp name="Argument.value">Password_1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userFirstNamePrefix" elementType="Argument">
@@ -140,9 +135,14 @@
             <stringProp name="Argument.value">${__P(tokenIssuer,Default)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="userCount" elementType="Argument">
+            <stringProp name="Argument.name">userCount</stringProp>
+            <stringProp name="Argument.value">${__P(users,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="spCount" elementType="Argument">
             <stringProp name="Argument.name">spCount</stringProp>
-            <stringProp name="Argument.value">${__P(apps,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(noOfSp,10)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -208,17 +208,11 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
-          <stringProp name="script">String apiResourceName = vars.get(&quot;apiResourceName&quot;);
-String apiIdentifier = vars.get(&quot;apiIdentifier&quot;);
-String scopeName = vars.get(&quot;scopeName&quot;);
-String scopeDisplayName = vars.get(&quot;scopeDisplayName&quot;);
-String apiResourceDescription = &quot;This is the api resource.&quot;;
+          <stringProp name="script">String apiResourceDescription = &quot;This is the api resource.&quot;;
+String scopeDescription = &quot;This is the scope.&quot;;
 
-vars.put(&quot;apiResourceName&quot;, new String(apiResourceName));
-vars.put(&quot;apiIdentifier&quot;, new String(apiIdentifier));
 vars.put(&quot;apiResourceDescription&quot;, new String(apiResourceDescription));
-vars.put(&quot;scopeName&quot;, new String(scopeName));
-vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringProp>
+vars.put(&quot;scopeDescription&quot;, new String(scopeDescription));</stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Api Resource">
@@ -244,7 +238,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
 		{&#xd;
 			&quot;name&quot;: &quot;${scopeName}&quot;,&#xd;
 			&quot;displayName&quot;: &quot;${scopeDisplayName}&quot;,&#xd;
-	    		&quot;description&quot;: &quot;This is a sample scope&quot;&#xd;
+	    		&quot;description&quot;: &quot;${scopeDescription}&quot;&#xd;
 		}&#xd;
 	]&#xd;
 }</stringProp>
@@ -281,7 +275,7 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP and Create User">
         <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -310,15 +304,6 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
           <boolProp name="CounterConfig.per_user">false</boolProp>
         </CounterConfig>
         <hashTree/>
-        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="User Index Counter">
-          <stringProp name="CounterConfig.start">1</stringProp>
-          <stringProp name="CounterConfig.end"></stringProp>
-          <stringProp name="CounterConfig.incr">1</stringProp>
-          <stringProp name="CounterConfig.name">userIndex</stringProp>
-          <stringProp name="CounterConfig.format"></stringProp>
-          <boolProp name="CounterConfig.per_user">false</boolProp>
-        </CounterConfig>
-        <hashTree/>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
           <collectionProp name="CookieManager.cookies"/>
           <boolProp name="CookieManager.clearEachIteration">false</boolProp>
@@ -341,6 +326,27 @@ vars.put(&quot;scopeDisplayName&quot;, new String(scopeDisplayName));</stringPro
             </elementProp>
           </collectionProp>
         </HeaderManager>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">String spNamePrefix = vars.get(&quot;spNamePrefix&quot;);
+String consumerKeyPrefix = vars.get(&quot;consumerKeyPrefix&quot;);
+String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
+String roleDisplayNamePrefix = vars.get(&quot;roleDisplayNamePrefix&quot;);
+
+String spName = spNamePrefix+&quot;${spCountId}&quot;;
+String consumerKey = consumerKeyPrefix+&quot;${spCountId}&quot;;
+String consumerSecret = consumerSecretPrefix+&quot;${spCountId}&quot;;
+String roleDisplayName = roleDisplayNamePrefix+&quot;${roleCountId}&quot;;
+
+vars.put(&quot;spName&quot;, new String(spName));
+vars.put(&quot;consumerKey&quot;, new String(consumerKey));
+vars.put(&quot;consumerSecret&quot;, new String(consumerSecret));
+vars.put(&quot;roleDisplayName&quot;, new String(roleDisplayName));
+</stringProp>
+        </BeanShellPreProcessor>
         <hashTree/>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()">
           <stringProp name="filename"></stringProp>
@@ -365,7 +371,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/api/server/v1/applications</stringProp>
+          <stringProp name="HTTPSampler.path">/t/carbon.super/api/server/v1/applications</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -375,7 +381,7 @@ if (y == 0) {
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;name&quot;: &quot;${spNamePrefix}${spCountId}&quot;,&#xd;
+  &quot;name&quot;: &quot;${spName}&quot;,&#xd;
   &quot;description&quot;: &quot;appDesc&quot;,&#xd;
   &quot;claimConfiguration&quot;: {&#xd;
         &quot;dialect&quot;: &quot;LOCAL&quot;,&#xd;
@@ -515,8 +521,8 @@ if (y == 0) {
       },&#xd;
       &quot;scopeValidators&quot;: [],&#xd;
       &quot;validateRequestObjectSignature&quot;: false,&#xd;
-      &quot;clientId&quot;: &quot;${consumerKeyPrefix}${spCountId}&quot;,&#xd;
-      &quot;clientSecret&quot;: &quot;${consumerSecretPrefix}${spCountId}&quot;&#xd;
+      &quot;clientId&quot;: &quot;${consumerKey}&quot;,&#xd;
+      &quot;clientSecret&quot;: &quot;${consumerSecret}&quot;&#xd;
     }&#xd;
   },&#xd;
   &quot;authenticationSequence&quot;: {&#xd;
@@ -568,6 +574,23 @@ if (y == 0) {
               </elementProp>
             </collectionProp>
           </HeaderManager>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import java.util.ArrayList;
+
+try {
+    ArrayList scimIdList = new ArrayList();
+    vars.putObject(&quot;scimIdList&quot;, scimIdList);
+}
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+          </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get SP ID">
@@ -644,11 +667,9 @@ if (y == 0) {
             <stringProp name="filename"></stringProp>
             <stringProp name="script">String apiResourceId = props.get(&quot;apiResourceId&quot;);
 String policyIdentifier = &quot;RBAC&quot;;
-String scopeName = vars.get(&quot;scopeName&quot;);
 
 vars.put(&quot;apiResourceId&quot;, new String(apiResourceId));
-vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));
-vars.put(&quot;scopeName&quot;, new String(scopeName));</stringProp>
+vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
@@ -682,7 +703,7 @@ vars.put(&quot;scopeName&quot;, new String(scopeName));</stringProp>
   &quot;schemas&quot;: [&#xd;
     &quot;urn:ietf:params:scim:schemas:extension:2.0:Role&quot;&#xd;
   ],&#xd;
-  &quot;displayName&quot;: &quot;${roleDisplayName}${roleCountId}&quot;,&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}&quot;,&#xd;
   &quot;audience&quot;: {&#xd;
     &quot;value&quot;: &quot;${applicationId}&quot;,&#xd;
     &quot;type&quot;: &quot;application&quot;&#xd;
@@ -711,59 +732,47 @@ vars.put(&quot;scopeName&quot;, new String(scopeName));</stringProp>
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="script">String applicationId = vars.get(&quot;applicationId&quot;);
-String roleDisplayNamePrefix = vars.get(&quot;roleDisplayNamePrefix&quot;);
-String scopeName = vars.get(&quot;scopeName&quot;);
-String scopeDisplayName = vars.get(&quot;scopeDisplayName&quot;);
-
-String roleDisplayName = roleDisplayNamePrefix;
-
-vars.put(roleDisplayName, new String(roleDisplayName));
-vars.put(applicationId, new String(applicationId));
-vars.put(scopeName, new String(scopeName));
-vars.put(scopeDisplayName, new String(scopeDisplayName));</stringProp>
-          </BeanShellPreProcessor>
-          <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
             <stringProp name="JSONPostProcessor.referenceNames">roleId</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
             <stringProp name="Scope.variable"></stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
-            <stringProp name="TestPlan.comments">Write extracted SCIM ID to a csv</stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="script">props.put(&quot;roleId&quot;, vars.get(&quot;roleId&quot;));</stringProp>
-          </BeanShellPostProcessor>
-          <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create User Account">
-          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
-          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
-          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/scim2/Users</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${userCount}</stringProp>
+        </LoopController>
+        <hashTree>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="User Index Counter">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end"></stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">userIndex</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">true</boolProp>
+          </CounterConfig>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create User Account">
+            <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+            <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/t/carbon.super/scim2/Users</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
    &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
    &quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;,&#xd;
-   &quot;password&quot;:&quot;${userPassword}${userIndex}&quot;,&#xd;
+   &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
    &quot;name&quot;:{&#xd;
       &quot;familyName&quot;:&quot;${userFirstNamePrefix}${userIndex}&quot;,&#xd;
       &quot;givenName&quot;:&quot;${userLastNamePrefix}${userIndex}&quot;&#xd;
@@ -778,72 +787,74 @@ vars.put(scopeDisplayName, new String(scopeDisplayName));</stringProp>
    },&#xd;
    &quot;roles&quot;:[  &#xd;
       {  &#xd;
-         &quot;type&quot;:&quot;default&quot;,&#xd;
-         &quot;value&quot;:&quot;${roleDisplayName}${roleCountId}&quot;&#xd;
+         &quot;type&quot;:&quot;application&quot;,&#xd;
+         &quot;value&quot;:&quot;${roleDisplayName}&quot;&#xd;
       }&#xd;
    ]&#xd;
 }&#xd;
 </stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="-2087731895">&quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-          </ResponseAssertion>
-          <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
-            <stringProp name="JSONPostProcessor.referenceNames">userId</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
-            <stringProp name="Scope.variable"></stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - SCIM ID">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">scimID</stringProp>
-            <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
-            <stringProp name="RegexExtractor.default">FALSE</stringProp>
-            <stringProp name="RegexExtractor.match_number">0</stringProp>
-            <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
-          </RegexExtractor>
-          <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
-            <stringProp name="TestPlan.comments">Write extracted SCIM ID to a csv</stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="script">import java.io.FileWriter;
-import java.io.BufferedReader;
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="-2087731895">&quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">userId</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
+              <stringProp name="Scope.variable"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - USER ID" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">userID</stringProp>
+              <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
+              <stringProp name="RegexExtractor.template">$1$</stringProp>
+              <stringProp name="RegexExtractor.default">FALSE</stringProp>
+              <stringProp name="RegexExtractor.match_number">0</stringProp>
+              <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
+            </RegexExtractor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+              <stringProp name="TestPlan.comments">Write extracted SCIM ID to a csv</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">import java.util.ArrayList;
 
 try {
-	props.put(&quot;userId&quot;, vars.get(&quot;userId&quot;));
-	String scimID = vars.get(&quot;scimID&quot;);
-	String filePath = vars.get(&quot;scimIdCsvPath&quot;);
-	FileWriter fstream = new FileWriter(filePath, true);
-	BufferedWriter out = new BufferedWriter(fstream);
-	out.write(scimID);
-	out.write(&quot;\n&quot;);
-	out.close();
-	fstream.close();
+    String userID = vars.get(&quot;userID&quot;);
+    ArrayList scimIdList = (ArrayList) vars.getObject(&quot;scimIdList&quot;);
+
+    if (scimIdList == null) {
+        scimIdList = new ArrayList();
+    }
+
+    scimIdList.add(userID);
+    vars.putObject(&quot;scimIdList&quot;, scimIdList);
+    log.info(&quot;Added userID to SCIM ID list: &quot; + userID);
 }
-catch (Throwable ex) {
-   log.info(&quot;Error in Beanshell&quot;, ex);
-   throw ex;
-}</stringProp>
-          </BeanShellPostProcessor>
-          <hashTree/>
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role">
           <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
@@ -861,10 +872,12 @@ catch (Throwable ex) {
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;displayName&quot;: &quot;${roleDisplayName}${roleCountId}&quot;,&#xd;
-  &quot;users&quot;: [&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}&quot;,&#xd;
+  &quot;users&quot;: ${usersJsonArray},&#xd;
+  &quot;permissions&quot;: [&#xd;
     {&#xd;
-      &quot;value&quot;: &quot;${userId}&quot;&#xd;
+      &quot;value&quot;: &quot;${scopeName}&quot;,&#xd;
+      &quot;display&quot;: &quot;${scopeDisplayName}&quot;&#xd;
     }&#xd;
   ]&#xd;
 }</stringProp>
@@ -875,17 +888,6 @@ catch (Throwable ex) {
           <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="script">String userId = props.get(&quot;userId)&quot;;
-String roleId = props.get(&quot;roleId&quot;);
-
-vars.put(userId, new String(userId));
-vars.put(roleId, new String(roleId));</stringProp>
-          </BeanShellPreProcessor>
-          <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="103171775">HTTP/1.1 200</stringProp>
@@ -896,45 +898,40 @@ vars.put(roleId, new String(roleId));</stringProp>
             <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
           </ResponseAssertion>
           <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import java.util.ArrayList;
+import java.util.List;
+
+try {
+    ArrayList scimIdList = (ArrayList) vars.getObject(&quot;scimIdList&quot;);
+    List usersList = new ArrayList();
+
+    if (scimIdList != null &amp;&amp; !scimIdList.isEmpty()) {
+        for (int i = 0; i &lt; scimIdList.size(); i++) {
+            String scimId = (String) scimIdList.get(i);
+            if (scimId != null &amp;&amp; !scimId.trim().isEmpty()) {
+                usersList.add(&quot;{\&quot;value\&quot;: \&quot;&quot; + scimId.trim() + &quot;\&quot;}&quot;);
+            }
+        }
+    } else {
+        log.info(&quot;SCIM ID list is empty or not initialized.&quot;);
+    }
+
+    String usersJsonArray = usersList.toString().replaceAll(&quot;, &quot;, &quot;,&quot;);
+    vars.put(&quot;usersJsonArray&quot;, usersJsonArray); 
+}
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
         </hashTree>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <sentBytes>true</sentBytes>
-            <url>true</url>
-            <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
-            <connectTime>true</connectTime>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>

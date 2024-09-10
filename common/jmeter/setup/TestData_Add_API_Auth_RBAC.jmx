@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add API Authorized Application Roles">
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -47,17 +47,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="spNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">spNamePrefix</stringProp>
-            <stringProp name="Argument.value">rbacApp</stringProp>
+            <stringProp name="Argument.value">rbacApp_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerKeyPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
-            <stringProp name="Argument.value">consumerKey</stringProp>
+            <stringProp name="Argument.value">consumerKeySP_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="consumerSecretPrefix" elementType="Argument">
             <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
-            <stringProp name="Argument.value">consumerSecret</stringProp>
+            <stringProp name="Argument.value">consumerSecretSP_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="callbackUrlPrefix" elementType="Argument">
@@ -87,12 +87,12 @@
           </elementProp>
           <elementProp name="roleDisplayNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">roleDisplayNamePrefix</stringProp>
-            <stringProp name="Argument.value">testRole</stringProp>
+            <stringProp name="Argument.value">testRole_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="usernamePrefix" elementType="Argument">
             <stringProp name="Argument.name">usernamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUser</stringProp>
+            <stringProp name="Argument.value">isTestUserSP_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userPassword" elementType="Argument">
@@ -102,17 +102,17 @@
           </elementProp>
           <elementProp name="userFirstNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">userFirstNamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUserFirstName</stringProp>
+            <stringProp name="Argument.value">isTestUserFirstName_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="userLastNamePrefix" elementType="Argument">
             <stringProp name="Argument.name">userLastNamePrefix</stringProp>
-            <stringProp name="Argument.value">isTestUserLastName</stringProp>
+            <stringProp name="Argument.value">isTestUserLastName_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="useremailPrefix" elementType="Argument">
-            <stringProp name="Argument.name">useremailPrefix</stringProp>
-            <stringProp name="Argument.value">isTestUser</stringProp>
+          <elementProp name="userEmailPrefix" elementType="Argument">
+            <stringProp name="Argument.name">userEmailPrefix</stringProp>
+            <stringProp name="Argument.value">isTestUser_</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -127,7 +127,7 @@
           </elementProp>
           <elementProp name="rampUpPeriod" elementType="Argument">
             <stringProp name="Argument.name">rampUpPeriod</stringProp>
-            <stringProp name="Argument.value">${__P(rampUpPeriod,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tokenIssuer" elementType="Argument">
@@ -137,12 +137,12 @@
           </elementProp>
           <elementProp name="userCount" elementType="Argument">
             <stringProp name="Argument.name">userCount</stringProp>
-            <stringProp name="Argument.value">${__P(users,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(users,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="spCount" elementType="Argument">
             <stringProp name="Argument.name">spCount</stringProp>
-            <stringProp name="Argument.value">${__P(noOfSp,10)}</stringProp>
+            <stringProp name="Argument.value">${__P(noOfSp,1000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -220,7 +220,7 @@ vars.put(&quot;scopeDescription&quot;, new String(scopeDescription));</stringPro
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/api/server/v1/api-resources</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/api-resources</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -371,7 +371,7 @@ if (y == 0) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/api/server/v1/applications</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -566,7 +566,7 @@ if (y == 0) {
             <stringProp name="Assertion.custom_message"></stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>
@@ -598,7 +598,7 @@ catch (Exception ex) {
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/api/server/v1/applications</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -619,7 +619,7 @@ catch (Exception ex) {
             <stringProp name="Assertion.custom_message">Test failed - common auth login</stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">applicationId</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.applications[0].id</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
@@ -627,7 +627,7 @@ catch (Exception ex) {
             <stringProp name="Scope.variable"></stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -636,12 +636,12 @@ catch (Exception ex) {
           </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register SCIM2 User API resource with shared SP">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register SCIM2 User API resource with shared SP" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/api/server/v1/applications/${applicationId}/authorized-apis</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications/${applicationId}/authorized-apis</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -661,7 +661,7 @@ catch (Exception ex) {
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -690,7 +690,7 @@ vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringPro
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/scim2/v2/Roles</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/v2/Roles</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -741,7 +741,7 @@ vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringPro
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <stringProp name="LoopController.loops">${userCount}</stringProp>
         </LoopController>
         <hashTree>
@@ -760,7 +760,7 @@ vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringPro
             <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
             <stringProp name="HTTPSampler.port">${is_port}</stringProp>
             <stringProp name="HTTPSampler.protocol">https</stringProp>
-            <stringProp name="HTTPSampler.path">/t/carbon.super/scim2/Users</stringProp>
+            <stringProp name="HTTPSampler.path">/scim2/Users</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -828,7 +828,7 @@ vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringPro
               <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
             </RegexExtractor>
             <hashTree/>
-            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
               <stringProp name="TestPlan.comments">Write extracted SCIM ID to a csv</stringProp>
               <boolProp name="resetInterpreter">false</boolProp>
               <stringProp name="parameters"></stringProp>
@@ -856,13 +856,13 @@ catch (Exception ex) {
             <hashTree/>
           </hashTree>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role" enabled="true">
           <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
           <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
           <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/t/carbon.super/scim2/v2/Roles/${roleId}</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/v2/Roles/${roleId}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -888,7 +888,7 @@ catch (Exception ex) {
           <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
               <stringProp name="103171775">HTTP/1.1 200</stringProp>
             </collectionProp>
@@ -898,7 +898,7 @@ catch (Exception ex) {
             <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
           </ResponseAssertion>
           <hashTree/>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>

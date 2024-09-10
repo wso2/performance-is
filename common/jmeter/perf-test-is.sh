@@ -84,7 +84,6 @@ default_is_port=9443
 is_port=$default_is_port
 
 noOfTenants=100
-noOfThreads=10
 spCount=10
 idpCount=1
 userCount=1000
@@ -476,7 +475,7 @@ function run_api_authorization_test_data_scripts() {
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfThreads=$noOfThreads -JuserCount=$userCount -JspCount=$spCount -n -t $script_file"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfThreads=$concurrency -JuserCount=$userCount -JspCount=$spCount -n -t $script_file"
         echo "$command"
         echo ""
         $command

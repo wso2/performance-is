@@ -466,6 +466,23 @@ function run_tenant_test_data_scripts() {
     done
 }
 
+function run_api_authorization_test_data_scripts() {
+
+    echo "Running api authorization test data setup scripts"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_API_Auth_RBAC.jmx")
+    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+
+    for script in "${scripts[@]}"; do
+        script_file="$setup_dir/$script"
+        command="jmeter -Jhost=$lb_host -Jport=$is_port -JnoOfThreads=$concurrency -JuserCount=$userCount -JspCount=$spCount -n -t $script_file"
+        echo "$command"
+        echo ""
+        $command
+        echo ""
+    done
+}
+
 function initiailize_test() {
 
     # Filter scenarios
@@ -558,6 +575,8 @@ function initiailize_test() {
 
         if [ $mode == "B2B" ]; then
             run_b2b_test_data_scripts
+        elif [ $mode == "OIDC RBAC" ]; then
+            run_api_authorization_test_data_scripts
         else
             run_test_data_scripts
             #run_tenant_test_data_scripts

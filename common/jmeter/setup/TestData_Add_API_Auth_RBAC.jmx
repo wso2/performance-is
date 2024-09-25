@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Add API Authorized Application Roles">
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Server Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="is_host" elementType="Argument">
+            <stringProp name="Argument.name">is_host</stringProp>
+            <stringProp name="Argument.value">${__P(host,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="is_port" elementType="Argument">
+            <stringProp name="Argument.name">is_port</stringProp>
+            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="adminCredentials" elementType="Argument">
+            <stringProp name="Argument.name">adminCredentials</stringProp>
+            <stringProp name="Argument.value">${__P(adminCredentials,YWRtaW46YWRtaW4=)} </stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="serverNode" elementType="Argument">
+            <stringProp name="Argument.name">serverNode</stringProp>
+            <stringProp name="Argument.value">${__P(serverNode,node1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="deployment" elementType="Argument">
+            <stringProp name="Argument.name">deployment</stringProp>
+            <stringProp name="Argument.value">${__P(deployment,active-passive)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="noOfNodes" elementType="Argument">
+            <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
+            <stringProp name="Argument.name">noOfNodes</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Test Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="spNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">spNamePrefix</stringProp>
+            <stringProp name="Argument.value">rbacApp_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="consumerKeyPrefix" elementType="Argument">
+            <stringProp name="Argument.name">consumerKeyPrefix</stringProp>
+            <stringProp name="Argument.value">consumerKeySP_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="consumerSecretPrefix" elementType="Argument">
+            <stringProp name="Argument.name">consumerSecretPrefix</stringProp>
+            <stringProp name="Argument.value">consumerSecretSP_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="callbackUrlPrefix" elementType="Argument">
+            <stringProp name="Argument.name">callbackUrlPrefix</stringProp>
+            <stringProp name="Argument.value">https://localhost/callback</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="apiResourceName" elementType="Argument">
+            <stringProp name="Argument.name">apiResourceName</stringProp>
+            <stringProp name="Argument.value">testApi</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="apiIdentifier" elementType="Argument">
+            <stringProp name="Argument.name">apiIdentifier</stringProp>
+            <stringProp name="Argument.value">https://api.test.com</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="scopeName" elementType="Argument">
+            <stringProp name="Argument.name">scopeName</stringProp>
+            <stringProp name="Argument.value">testScope</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="scopeDisplayName" elementType="Argument">
+            <stringProp name="Argument.name">scopeDisplayName</stringProp>
+            <stringProp name="Argument.value">testScope</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="roleDisplayNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">roleDisplayNamePrefix</stringProp>
+            <stringProp name="Argument.value">testRole_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="usernamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">usernamePrefix</stringProp>
+            <stringProp name="Argument.value">isTestUserSP_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userPassword" elementType="Argument">
+            <stringProp name="Argument.name">userPassword</stringProp>
+            <stringProp name="Argument.value">Password_1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userFirstNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">userFirstNamePrefix</stringProp>
+            <stringProp name="Argument.value">isTestUserFirstName_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userLastNamePrefix" elementType="Argument">
+            <stringProp name="Argument.name">userLastNamePrefix</stringProp>
+            <stringProp name="Argument.value">isTestUserLastName_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userEmailPrefix" elementType="Argument">
+            <stringProp name="Argument.name">userEmailPrefix</stringProp>
+            <stringProp name="Argument.value">isTestUser_</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="noOfThreads" elementType="Argument">
+            <stringProp name="Argument.name">noOfThreads</stringProp>
+            <stringProp name="Argument.value">${__P(concurrency,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="rampUpPeriod" elementType="Argument">
+            <stringProp name="Argument.name">rampUpPeriod</stringProp>
+            <stringProp name="Argument.value">${__P(rampUpPeriod,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tokenIssuer" elementType="Argument">
+            <stringProp name="Argument.name">tokenIssuer</stringProp>
+            <stringProp name="Argument.value">${__P(tokenIssuer,Default)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="userCount" elementType="Argument">
+            <stringProp name="Argument.name">userCount</stringProp>
+            <stringProp name="Argument.value">${__P(users,100)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="spCount" elementType="Argument">
+            <stringProp name="Argument.name">spCount</stringProp>
+            <stringProp name="Argument.value">${__P(noOfSp,1000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create API Resource">
+        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
+        <longProp name="ThreadGroup.duration">3600</longProp>
+        <longProp name="ThreadGroup.delay">10</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">startnextloop</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
+          <collectionProp name="CookieManager.cookies"/>
+          <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+        </CookieManager>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
+int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
+int x = Integer.parseInt(vars.get(&quot;spCountId&quot;));
+int y = x - (x/numOfNodes)*numOfNodes;
+
+if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
+    vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else if (y == 1) {
+    vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+} else if (y == 2) {
+    vars.put(&quot;serverNode&quot;, &quot;node3&quot;);
+} else {
+    vars.put(&quot;serverNode&quot;, &quot;node4&quot;);
+}</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">String apiResourceDescription = &quot;This is the api resource.&quot;;
+String scopeDescription = &quot;This is the scope.&quot;;
+
+vars.put(&quot;apiResourceDescription&quot;, new String(apiResourceDescription));
+vars.put(&quot;scopeDescription&quot;, new String(scopeDescription));</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Api Resource">
+          <intProp name="HTTPSampler.concurrentPool">6</intProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/api-resources</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;name&quot;: &quot;${apiResourceName}&quot;,&#xd;
+	&quot;identifier&quot; : &quot;${apiIdentifier}&quot;,&#xd;
+	&quot;description&quot;: &quot;${apiResourceDescription}&quot;,&#xd;
+	&quot;requiresAuthorization&quot;: true,&#xd;
+	&quot;scopes&quot; : [&#xd;
+		{&#xd;
+			&quot;name&quot;: &quot;${scopeName}&quot;,&#xd;
+			&quot;displayName&quot;: &quot;${scopeDisplayName}&quot;,&#xd;
+	    		&quot;description&quot;: &quot;${scopeDescription}&quot;&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP/1.1 201 Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171776">HTTP/1.1 201</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test failed - common auth login</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">apiResourceId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">props.put(&quot;apiResourceId&quot;, vars.get(&quot;apiResourceId&quot;));</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create SP and Create User">
+        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">${spCount}</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="SP Counter">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${spCount}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">spCountId</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Role Counter">
+          <stringProp name="CounterConfig.start">1</stringProp>
+          <stringProp name="CounterConfig.end">${spCount}</stringProp>
+          <stringProp name="CounterConfig.incr">1</stringProp>
+          <stringProp name="CounterConfig.name">roleCountId</stringProp>
+          <stringProp name="CounterConfig.format"></stringProp>
+          <boolProp name="CounterConfig.per_user">false</boolProp>
+        </CounterConfig>
+        <hashTree/>
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
+          <collectionProp name="CookieManager.cookies"/>
+          <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+          <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+        </CookieManager>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic ${adminCredentials}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="X-Server-Select" elementType="Header">
+              <stringProp name="Header.name">X-Server-Select</stringProp>
+              <stringProp name="Header.value">${serverNode}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">String spNamePrefix = vars.get(&quot;spNamePrefix&quot;);
+String consumerKeyPrefix = vars.get(&quot;consumerKeyPrefix&quot;);
+String consumerSecretPrefix = vars.get(&quot;consumerSecretPrefix&quot;);
+String roleDisplayNamePrefix = vars.get(&quot;roleDisplayNamePrefix&quot;);
+
+String spName = spNamePrefix+&quot;${spCountId}&quot;;
+String consumerKey = consumerKeyPrefix+&quot;${spCountId}&quot;;
+String consumerSecret = consumerSecretPrefix+&quot;${spCountId}&quot;;
+String roleDisplayName = roleDisplayNamePrefix+&quot;${roleCountId}&quot;;
+
+vars.put(&quot;spName&quot;, new String(spName));
+vars.put(&quot;consumerKey&quot;, new String(consumerKey));
+vars.put(&quot;consumerSecret&quot;, new String(consumerSecret));
+vars.put(&quot;roleDisplayName&quot;, new String(roleDisplayName));
+</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="setRequestingNode()">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
+int x = Integer.parseInt(vars.get(&quot;spCountId&quot;));
+int y = x - (x/numOfNodes)*numOfNodes;
+
+if (y == 0) {
+    vars.put(&quot;serverNode&quot;, &quot;node1&quot;);
+} else if (y == 1) {
+    vars.put(&quot;serverNode&quot;, &quot;node2&quot;);
+} else if (y == 2) {
+    vars.put(&quot;serverNode&quot;, &quot;node3&quot;);
+} else {
+    vars.put(&quot;serverNode&quot;, &quot;node4&quot;);
+}</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create SP">
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;name&quot;: &quot;${spName}&quot;,&#xd;
+  &quot;description&quot;: &quot;appDesc&quot;,&#xd;
+  &quot;claimConfiguration&quot;: {&#xd;
+        &quot;dialect&quot;: &quot;LOCAL&quot;,&#xd;
+        &quot;claimMappings&quot;: [&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/roles&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/roles&quot;&#xd;
+                }&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/country&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/country&quot;&#xd;
+                }&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/emailaddress&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/emailaddress&quot;&#xd;
+                }&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/groups&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/groups&quot;&#xd;
+                }&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/givenname&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/givenname&quot;&#xd;
+                }&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;applicationClaim&quot;: &quot;http://wso2.org/claims/lastname&quot;,&#xd;
+                &quot;localClaim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/lastname&quot;&#xd;
+                }&#xd;
+            }&#xd;
+        ],&#xd;
+        &quot;requestedClaims&quot;: [&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/roles&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/country&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/emailaddress&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/groups&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/givenname&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;claim&quot;: {&#xd;
+                    &quot;uri&quot;: &quot;http://wso2.org/claims/lastname&quot;&#xd;
+                },&#xd;
+                &quot;mandatory&quot;: true&#xd;
+            }&#xd;
+        ],&#xd;
+        &quot;subject&quot;: {&#xd;
+            &quot;claim&quot;: {&#xd;
+                &quot;uri&quot;: &quot;http://wso2.org/claims/username&quot;&#xd;
+            },&#xd;
+            &quot;includeUserDomain&quot;: false,&#xd;
+            &quot;includeTenantDomain&quot;: false,&#xd;
+            &quot;useMappedLocalSubject&quot;: false&#xd;
+        },&#xd;
+        &quot;role&quot;: {&#xd;
+            &quot;includeUserDomain&quot;: true&#xd;
+        }&#xd;
+    },&#xd;
+  &quot;inboundProtocolConfiguration&quot;: {&#xd;
+    &quot;oidc&quot;: {&#xd;
+      &quot;accessToken&quot;: {&#xd;
+        &quot;type&quot;: &quot;${tokenIssuer}&quot;,&#xd;
+        &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
+        &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
+        &quot;bindingType&quot;: &quot;sso-session&quot;,&#xd;
+        &quot;revokeTokensWhenIDPSessionTerminated&quot;: false,&#xd;
+        &quot;validateTokenBinding&quot;: false&#xd;
+      },&#xd;
+      &quot;allowedOrigins&quot;: [],&#xd;
+      &quot;callbackURLs&quot;: [&#xd;
+       &quot;${callbackUrlPrefix}${spCountId}&quot;&#xd;
+      ],&#xd;
+      &quot;grantTypes&quot;: [&#xd;
+        &quot;authorization_code&quot;,&#xd;
+        &quot;implicit&quot;,&#xd;
+        &quot;password&quot;,&#xd;
+        &quot;client_credentials&quot;,&#xd;
+        &quot;refresh_token&quot;,&#xd;
+        &quot;urn:ietf:params:oauth:grant-type:saml2-bearer&quot;,&#xd;
+        &quot;urn:ietf:params:oauth:grant-type:jwt-bearer&quot;,&#xd;
+        &quot;iwa:ntlm&quot;&#xd;
+      ],&#xd;
+      &quot;idToken&quot;: {&#xd;
+        &quot;audience&quot;: [&#xd;
+          &quot;https://localhost:9443/oauth2/token&quot;&#xd;
+        ],&#xd;
+        &quot;encryption&quot;: {&#xd;
+          &quot;algorithm&quot;: &quot;&quot;,&#xd;
+          &quot;enabled&quot;: false,&#xd;
+          &quot;method&quot;: &quot;&quot;&#xd;
+        },&#xd;
+        &quot;expiryInSeconds&quot;: 3600&#xd;
+      },&#xd;
+      &quot;logout&quot;: {&#xd;
+      },&#xd;
+      &quot;pkce&quot;: {&#xd;
+        &quot;mandatory&quot;: false,&#xd;
+        &quot;supportPlainTransformAlgorithm&quot;: true&#xd;
+      },&#xd;
+      &quot;publicClient&quot;: false,&#xd;
+      &quot;refreshToken&quot;: {&#xd;
+        &quot;expiryInSeconds&quot;: 86400,&#xd;
+        &quot;renewRefreshToken&quot;: true&#xd;
+      },&#xd;
+      &quot;scopeValidators&quot;: [],&#xd;
+      &quot;validateRequestObjectSignature&quot;: false,&#xd;
+      &quot;clientId&quot;: &quot;${consumerKey}&quot;,&#xd;
+      &quot;clientSecret&quot;: &quot;${consumerSecret}&quot;&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;authenticationSequence&quot;: {&#xd;
+    &quot;type&quot;: &quot;DEFAULT&quot;,&#xd;
+    &quot;steps&quot;: [&#xd;
+      {&#xd;
+        &quot;id&quot;: 1,&#xd;
+        &quot;options&quot;: [&#xd;
+          {&#xd;
+            &quot;idp&quot;: &quot;LOCAL&quot;,&#xd;
+            &quot;authenticator&quot;: &quot;BasicAuthenticator&quot;&#xd;
+          }&#xd;
+        ]&#xd;
+      }&#xd;
+    ],&#xd;
+    &quot;requestPathAuthenticators&quot;: [&#xd;
+    &quot;BasicAuthRequestPathAuthenticator&quot;],&#xd;
+    &quot;subjectStepId&quot;: 1,&#xd;
+    &quot;attributeStepId&quot;: 1&#xd;
+  },&#xd;
+  &quot;provisioningConfigurations&quot;: {&#xd;
+    &quot;inboundProvisioning&quot;: {&#xd;
+      &quot;provisioningUserstoreDomain&quot;: &quot;PRIMARY&quot;&#xd;
+    }&#xd;
+  }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171776">HTTP/1.1 201</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import java.util.ArrayList;
+
+try {
+    ArrayList scimIdList = new ArrayList();
+    vars.putObject(&quot;scimIdList&quot;, scimIdList);
+}
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get SP ID">
+          <intProp name="HTTPSampler.concurrentPool">6</intProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP/1.1 200 Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test failed - common auth login</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">applicationId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.applications[0].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
+            <stringProp name="Scope.variable"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">props.put(&quot;applicationId&quot;, vars.get(&quot;applicationId&quot;));
+</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register SCIM2 User API resource with shared SP" enabled="true">
+          <intProp name="HTTPSampler.concurrentPool">6</intProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/api/server/v1/applications/${applicationId}/authorized-apis</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;${apiResourceId}&quot;,&#xd;
+	&quot;policyIdentifier&quot;: &quot;${policyIdentifier}&quot;,&#xd;
+	&quot;scopes&quot;:[&quot;${scopeName}&quot;]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">String apiResourceId = props.get(&quot;apiResourceId&quot;);
+String policyIdentifier = &quot;RBAC&quot;;
+
+vars.put(&quot;apiResourceId&quot;, new String(apiResourceId));
+vars.put(&quot;policyIdentifier&quot;, new String(policyIdentifier));</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.scope">all</stringProp>
+            <stringProp name="Assertion.custom_message">Test failed - get token</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Role">
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/v2/Roles</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;schemas&quot;: [&#xd;
+    &quot;urn:ietf:params:scim:schemas:extension:2.0:Role&quot;&#xd;
+  ],&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}&quot;,&#xd;
+  &quot;audience&quot;: {&#xd;
+    &quot;value&quot;: &quot;${applicationId}&quot;,&#xd;
+    &quot;type&quot;: &quot;application&quot;&#xd;
+  },&#xd;
+  &quot;permissions&quot;: [&#xd;
+    {&#xd;
+      &quot;value&quot;: &quot;${scopeName}&quot;,&#xd;
+      &quot;display&quot;: &quot;${scopeDisplayName}&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP/1.1 201 Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171776">HTTP/1.1 201</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
+            <stringProp name="JSONPostProcessor.referenceNames">roleId</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
+            <stringProp name="Scope.variable"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <stringProp name="LoopController.loops">${userCount}</stringProp>
+        </LoopController>
+        <hashTree>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="User Index Counter">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end"></stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">userIndex</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">true</boolProp>
+          </CounterConfig>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create User Account">
+            <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+            <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+            <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+            <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/scim2/Users</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+   &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
+   &quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;,&#xd;
+   &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
+   &quot;name&quot;:{&#xd;
+      &quot;familyName&quot;:&quot;${userFirstNamePrefix}${userIndex}&quot;,&#xd;
+      &quot;givenName&quot;:&quot;${userLastNamePrefix}${userIndex}&quot;&#xd;
+   },&#xd;
+   &quot;wso2Extension&quot;:{&#xd;
+      &quot;accountLocked&quot;:&quot;false&quot;&#xd;
+   },&#xd;
+   &quot;emails&quot;:[&quot;${useremailPrefix}${userIndex}@test.com&quot;],&#xd;
+   &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: &#xd;
+   {&#xd;
+   		&quot;country&quot;:&quot;Sri Lanka&quot;&#xd;
+   },&#xd;
+   &quot;roles&quot;:[  &#xd;
+      {  &#xd;
+         &quot;type&quot;:&quot;application&quot;,&#xd;
+         &quot;value&quot;:&quot;${roleDisplayName}&quot;&#xd;
+      }&#xd;
+   ]&#xd;
+}&#xd;
+</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="-2087731895">&quot;userName&quot;:&quot;${usernamePrefix}${userIndex}&quot;</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">userId</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">None</stringProp>
+              <stringProp name="Scope.variable"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - USER ID" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">userID</stringProp>
+              <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
+              <stringProp name="RegexExtractor.template">$1$</stringProp>
+              <stringProp name="RegexExtractor.default">FALSE</stringProp>
+              <stringProp name="RegexExtractor.match_number">0</stringProp>
+              <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
+            </RegexExtractor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor">
+              <stringProp name="TestPlan.comments">Write extracted SCIM ID to a csv</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">import java.util.ArrayList;
+
+try {
+    String userID = vars.get(&quot;userID&quot;);
+    ArrayList scimIdList = (ArrayList) vars.getObject(&quot;scimIdList&quot;);
+
+    if (scimIdList == null) {
+        scimIdList = new ArrayList();
+    }
+
+    scimIdList.add(userID);
+    vars.putObject(&quot;scimIdList&quot;, scimIdList);
+    log.info(&quot;Added userID to SCIM ID list: &quot; + userID);
+}
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role" enabled="true">
+          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
+          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/v2/Roles/${roleId}</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;displayName&quot;: &quot;${roleDisplayName}&quot;,&#xd;
+  &quot;users&quot;: ${usersJsonArray},&#xd;
+  &quot;permissions&quot;: [&#xd;
+    {&#xd;
+      &quot;value&quot;: &quot;${scopeName}&quot;,&#xd;
+      &quot;display&quot;: &quot;${scopeDisplayName}&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">import java.util.ArrayList;
+import java.util.List;
+
+try {
+    ArrayList scimIdList = (ArrayList) vars.getObject(&quot;scimIdList&quot;);
+    List usersList = new ArrayList();
+
+    if (scimIdList != null &amp;&amp; !scimIdList.isEmpty()) {
+        for (int i = 0; i &lt; scimIdList.size(); i++) {
+            String scimId = (String) scimIdList.get(i);
+            if (scimId != null &amp;&amp; !scimId.trim().isEmpty()) {
+                usersList.add(&quot;{\&quot;value\&quot;: \&quot;&quot; + scimId.trim() + &quot;\&quot;}&quot;);
+            }
+        }
+    } else {
+        log.info(&quot;SCIM ID list is empty or not initialized.&quot;);
+    }
+
+    String usersJsonArray = usersList.toString().replaceAll(&quot;, &quot;, &quot;,&quot;);
+    vars.put(&quot;usersJsonArray&quot;, usersJsonArray); 
+}
+catch (Exception ex) {
+    log.info(&quot;Error in Beanshell: &quot; + ex.toString());
+    throw ex;
+}
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

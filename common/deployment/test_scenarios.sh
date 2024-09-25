@@ -161,3 +161,12 @@ declare -A test_scenario15=(
     [skip]=false
     [modes]="B2B"
 )
+declare -A test_scenario16=(
+    [name]="16-OIDC_Password_Grant_RBAC"
+    [display_name]="OIDC Password Grant RBAC"
+    [description]="Obtain the access token and ID token, and check for the given scope using the OAuth 2.0 authorization code grant type."
+    [jmx]="oidc/OIDC_Password_Grant_RBAC.jmx"
+    [tenantMode]=false
+    [skip]=false
+    [modes]="OIDC RBAC"
+)

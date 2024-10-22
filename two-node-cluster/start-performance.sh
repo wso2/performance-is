@@ -40,6 +40,8 @@ default_db_password="wso2carbon"
 db_password="$default_db_password"
 default_db_storage="100"
 db_storage=$default_db_storage
+default_session_db_storage="100"
+session_db_storage=$default_session_db_storage
 default_db_instance_type=db.m5.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
@@ -56,7 +58,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-e <db_instance_type>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-s <session_db_storage>] [-e <db_instance_type>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
@@ -71,6 +73,7 @@ function usage() {
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
     echo "-d: The database storage in GB. Default: $default_db_storage."
+    echo "-s: The session database storage in GB. Default: $default_session_db_storage."
     echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
@@ -81,7 +84,7 @@ function usage() {
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:v:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:s:e:i:b:w:v:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -106,6 +109,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:v:h" opts; do
         ;;
     d)
         db_storage=${OPTARG}
+        ;;
+    s)
+        session_db_storage=${OPTARG}
         ;;
     e)
         db_instance_type=${OPTARG}
@@ -183,6 +189,11 @@ fi
 
 if [[ -z $db_storage ]]; then
     echo "Please provide the database storage size."
+    exit 1
+fi
+
+if [[ -z $session_db_storage ]]; then
+    echo "Please provide the session database storage size."
     exit 1
 fi
 
@@ -288,6 +299,10 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=SessionDBUsername,ParameterValue=$db_username \
+        ParameterKey=SessionDBPassword,ParameterValue=$db_password \
+        ParameterKey=SessionDBAllocationStorage,ParameterValue=$session_db_storage \
+        ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
         ParameterKey=UserTag,ParameterValue=$user_tag \
@@ -348,6 +363,12 @@ rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
+echo ""
+echo "Getting Session DB RDS Hostname..."
+session_rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISSessionDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+session_rds_host="$(aws rds describe-db-instances --db-instance-identifier "$session_rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
+echo "Session DB RDS Hostname: $session_rds_host"
+
 if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
     exit 1
@@ -366,6 +387,10 @@ if [[ -z $wso2_is_2_ip ]]; then
 fi
 if [[ -z $rds_host ]]; then
     echo "RDS host could not be found. Exiting..."
+    exit 1
+fi
+if [[ -z $session_rds_host ]]; then
+    echo "Session RDS host could not be found. Exiting..."
     exit 1
 fi
 
@@ -399,7 +424,7 @@ echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -r $rds_host -l $nginx_instance_ip"
+    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
 echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
@@ -415,10 +440,17 @@ ssh -i "$key_file" -o "StrictHostKeyChecking=no" -t ubuntu@"$bastion_node_ip" "c
 $create_db_command
 
 echo ""
+echo "Creating session database in RDS..."
+create_session_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $session_rds_host \
+    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createSessionDB.sql"
+echo "$create_session_db_command"
+$create_session_db_command
+
+echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -a wso2is1 -n $no_of_nodes -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host"
+    ./setup/setup-is.sh -a wso2is1 -n $no_of_nodes -i $wso2_is_1_ip -w $wso2_is_2_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
@@ -427,7 +459,7 @@ echo ""
 echo "Running IS node 2 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -a wso2is2 -n $no_of_nodes -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host"
+    ./setup/setup-is.sh -a wso2is2 -n $no_of_nodes -i $wso2_is_2_ip -w $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."

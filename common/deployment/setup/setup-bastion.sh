@@ -26,6 +26,7 @@ wso2_is_3_ip=""
 wso2_is_4_ip=""
 lb_host=""
 rds_host=""
+session_rds_host=""
 wso2is_host_alias=wso2is
 wso2is_1_host_alias=wso2is1
 wso2is_2_host_alias=wso2is2
@@ -36,7 +37,7 @@ lb_alias=loadbalancer
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host>"
+    echo "$0 -w <wso2_is_1_ip> -i <wso2_is_2_ip> -l <lb_host> -r <rds_host> -s <session_rds_host>"
     echo ""
     echo "-w: The private IP of WSO2 IS node 1."
     echo "-i: The private IP of WSO2 IS node 2."
@@ -44,11 +45,12 @@ function usage() {
     echo "-k: The private IP of WSO2 IS node 4."
     echo "-l: The private hostname of Load balancer instance."
     echo "-r: The private hostname of RDS instance."
+    echo "-s: The private hostname of the session Database RDS instance."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "n:w:i:j:k:l:r:h" opts; do
+while getopts "n:w:i:j:k:l:r:s:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -71,6 +73,9 @@ while getopts "n:w:i:j:k:l:r:h" opts; do
     r)
         rds_host=${OPTARG}
         ;;
+    s)
+        session_rds_host=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -89,6 +94,11 @@ fi
 
 if [[ -z $rds_host ]]; then
     echo "Please provide the private hostname of the RDS instance."
+    exit 1
+fi
+
+if [[ -z $session_rds_host ]]; then
+    echo "Please provide the private hostname of the session Database RDS instance."
     exit 1
 fi
 
@@ -123,7 +133,8 @@ elif [[ $no_of_nodes -eq 1 ]]; then
                 -f /home/ubuntu/apache-jmeter-*.tgz \
                 -a $wso2is_host_alias -n "$wso2_is_1_ip" \
                 -a loadbalancer -n "$wso2_is_1_ip"\
-                -a rds -n "$rds_host"
+                -a rds -n "$rds_host"\
+                -a sessionrds -n "$session_rds_host"
 elif [[ $no_of_nodes -eq 2 ]]; then
     workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
                 -i /home/ubuntu \
@@ -132,7 +143,8 @@ elif [[ $no_of_nodes -eq 2 ]]; then
                 -a $wso2is_1_host_alias -n "$wso2_is_1_ip" \
                 -a $wso2is_2_host_alias -n "$wso2_is_2_ip" \
                 -a $lb_alias -n "$lb_host"\
-                -a rds -n "$rds_host"
+                -a rds -n "$rds_host"\
+                -a sessionrds -n "$session_rds_host"
 elif [[ $no_of_nodes -eq 3 ]]; then
     workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
                 -i /home/ubuntu \
@@ -142,7 +154,8 @@ elif [[ $no_of_nodes -eq 3 ]]; then
                 -a $wso2is_2_host_alias -n "$wso2_is_2_ip" \
                 -a $wso2is_3_host_alias -n "$wso2_is_3_ip" \
                 -a $lb_alias -n "$lb_host"\
-                -a rds -n "$rds_host"
+                -a rds -n "$rds_host"\
+                -a sessionrds -n "$session_rds_host"
 elif [[ $no_of_nodes -eq 4 ]]; then
     workspace/setup/setup-jmeter-client-is.sh -g -k /home/ubuntu/private_key.pem \
                 -i /home/ubuntu \
@@ -153,7 +166,8 @@ elif [[ $no_of_nodes -eq 4 ]]; then
                 -a $wso2is_3_host_alias -n "$wso2_is_3_ip" \
                 -a $wso2is_4_host_alias -n "$wso2_is_4_ip" \
                 -a $lb_alias -n "$lb_host"\
-                -a rds -n "$rds_host"
+                -a rds -n "$rds_host"\
+                -a sessionrds -n "$session_rds_host"
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1

@@ -273,6 +273,9 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=SessionDBUsername,ParameterValue=$db_username \
+        ParameterKey=SessionDBPassword,ParameterValue=$db_password \
+        ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
         ParameterKey=UserTag,ParameterValue=$user_tag \
@@ -320,6 +323,12 @@ rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
 
+echo ""
+echo "Getting Session DB RDS Hostname..."
+session_rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISSessionDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+session_rds_host="$(aws rds describe-db-instances --db-instance-identifier "$session_rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
+echo "Session DB RDS Hostname: $session_rds_host"
+
 if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
     exit 1
@@ -330,6 +339,10 @@ if [[ -z $wso2_is_ip ]]; then
 fi
 if [[ -z $rds_host ]]; then
     echo "RDS host could not be found. Exiting..."
+    exit 1
+fi
+if [[ -z $session_rds_host ]]; then
+    echo "Session RDS host could not be found. Exiting..."
     exit 1
 fi
 
@@ -362,7 +375,7 @@ $copy_connector_command
 echo ""
 echo "Running IS node setup script..."
 echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."
@@ -371,7 +384,7 @@ echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
 setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host"
+    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host -s $session_rds_host"
 echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."

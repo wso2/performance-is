@@ -39,6 +39,15 @@ Metadata:
           - DBAllocationStorage
           - DBIops
       - Label:
+          default: Session Database Credentials
+        Parameters:
+          - SessionDBUsername
+          - SessionDBPassword
+          - SessionDBEngine
+          - SessionDBInstanceType
+          - SessionDBAllocationStorage
+          - SessionDBIops
+      - Label:
           default: Other Configuration
         Parameters:
           - JDK
@@ -51,6 +60,10 @@ Metadata:
       DBUsername:
         default: Username
       DBPassword:
+        default: Password
+      SessionDBUsername:
+        default: Username
+      SessionDBPassword:
         default: Password
       JDK:
         default: JDK Version
@@ -66,6 +79,14 @@ Metadata:
         default: Allocation IOPS
       DBInstanceType:
         default: DB Instance Type
+      SessionDBEngine:
+        default: Session DB Engine
+      SessionDBAllocationStorage:
+        default: Session DB Allocation Storage
+      SessionDBIops:
+        default: Session DB Allocation IOPS
+      SessionDBInstanceType:
+        default: Session DB Instance Type
       JDKVersion:
         default: JDK Version
       OSType:
@@ -191,6 +212,16 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           CidrIp: 0.0.0.0/0
+  WSO2ISSessionDBInstanceSecurityGroupsuffix:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      GroupDescription: Session DB Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '3306'
+          ToPort: '3306'
+          CidrIp: 0.0.0.0/0
   WSO2ISDBInstancesuffix:
     Type: 'AWS::RDS::DBInstance'
     DeletionPolicy: Delete
@@ -210,6 +241,28 @@ Resources:
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
       Iops: !Ref DBIops
+      StorageType: io1
+      DBParameterGroupName: perf-test-param-group
+      DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
+  WSO2ISSessionDBInstancesuffix:
+    Type: 'AWS::RDS::DBInstance'
+    DeletionPolicy: Delete
+    Properties:
+      VPCSecurityGroups:
+        - !Ref WSO2ISSessionDBInstanceSecurityGroupsuffix
+      DBInstanceClass: !Ref SessionDBInstanceType
+      AllocatedStorage: !Ref SessionDBAllocationStorage
+      BackupRetentionPeriod: '0'
+      DBInstanceIdentifier: WSO2ISSessionDBInstancesuffix
+      DBName: WSO2_IS_DB_SESSION
+      #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
+      #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
+      EngineVersion: 8.0.36
+      Engine: MySQL
+      MasterUsername: !Ref SessionDBUsername
+      MasterUserPassword: !Ref SessionDBPassword
+      MultiAZ: 'false'
+      Iops: !Ref SessionDBIops
       StorageType: io1
       DBParameterGroupName: perf-test-param-group
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
@@ -488,6 +541,42 @@ Parameters:
     Description: Provide IOps size in numbers
     Type: Number
     Default: 1000
+  SessionDBUsername:
+    Type: String
+    MinLength: 4
+    AllowedPattern: '[A-Za-z0-9\-]+'
+  SessionDBEngine:
+    Type: String
+    Default: MySQL_8.0
+  SessionDBPassword:
+    Type: String
+    MinLength: 8
+    NoEcho: true
+  SessionDBInstanceType:
+    Type: String
+    Default: db.m5.2xlarge
+    AllowedValues:
+      - db.t2.medium
+      - db.t2.large
+      - db.t2.xlarge
+      - db.t2.2xlarge
+      - db.m3.medium
+      - db.m3.large
+      - db.m3.xlarge
+      - db.m3.2xlarge
+      - db.m4.large
+      - db.m4.xlarge
+      - db.m4.2xlarge
+      - db.m5.xlarge
+      - db.m5.2xlarge
+  SessionDBAllocationStorage:
+    Description: Provide storage size in Gigabytes
+    Type: Number
+    Default: 50
+  SessionDBIops:
+    Description: Provide IOps size in numbers
+    Type: Number
+    Default: 5000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

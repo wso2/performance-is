@@ -30,7 +30,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.identity_db.pool_options]
-maxActive = "400"
+maxActive = "1500"
 
 [database.shared_db]
 driver = "com.mysql.jdbc.Driver"
@@ -39,7 +39,7 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.shared_db.pool_options]
-maxActive = "400"
+maxActive = "1500"
 
 [database.user]
 driver = "com.mysql.jdbc.Driver"
@@ -48,11 +48,31 @@ validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
 [database.user.pool_options]
-maxActive = "400"
+maxActive = "1500"
+
+[session]
+data_source="jdbc/WSO2SessionDB"
+
+[datasource.WSO2SessionDB]
+id = "WSO2SessionDB"
+url = "jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/SESSION_DB?useSSL=false&amp;rewriteBatchedStatements=true"
+username = "wso2carbon"
+password = "wso2carbon"
+driver = "com.mysql.jdbc.Driver"
+jmxEnabled = false
+
+[datasource.WSO2SessionDB.pool_options]
+validationQuery="SELECT 1; COMMIT"
+testOnBorrow = true
+maxActive=1500
+maxWait = 60000
+minIdle = 5
+validationInterval="30000"
+defaultAutoCommit=false
 
 [transport.https.properties]
-maxThreads = "400"
-acceptCount = "400"
+maxThreads = "1500"
+acceptCount = "1500"
 
 [authentication.consent]
 prompt = true

@@ -28,24 +28,84 @@ scenarioCount = []  # To keep scenario count orderly
 burst_keyword = "Burst"  # Keyword to identify burst scenarios
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
-scenarios = {"Auth Code Grant Redirect With Consent": "2 Common Auth Login HTTP Request",
-             "Password Grant Type": "1 GetToken_Password_Grant",
-             "Client Credentials Grant Type": "1 Get Token Client Credential Grant",
-             "OIDC Auth Code Grant Redirect With Consent": "2 Common Auth Login HTTP Request",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes": "5 Get tokens",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes and Groups": "5 Get tokens",
-             "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes Groups and Roles": "5 Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent": "2 Common Auth Login HTTP Request",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes": "4 Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes and Groups": "4 Get tokens",
-             "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles": "4 Get tokens",
-             "OIDC Password Grant Type": "1 GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes": "1 GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes and Groups": "1 GetToken_Password_Grant",
-             "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": "1 GetToken_Password_Grant",
-             "SAML2 SSO Redirect Binding": "2 Identity Provider Login",
-             "Token Exchange Grant": "1 GetToken_Token_Exchange_Grant",
-             "B2B OIDC Auth Code Grant Redirect With Consent": "4. Common Auth Login Request to Sub Org"}
+scenarios = {
+    "Auth Code Grant Redirect With Consent": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Send Consent Approve Request",
+        "5 Get tokens"],
+    "Password Grant Type": [
+        "1 GetToken_Password_Grant"],
+    "Client Credentials Grant Type": [
+        "1 Get Token Client Credential Grant"],
+    "OIDC Auth Code Grant Redirect With Consent": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Send Consent Approve Request",
+        "5 Get tokens"],
+    "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Send Consent Approve Request",
+        "5 Get tokens"],
+    "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes and Groups": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Send Consent Approve Request",
+        "5 Get tokens"],
+    "OIDC Auth Code Grant Redirect With Consent Retrieve User Attributes Groups and Roles": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Send Consent Approve Request",
+        "5 Get tokens"],
+    "OIDC Auth Code Grant Redirect Without Consent": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Get tokens"],
+    "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes":[
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Get tokens"],
+    "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes and Groups": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Get tokens"],
+    "OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles": [
+        "1 Send request to authorize end point",
+        "2 Common Auth Login HTTP Request",
+        "3 Authorize call",
+        "4 Get tokens"],
+    "OIDC Password Grant Type": [
+        "1 GetToken_Password_Grant"],
+    "OIDC Password Grant Type Retrieve User Attributes": [
+        "1 GetToken_Password_Grant"],
+    "OIDC Password Grant Type Retrieve User Attributes and Groups": [
+        "1 GetToken_Password_Grant"],
+    "OIDC Password Grant Type Retrieve User Attributes Groups and Roles": [
+        "1 GetToken_Password_Grant"],
+    "SAML2 SSO Redirect Binding": [
+        "1 Initial SAML Request",
+        "2 Identity Provider Login"],
+    "Token Exchange Grant": [
+        "1 GetToken_Token_Exchange_Grant"],
+    "B2B OIDC Auth Code Grant Redirect With Consent": [
+        "1. Send Authorize Request to Parent App Org",
+        "2. Select Sub Org Request",
+        "3. Send Authorize Request to Sub Org",
+        "4. Common Auth Login Request to Sub Org",
+        "5. Post Authentication Redirect call to Sub Org",
+        "6. Common Auth Redirect call to the Parent Org",
+        "7. Post Authentication Redirect call to Parent Org",
+        "8. Send Consent Approve Request",
+        "9. Get tokens Request"]}
 
 scenarios_critical_requests = scenarios.copy()
 
@@ -61,18 +121,29 @@ with open('summary.csv') as file:
 
 scenario = rows[1][0]  # Assign first scenario
 count = 0  # Number of times each scenario appears
+concurrency = rows[1][2]
+scenario_concurrency_sum = 0
 for row in rows[1:]:
     if scenario == row[0]:
-        if scenarios.get(scenario) == row[3] or (burst_keyword + " " + scenarios.get(scenario)) == row[3]:
-            scenarios_critical_requests[scenario].append(row[14])
+        if row[3] in scenarios.get(scenario) or row[3] in [burst_keyword + " " + request for request in scenarios.get(scenario)]:
+            if concurrency == row[2]:
+                scenario_concurrency_sum += int(row[14])
+            else:
+                scenarios_critical_requests[scenario].append(scenario_concurrency_sum)
+                scenario_concurrency_sum = int(row[14])
+                concurrency = row[2]
         count += 1  # Increase the count when the same scenario appears
     else:
         scenarioCount.append(count)  # Append the count to the array when a new scenario name appears
+        scenarios_critical_requests[scenario].append(scenario_concurrency_sum)
         scenario = row[0]
-        if scenarios.get(scenario) == row[3] or (burst_keyword + " " + scenarios.get(scenario)) == row[3]:
-            scenarios_critical_requests[scenario].append(row[14])
+        scenario_concurrency_sum = 0
+        concurrency = row[2]
+        if row[3] in scenarios.get(scenario) or row[3] in [burst_keyword + " " + request for request in scenarios.get(scenario)]:
+            scenario_concurrency_sum += int(row[14])
         count = 1
 scenarioCount.append(count)  # Append the count of the last scenario
+scenarios_critical_requests[scenario].append(scenario_concurrency_sum)
 
 concurrentUserCounts = 0  # Get number of different concurrent user counts
 userCount = ""  # Assign reading value from the file

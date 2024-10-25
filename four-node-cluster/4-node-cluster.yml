@@ -677,7 +677,7 @@ Parameters:
   DBIops:
     Description: Provide IOps size in numbers
     Type: Number
-    Default: 1000
+    Default: 5000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

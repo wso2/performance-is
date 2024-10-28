@@ -389,6 +389,7 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
          &lt;xsd:application&gt;&#xd;
             &lt;xsd1:OAuthVersion&gt;OAuth-2.0&lt;/xsd1:OAuthVersion&gt;&#xd;
             &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt;&#xd;
+            &lt;xsd1:applicationVersion&gt;v0.0.0&lt;/xsd1:applicationVersion&gt;&#xd;
             &lt;xsd1:callbackUrl&gt;${callbackUrlPrefix}${sp_count_id}&lt;/xsd1:callbackUrl&gt;&#xd;
             &lt;xsd1:grantTypes&gt;authorization_code implicit password client_credentials refresh_token organization_switch urn:ietf:params:oauth:grant-type:token-exchange urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer iwa:ntlm&lt;/xsd1:grantTypes&gt;&#xd;
             &lt;xsd1:oauthConsumerKey&gt;${consumerKeyPrefix}${sp_count_id}&lt;/xsd1:oauthConsumerKey&gt;&#xd;
@@ -457,6 +458,7 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
        &lt;xsd:createApplication&gt; &#xd;
       &lt;xsd:serviceProvider&gt; &#xd;
             &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt; &#xd;
+            &lt;xsd1:applicationVersion&gt;v0.0.0&lt;/xsd1:applicationVersion&gt;&#xd;
          &lt;/xsd:serviceProvider&gt; &#xd;
       &lt;/xsd:createApplication&gt; &#xd;
    &lt;/soapenv:Body&gt;&#xd;
@@ -603,6 +605,7 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
             &lt;!--Optional:--&gt;&#xd;
             &lt;xsd1:applicationID&gt;${appID}&lt;/xsd1:applicationID&gt;&#xd;
                   &lt;xsd1:applicationName&gt;${spNamePrefix}${sp_count_id}&lt;/xsd1:applicationName&gt; &#xd;
+                  &lt;xsd1:applicationVersion&gt;v0.0.0&lt;/xsd1:applicationVersion&gt;&#xd;
             &lt;xsd1:claimConfig&gt; &#xd;
                &lt;xsd1:alwaysSendMappedLocalSubjectId&gt;false&lt;/xsd1:alwaysSendMappedLocalSubjectId&gt; &#xd;
             &lt;/xsd1:claimConfig&gt; &#xd;

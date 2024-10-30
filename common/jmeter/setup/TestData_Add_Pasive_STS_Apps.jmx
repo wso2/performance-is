@@ -116,6 +116,7 @@
        &lt;xsd:createApplication&gt; &#xd;
       &lt;xsd:serviceProvider&gt; &#xd;
             &lt;xsd1:applicationName&gt;${passiveSTSAppNamePrefix}_${spId}&lt;/xsd1:applicationName&gt; &#xd;
+            &lt;xsd1:applicationVersion&gt;v0.0.0&lt;/xsd1:applicationVersion&gt;&#xd;
          &lt;/xsd:serviceProvider&gt; &#xd;
       &lt;/xsd:createApplication&gt; &#xd;
    &lt;/soapenv:Body&gt;&#xd;
@@ -255,6 +256,7 @@
             &lt;!--Optional:--&gt;&#xd;
             &lt;xsd1:applicationID&gt;${appID}&lt;/xsd1:applicationID&gt;&#xd;
             &lt;xsd1:applicationName&gt;${passiveSTSAppNamePrefix}_${spId}&lt;/xsd1:applicationName&gt;&#xd;
+            &lt;xsd1:applicationVersion&gt;v0.0.0&lt;/xsd1:applicationVersion&gt;&#xd;
             &lt;xsd1:claimConfig&gt;&#xd;
                &lt;xsd1:alwaysSendMappedLocalSubjectId&gt;true&lt;/xsd1:alwaysSendMappedLocalSubjectId&gt;&#xd;
                &lt;xsd1:localClaimDialect&gt;true&lt;/xsd1:localClaimDialect&gt;&#xd;

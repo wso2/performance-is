@@ -342,29 +342,92 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-   &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
-   &quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
-   &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
-   &quot;name&quot;:{&#xd;
-      &quot;familyName&quot;:&quot;${userFirstNamePrefix}${user_index}&quot;,&#xd;
-      &quot;givenName&quot;:&quot;${userLastNamePrefix}${user_index}&quot;&#xd;
-   },&#xd;
-   &quot;wso2Extension&quot;:{&#xd;
-      &quot;accountLocked&quot;:&quot;false&quot;&#xd;
-   },&#xd;
-   &quot;emails&quot;:[&quot;${useremailPrefix}${user_index}@test.com&quot;],&#xd;
-   &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: &#xd;
-   {&#xd;
-   		&quot;country&quot;:&quot;Sri Lanka&quot;&#xd;
-   },&#xd;
-   &quot;roles&quot;:[  &#xd;
-      {  &#xd;
-         &quot;type&quot;:&quot;default&quot;,&#xd;
-         &quot;value&quot;:&quot;${rolename}&quot;&#xd;
-      }&#xd;
-   ]&#xd;
-}&#xd;
-</stringProp>
+    &quot;Operations&quot;: [&#xd;
+        {&#xd;
+            &quot;bulkId&quot;: &quot;bulkId:${useremailPrefix}${user_index}@test.com:${user_index}&quot;,&#xd;
+            &quot;method&quot;: &quot;POST&quot;,&#xd;
+            &quot;path&quot;: &quot;/Users&quot;,&#xd;
+            &quot;data&quot;: {&#xd;
+                &quot;schemas&quot;: [&#xd;
+                    &quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;,&#xd;
+                    &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;,&#xd;
+                    &quot;urn:scim:wso2:schema&quot;&#xd;
+                ],&#xd;
+                &quot;userName&quot;: &quot;${usernamePrefix}${user_index}&quot;,&#xd;
+                &quot;password&quot;: &quot;${userPassword}&quot;,&#xd;
+                &quot;name&quot;: {&#xd;
+                    &quot;familyName&quot;: &quot;${userFirstNamePrefix}${user_index}&quot;,&#xd;
+                    &quot;givenName&quot;: &quot;${userLastNamePrefix}${user_index}&quot;&#xd;
+                },&#xd;
+                &quot;wso2Extension&quot;: {&#xd;
+                    &quot;accountLocked&quot;: &quot;false&quot;&#xd;
+                },&#xd;
+                &quot;emails&quot;: [&#xd;
+                    &quot;${useremailPrefix}${user_index}@test.com&quot;&#xd;
+                ],&#xd;
+                &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: {&#xd;
+                    &quot;country&quot;: &quot;Sri Lanka&quot;&#xd;
+                },&#xd;
+                &quot;roles&quot;: [&#xd;
+                    {&#xd;
+                        &quot;type&quot;: &quot;default&quot;,&#xd;
+                        &quot;value&quot;: &quot;${rolename}&quot;&#xd;
+                    }&#xd;
+                ]&#xd;
+            }&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;bulkId&quot;: &quot;bulkId:${groupname}:${user_index}&quot;,&#xd;
+            &quot;method&quot;: &quot;PATCH&quot;,&#xd;
+            &quot;path&quot;: &quot;/Groups/${__property(groupID)}&quot;,&#xd;
+            &quot;data&quot;: {&#xd;
+                &quot;Operations&quot;: [&#xd;
+                    {&#xd;
+                        &quot;op&quot;: &quot;add&quot;,&#xd;
+                        &quot;value&quot;: {&#xd;
+                            &quot;members&quot;: [&#xd;
+                                {&#xd;
+                                    &quot;display&quot;: &quot;${usernamePrefix}${user_index}&quot;,&#xd;
+                                    &quot;value&quot;: &quot;bulkId:bulkId:${useremailPrefix}${user_index}@test.com:${user_index}&quot;&#xd;
+                                }&#xd;
+                            ]&#xd;
+                        }&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;schemas&quot;: [&#xd;
+                    &quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;&#xd;
+                ]&#xd;
+            }&#xd;
+        },&#xd;
+        {&#xd;
+            &quot;bulkId&quot;: &quot;bulkId:${rolename}:${user_index}&quot;,&#xd;
+            &quot;method&quot;: &quot;PATCH&quot;,&#xd;
+            &quot;path&quot;: &quot;/Roles/${__property(roleID)}&quot;,&#xd;
+            &quot;data&quot;: {&#xd;
+                &quot;Operations&quot;: [&#xd;
+                    {&#xd;
+                        &quot;op&quot;: &quot;add&quot;,&#xd;
+                        &quot;value&quot;: {&#xd;
+                            &quot;users&quot;: [&#xd;
+                                {&#xd;
+                                    &quot;display&quot;: &quot;${usernamePrefix}${user_index}&quot;,&#xd;
+                                    &quot;value&quot;: &quot;bulkId:bulkId:${useremailPrefix}${user_index}@test.com:${user_index}&quot;&#xd;
+                                }&#xd;
+                            ]&#xd;
+                        }&#xd;
+                    }&#xd;
+                ],&#xd;
+                &quot;schemas&quot;: [&#xd;
+                    &quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;&#xd;
+                ]&#xd;
+            }&#xd;
+        }&#xd;
+    ],&#xd;
+    &quot;failOnErrors&quot;: 0,&#xd;
+    &quot;schemas&quot;: [&#xd;
+        &quot;urn:ietf:params:scim:api:messages:2.0:BulkRequest&quot;&#xd;
+    ]&#xd;
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -373,7 +436,7 @@
           <stringProp name="HTTPSampler.port">${is_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/scim2/Users</stringProp>
+          <stringProp name="HTTPSampler.path">/scim2/Bulk</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -389,7 +452,7 @@
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="-465808698">&quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;</stringProp>
+              <stringProp name="-465808698">&quot;status&quot;:{&quot;code&quot;:201}</stringProp>
             </collectionProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
@@ -400,7 +463,7 @@
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - SCIM ID" enabled="true">
             <stringProp name="RegexExtractor.useHeaders">unescaped</stringProp>
             <stringProp name="RegexExtractor.refname">scimID</stringProp>
-            <stringProp name="RegexExtractor.regex">&quot;id&quot;:&quot;(.+?)&quot;</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;location&quot;:&quot;https://localhost:9443/scim2/Users/(.+?)&quot;</stringProp>
             <stringProp name="RegexExtractor.template">$1$</stringProp>
             <stringProp name="RegexExtractor.default">FALSE</stringProp>
             <stringProp name="RegexExtractor.match_number">0</stringProp>
@@ -429,112 +492,6 @@ catch (Throwable ex) {
    throw ex;
 }</stringProp>
           </BeanShellPostProcessor>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Role" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;Operations&quot;:[&#xd;
-			{	&quot;op&quot;:&quot;add&quot;,&#xd;
-				&quot;value&quot;:{&quot;users&quot;:[{&quot;display&quot;:&quot;${usernamePrefix}${user_index}&quot;,&quot;value&quot;:&quot;${scimID}&quot;}]}&#xd;
-			}&#xd;
-		],&#xd;
-	&quot;schemas&quot;:[&quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;]&#xd;
-}&#xd;
-</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/scim2/Roles/${__property(roleID)}</stringProp>
-          <stringProp name="HTTPSampler.method">PATCH</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
-          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
-          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="103171775">HTTP/1.1 200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Assign Group" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;Operations&quot;:&#xd;
-		[&#xd;
-			{&#xd;
-				&quot;op&quot;:&quot;add&quot;,&#xd;
-				&quot;value&quot;:&#xd;
-					{&#xd;
-						&quot;members&quot;:&#xd;
-							[&#xd;
-								{&#xd;
-									&quot;display&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
-									&quot;value&quot;:&quot;${scimID}&quot;&#xd;
-								}&#xd;
-							]&#xd;
-					}&#xd;
-			}&#xd;
-		],&#xd;
-		&quot;schemas&quot;:[&quot;urn:ietf:params:scim:api:messages:2.0:PatchOp&quot;]&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
-          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/scim2/Groups/${__property(groupID)}</stringProp>
-          <stringProp name="HTTPSampler.method">PATCH</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.proxyUser">admin</stringProp>
-          <stringProp name="HTTPSampler.proxyPass">admin</stringProp>
-          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 HTTP Code Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="103171775">HTTP/1.1 200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-            <stringProp name="Assertion.custom_message">Test Failed - Create Role</stringProp>
-          </ResponseAssertion>
           <hashTree/>
         </hashTree>
       </hashTree>

@@ -79,7 +79,7 @@ See usage:
 -u: The database username. Default: wso2carbon.
 -p: The database password. Default: wso2carbon.
 -i: The instance type used for IS nodes. Default: c5.xlarge.
--b: The instance type used for the bastion node. Default: c5.xlarge.
+-b: The instance type used for the bastion node. Default: c6i.large.
 -w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status.
     Default: 10 minutes.
 -h: Display this help and exit.

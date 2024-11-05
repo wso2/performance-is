@@ -31,10 +31,11 @@ function usage() {
     echo "-k: The IP of wso2is node 4."
     echo "-r: The IP address of RDS."
     echo "-h: Display this help and exit."
+    echo "-s: Keystore type."
     echo ""
 }
 
-while getopts "a:n:w:i:j:k:r:h" opts; do
+while getopts "a:n:w:i:j:k:r:s:h" opts; do
     case $opts in
     a)
         is_host_alias=${OPTARG}
@@ -57,6 +58,9 @@ while getopts "a:n:w:i:j:k:r:h" opts; do
     r)
         db_instance_ip=${OPTARG}
         ;;
+    s)
+        keystore_type=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -75,6 +79,11 @@ fi
 
 if [[ -z $db_instance_ip ]]; then
     echo "Please provide the db instance IP address."
+    exit 1
+fi
+
+if [[ -z $keystore_type ]]; then
+    echo "Please provide the keystore type."
     exit 1
 fi
 
@@ -100,13 +109,13 @@ if [[ -z $no_of_nodes ]]; then
     exit 1
 elif [[ $no_of_nodes -eq 2 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
+      ./update-is-conf.sh -n $no_of_nodes -s $keystore_type -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
 elif [[ $no_of_nodes -eq 3 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
+      ./update-is-conf.sh -n $no_of_nodes -s $keystore_type -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
 elif [[ $no_of_nodes -eq 4 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip"
+      ./update-is-conf.sh -n $no_of_nodes -s $keystore_type -r $db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip"
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1

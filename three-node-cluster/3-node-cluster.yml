@@ -601,15 +601,14 @@ Parameters:
       - db.t2.large
       - db.t2.xlarge
       - db.t2.2xlarge
-      - db.m3.medium
-      - db.m3.large
-      - db.m3.xlarge
-      - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
       - db.m4.2xlarge
       - db.m5.xlarge
       - db.m5.2xlarge
+      - db.m6i.large
+      - db.m6i.xlarge
+      - db.m6i.2xlarge
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number

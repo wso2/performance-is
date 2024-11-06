@@ -21,7 +21,7 @@ default_carbon_home=$(realpath ~/wso2is)
 carbon_home=$default_carbon_home
 default_waiting_time=100
 waiting_time=$default_waiting_time
-default_heap_size="2g"
+default_heap_size="4g"
 heap_size="$default_heap_size"
 
 function usage() {

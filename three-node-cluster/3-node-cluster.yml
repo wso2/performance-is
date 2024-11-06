@@ -458,7 +458,7 @@ Resources:
             - apt-get update
             - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-21.0.5.11_linux-x64_bin.tar.gz
             - sudo mkdir /usr/lib/jvm
             - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk

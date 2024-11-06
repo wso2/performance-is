@@ -101,7 +101,7 @@ cp resources/deployment.toml "$carbon_home"/repository/conf/deployment.toml
 echo ""
 echo "Applying basic parameter changes..."
 echo "-------------------------------------------"
-sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms2g -Xmx2g"/g' \
+sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"

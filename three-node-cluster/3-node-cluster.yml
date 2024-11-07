@@ -235,7 +235,7 @@ Resources:
       #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
       EngineVersion: 8.0.36
       Engine: MySQL
-      EnablePerformanceInsights : 'true'
+      EnablePerformanceInsights : 'false'
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
@@ -635,7 +635,7 @@ Parameters:
       - CentOS_7
   BastionInstanceType:
     Type: String
-    Default: c6i.large
+    Default: c6i.xlarge
     AllowedValues:
       - t2.micro
       - t2.medium

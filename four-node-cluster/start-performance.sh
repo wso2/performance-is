@@ -41,7 +41,7 @@ default_db_instance_type=db.m5.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
-default_bastion_instance_type=c6i.large
+default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 no_of_nodes=4
 

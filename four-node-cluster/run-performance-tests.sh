@@ -29,7 +29,7 @@ db_username="wso2carbon"
 db_password="wso2carbon"
 
 # Execute common script
-. $script_dir/perf-test-is.sh
+. $script_dir/perf-test-is.sh "$@"
 
 # Source test scenarios
 source $script_dir/test_scenarios.sh

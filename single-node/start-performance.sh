@@ -44,6 +44,8 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+default_keystore_type="JKS"
+keystore_type="$default_keystore_type"
 no_of_nodes=1
 deployment="single-node"
 
@@ -75,10 +77,11 @@ function usage() {
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-t: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
+    echo "-s: Keystore type. Default: $default_keystore_type."
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
+while getopts "q:k:c:j:n:u:p:i:b:w:v:s:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -112,6 +115,9 @@ while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    s)
+        keystore_type=${OPTARG}
         ;;
     h)
         usage
@@ -225,7 +231,7 @@ echo "Extracting IS Performance Distribution to $results_dir"
 tar -xf target/is-performance-singlenode-*.tar.gz -C "$results_dir"
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
-estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
+estimate_command="$results_dir/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.
@@ -362,7 +368,7 @@ $copy_connector_command
 echo ""
 echo "Running IS node setup script..."
 echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host -s $keystore_type"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."

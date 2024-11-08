@@ -30,10 +30,11 @@ function usage() {
     echo "-r: The IP address of RDS."
     echo "-w: The IP of wso2is node 2."
     echo "-h: Display this help and exit."
+    echo "-s: Keystore type."
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:h" opts; do
+while getopts "n:w:i:j:k:r:s:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -53,6 +54,9 @@ while getopts "n:w:i:j:k:r:h" opts; do
     r)
         db_instance_ip=${OPTARG}
         ;;
+    s)
+        keystore_type=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -67,6 +71,17 @@ done
 if [[ -z $db_instance_ip ]]; then
     echo "Please provide the db instance ip address."
     exit 1
+fi
+
+if [[ -z $keystore_type ]]; then
+    echo "Please provide the keystore type."
+    exit 1
+elif [[ $keystore_type -eq "PKCS12" ]]; then
+    keystore_type="PKCS12"
+    keystore_extension=".p12"
+else
+    keystore_type="JKS"
+    keystore_extension=".jks"
 fi
 
 echo ""
@@ -104,6 +119,10 @@ echo "-------------------------------------------"
 sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i 's|.jks|'"$keystore_extension"'|g' \
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i "s|JKS|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 
 if [[ -z $no_of_nodes ]]; then

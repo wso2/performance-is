@@ -17,7 +17,7 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  WSO2 Identity Server 2-node cluster deployment.
+  WSO2 Identity Server 4-node cluster deployment.
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:

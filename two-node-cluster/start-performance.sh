@@ -246,7 +246,7 @@ echo "Extracting IS Performance Distribution to $results_dir"
 tar -xf target/is-performance-twonode-cluster*.tar.gz -C "$results_dir"
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
-estimate_command="$results_dir/jmeter/run-performance-tests.sh ${run_performance_tests_options[@]}"
+estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[@]}"
 echo ""
 echo "Estimating time for performance tests: $estimate_command"
 # Estimating this script will also validate the options. It's important to validate options before creating the stack.

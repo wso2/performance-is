@@ -95,8 +95,8 @@ sudo sh -c 'echo "fs.file-max = 70000" >> /etc/sysctl.conf'
 echo ""
 echo "Set soft and hard limit for ubuntu user..."
 echo "============================================"
-sudo sh -c 'echo "ubuntu       soft    nofile   10000" >> /etc/security/limits.conf'
-sudo sh -c 'echo "ubuntu       hard    nofile   30000" >> /etc/security/limits.conf'
+sudo sh -c 'echo "ubuntu       soft    nofile   4096" >> /etc/security/limits.conf'
+sudo sh -c 'echo "ubuntu       hard    nofile   65535" >> /etc/security/limits.conf'
 
 sudo sysctl -p
 
@@ -109,11 +109,13 @@ echo "LimitNOFILE=65535" | sudo tee -a /etc/systemd/system/nginx.service.d/overr
 sudo systemctl daemon-reload
 
 # nginx worker_rlimit_nofile Option
-sudo sh -c 'echo "worker_rlimit_nofile 30000;" >> /etc/nginx/nginx.conf'
+sudo sh -c 'echo "worker_rlimit_nofile 65535;" >> /etc/nginx/nginx.conf'
 
 echo ""
-echo "Adding workerconnection to nginx.conf file"
+echo "Adding configurations to nginx.conf file"
 echo "============================================"
-sudo sed -i 's/worker_connections 768/worker_connections 65535/g' /etc/nginx/nginx.conf || echo "error 1"
+sudo sed -i 's/worker_connections 768/worker_connections 4096/g' /etc/nginx/nginx.conf || echo "error 1"
+sudo sed -i 's/# multi_accept on;/multi_accept on;/g' /etc/nginx/nginx.conf || echo "error 2"
+sudo sed -i 's/keepalive_timeout 65;/keepalive_timeout 90;\n    send_timeout 120;/g' /etc/nginx/nginx.conf || echo "error 3"
 
 sudo service nginx restart

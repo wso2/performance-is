@@ -624,7 +624,7 @@ Parameters:
     MinLength: 1
   WSO2InstanceType:
     Type: String
-    Default: c5.xlarge
+    Default: c6i.xlarge
     AllowedValues:
       - t2.micro
       - t2.medium
@@ -653,7 +653,7 @@ Parameters:
     NoEcho: true
   DBInstanceType:
     Type: String
-    Default: db.m5.2xlarge
+    Default: db.m6i.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large
@@ -667,6 +667,7 @@ Parameters:
       - db.m6i.large
       - db.m6i.xlarge
       - db.m6i.2xlarge
+      - db.m6i.4xlarge
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
@@ -674,7 +675,7 @@ Parameters:
   DBIops:
     Description: Provide IOps size in numbers
     Type: Number
-    Default: 5000
+    Default: 1000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

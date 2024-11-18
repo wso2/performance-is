@@ -90,13 +90,13 @@ fi
 echo ""
 echo "Increase Open FD Limit..."
 echo "============================================"
-sudo sh -c 'echo "fs.file-max = 70000" >> /etc/sysctl.conf'
+sudo sh -c 'echo "fs.file-max = 65535" >> /etc/sysctl.conf'
 
 echo ""
 echo "Set soft and hard limit for ubuntu user..."
 echo "============================================"
-sudo sh -c 'echo "ubuntu       soft    nofile   10000" >> /etc/security/limits.conf'
-sudo sh -c 'echo "ubuntu       hard    nofile   30000" >> /etc/security/limits.conf'
+sudo sh -c 'echo "ubuntu       soft    nofile   4096" >> /etc/security/limits.conf'
+sudo sh -c 'echo "ubuntu       hard    nofile   65535" >> /etc/security/limits.conf'
 
 sudo sysctl -p
 
@@ -109,7 +109,7 @@ echo "LimitNOFILE=65535" | sudo tee -a /etc/systemd/system/nginx.service.d/overr
 sudo systemctl daemon-reload
 
 # nginx worker_rlimit_nofile Option
-sudo sh -c 'echo "worker_rlimit_nofile 30000;" >> /etc/nginx/nginx.conf'
+sudo sh -c 'echo "worker_rlimit_nofile 65535;" >> /etc/nginx/nginx.conf'
 
 echo ""
 echo "Adding workerconnection to nginx.conf file"

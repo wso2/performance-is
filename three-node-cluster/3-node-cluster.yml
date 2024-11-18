@@ -566,7 +566,7 @@ Parameters:
     MinLength: 1
   WSO2InstanceType:
     Type: String
-    Default: c5.xlarge
+    Default: c6i.xlarge
     AllowedValues:
       - t2.micro
       - t2.medium

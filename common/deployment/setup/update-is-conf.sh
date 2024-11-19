@@ -80,6 +80,7 @@ fi
 if [[ -z $session_db_instance_ip ]]; then
     echo "Please provide the session db instance ip address."
     exit 1
+fi
 
 if [[ -z $keystore_type ]]; then
     echo "Please provide the keystore type."

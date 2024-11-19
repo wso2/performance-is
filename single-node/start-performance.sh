@@ -39,11 +39,18 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-db_instance_type=db.m5.2xlarge
+default_db_storage="100"
+db_storage=$default_db_storage
+default_session_db_storage="100"
+session_db_storage=$default_session_db_storage
+default_db_instance_type=db.m6i.2xlarge
+db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
-default_bastion_instance_type=c5.xlarge
+default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+default_keystore_type="JKS"
+keystore_type="$default_keystore_type"
 no_of_nodes=1
 deployment="single-node"
 
@@ -55,13 +62,13 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-s <session_db_storage>] [-e <db_instance_type>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
-    echo "-v: The token issuer type."
+    echo "-y: The token issuer type."
     echo "-q: User tag who triggered the Jenkins build"
     echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
     echo "-m: Enable burst traffic"
@@ -69,16 +76,20 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
+    echo "-d: The database storage in GB. Default: $default_db_storage."
+    echo "-s: The session database storage in GB. Default: $default_session_db_storage."
+    echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
-    echo "-t: The required testing mode [FULL/QUICK]"
+    echo "-v: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
+    echo "-t: Keystore type. Default: $default_keystore_type."
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:v:s:t:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -101,6 +112,15 @@ while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
     p)
         db_password=${OPTARG}
         ;;
+    d)
+        db_storage=${OPTARG}
+        ;;
+    s)
+        session_db_storage=${OPTARG}
+        ;;
+    e)
+        db_instance_type=${OPTARG}
+        ;;
     i)
         wso2_is_instance_type=${OPTARG}
         ;;
@@ -112,6 +132,9 @@ while getopts "q:k:c:j:n:u:p:i:b:w:v:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    t)
+        keystore_type=${OPTARG}
         ;;
     h)
         usage
@@ -272,9 +295,11 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
+        ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=SessionDBUsername,ParameterValue=$db_username \
         ParameterKey=SessionDBPassword,ParameterValue=$db_password \
+        ParameterKey=SessionDBAllocationStorage,ParameterValue=$session_db_storage \
         ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
@@ -375,7 +400,7 @@ $copy_connector_command
 echo ""
 echo "Running IS node setup script..."
 echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host -s $session_rds_host"
+setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip ./setup/setup-is.sh -n $no_of_nodes -p $wso2_is_ip -r $rds_host -t $keystore_type -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node through bastion failed."

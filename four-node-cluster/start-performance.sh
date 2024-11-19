@@ -39,12 +39,14 @@ default_db_storage="100"
 db_storage=$default_db_storage
 default_session_db_storage="100"
 session_db_storage=$default_session_db_storage
-default_db_instance_type=db.m5.2xlarge
+default_db_instance_type=db.m6i.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
-default_bastion_instance_type=c5.xlarge
+default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
+default_keystore_type="JKS"
+keystore_type="$default_keystore_type"
 no_of_nodes=4
 
 results_dir="$PWD/results-$timestamp"
@@ -78,10 +80,11 @@ function usage() {
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-t: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
+    echo "-s: Keystore type. Default: $default_keystore_type."
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:s:e:i:b:w:v:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:v:s:t:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -124,6 +127,9 @@ while getopts "q:k:c:j:n:u:p:d:s:e:i:b:w:v:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    t)
+        keystore_type=${OPTARG}
         ;;
     h)
         usage
@@ -450,7 +456,7 @@ $setup_bastion_node_command || echo "Remote ssh command failed."
 
 echo ""
 echo "Sleep for FD Limit"
-sleep 30m
+sleep 5m
 
 echo ""
 echo "Creating databases in RDS..."
@@ -473,7 +479,7 @@ echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
@@ -482,7 +488,7 @@ echo ""
 echo "Running IS node 2 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
@@ -491,7 +497,7 @@ echo ""
 echo "Running IS node 3 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 3 through bastion failed."
@@ -500,7 +506,7 @@ echo ""
 echo "Running IS node 4 setup script..."
 echo "============================================"
 setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
+    ./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 echo "$setup_is_command"
 # Handle any error and let the script continue.
 $setup_is_command || echo "Remote ssh command to setup IS node 4 through bastion failed."

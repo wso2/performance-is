@@ -111,7 +111,7 @@
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">String deploymentType = vars.get(&quot;deployment&quot;);
 int numOfNodes = Integer.parseInt(vars.get(&quot;noOfNodes&quot;));
-int x = Integer.parseInt(vars.get(&quot;sp_count_id&quot;));
+int x = Integer.parseInt(vars.get(&quot;sub_org_idx&quot;));
 int y = x - (x/numOfNodes)*numOfNodes;
 
 if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {

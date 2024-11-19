@@ -57,7 +57,7 @@
 default_concurrent_users=""
 concurrency=""
 # Application heap Sizes
-default_heap_sizes="2G"
+default_heap_sizes="4G"
 
 # Test Duration in minutes
 default_test_duration=15
@@ -134,7 +134,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:t:p:k:v:x:o:y:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -221,6 +221,12 @@ if [ "$concurrency" == "50-500" ]; then
 elif [ "$concurrency" == "500-3000" ]; then
     echo "Running tests for concurrency level 500-3000"
     default_concurrent_users="500 1000 1500 2000 2500 3000"
+elif [ "$concurrency" == "1000-3000" ]; then
+    echo "Running tests for concurrency level 1000-3000"
+    default_concurrent_users="1000 1500 2000 2500 3000"
+elif [ "$concurrency" == "50-50" ]; then
+    echo "Running tests for concurrency level 50"
+    default_concurrent_users="50"
 else
     echo "Running tests for concurrency level 50-3000"
     default_concurrent_users="50 100 150 300 500 1000 1500 2000 2500 3000"
@@ -435,7 +441,7 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_images.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
 #    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
     setup_dir="/home/ubuntu/workspace/jmeter/setup"
 

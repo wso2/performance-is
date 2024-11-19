@@ -27,11 +27,11 @@ function usage() {
     echo "-i: The IP of wso2is node."
     echo "-r: The IP address of RDS."
     echo "-h: Display this help and exit."
-    echo "-s: Keystore type."
+    echo "-t: Keystore type."
     echo ""
 }
 
-while getopts "n:p:r:s:h" opts; do
+while getopts "n:p:r:t:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -42,7 +42,7 @@ while getopts "n:p:r:s:h" opts; do
     r)
         db_instance_ip=${OPTARG}
         ;;
-    s)
+    t)
         keystore_type=${OPTARG}
         ;;
     h)
@@ -87,7 +87,7 @@ $copy_is_server_command
 echo "$copy_mysql_connector_command"
 $copy_mysql_connector_command
 
-setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -s $keystore_type"
+setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_ip ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type"
 
 echo ""
 echo "Running IS node setup script: $setup_is_node_command"

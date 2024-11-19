@@ -742,7 +742,7 @@ Parameters:
     NoEcho: true
   SessionDBInstanceType:
     Type: String
-    Default: db.m5.2xlarge
+    Default: db.m6i.2xlarge
     AllowedValues:
       - db.t2.medium
       - db.t2.large
@@ -757,6 +757,10 @@ Parameters:
       - db.m4.2xlarge
       - db.m5.xlarge
       - db.m5.2xlarge
+      - db.m6i.large
+      - db.m6i.xlarge
+      - db.m6i.2xlarge
+      - db.m6i.4xlarge
   SessionDBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
@@ -764,7 +768,7 @@ Parameters:
   SessionDBIops:
     Description: Provide IOps size in numbers
     Type: Number
-    Default: 5000
+    Default: 1000
   JDKVersion:
     Type: String
     Default: Oracle_JDK_8

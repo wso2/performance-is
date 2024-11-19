@@ -469,9 +469,11 @@ echo "$setup_bastion_node_command"
 # Handle any error and let the script continue.
 $setup_bastion_node_command || echo "Remote ssh command failed."
 
-echo ""
-echo "Sleep for FD Limit"
-sleep 5m
+if [[ $no_of_nodes -gt 3 ]]; then
+    echo ""
+    echo "Sleep for FD Limit"
+    sleep 5m
+fi
 
 echo ""
 echo "Creating databases in RDS..."

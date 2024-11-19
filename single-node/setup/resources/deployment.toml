@@ -71,8 +71,8 @@ validationInterval="30000"
 defaultAutoCommit=false
 
 [transport.https.properties]
-maxThreads = "1500"
-acceptCount = "1500"
+maxThreads = "750"
+acceptCount = "750"
 
 [authentication.consent]
 prompt = true

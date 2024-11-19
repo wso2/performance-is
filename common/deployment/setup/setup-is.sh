@@ -36,7 +36,7 @@ function usage() {
     echo ""
 }
 
-while getopts "a:n:w:i:j:k:r:s:h" opts; do
+while getopts "a:n:w:i:j:k:r:s:t:h" opts; do
     case $opts in
     a)
         is_host_alias=${OPTARG}

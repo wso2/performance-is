@@ -35,7 +35,7 @@ function usage() {
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:s:h" opts; do
+while getopts "n:w:i:j:k:r:s:t:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}

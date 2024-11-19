@@ -28,13 +28,14 @@ function usage() {
     echo "-j: The IP of wso2is node 3."
     echo "-k: The IP of wso2is node 4."
     echo "-r: The IP address of RDS."
+    echo "-s: The IP address of session DB RDS."
     echo "-w: The IP of wso2is node 2."
     echo "-h: Display this help and exit."
-    echo "-s: Keystore type."
+    echo "-t: Keystore type."
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:s:h" opts; do
+while getopts "n:w:i:j:k:r:s:t:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -55,6 +56,9 @@ while getopts "n:w:i:j:k:r:s:h" opts; do
         db_instance_ip=${OPTARG}
         ;;
     s)
+        session_db_instance_ip=${OPTARG}
+        ;;
+    t)
         keystore_type=${OPTARG}
         ;;
     h)
@@ -70,6 +74,11 @@ done
 
 if [[ -z $db_instance_ip ]]; then
     echo "Please provide the db instance ip address."
+    exit 1
+fi
+
+if [[ -z $session_db_instance_ip ]]; then
+    echo "Please provide the session db instance ip address."
     exit 1
 fi
 
@@ -120,6 +129,8 @@ sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i "s|jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$session_db_instance_ip|g" \
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i 's|.jks|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|JKS|$keystore_type|g" \
@@ -135,6 +146,7 @@ if [[ $no_of_nodes -eq 1 ]]; then
     echo "Creating databases in RDS..."
     echo "============================================"
     mysql -h "$db_instance_ip" -u wso2carbon -pwso2carbon < resources/createDB.sql
+    mysql -h "$session_db_instance_ip" -u wso2carbon -pwso2carbon < resources/createSessionDB.sql
 fi
 if [[ $no_of_nodes -gt 1 ]]; then
     sed -i "s|member_ip_1|$wso2_is_1_ip|g" "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"

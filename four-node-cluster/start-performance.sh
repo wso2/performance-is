@@ -63,7 +63,7 @@ function usage() {
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
-    echo "-v: The token issuer type."
+    echo "-y: The token issuer type."
     echo "-q: User tag who triggered the Jenkins build"
     echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
     echo "-m: Enable burst traffic"
@@ -78,9 +78,9 @@ function usage() {
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
-    echo "-t: The required testing mode [FULL/QUICK]"
+    echo "-v: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
-    echo "-s: Keystore type. Default: $default_keystore_type."
+    echo "-t: Keystore type. Default: $default_keystore_type."
     echo ""
 }
 

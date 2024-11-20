@@ -46,18 +46,32 @@ function add_mssql_connector() {
 
 function update_mysql_config() {
 
-    sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
-        "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-    sed -i "s|jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$session_db_instance_ip|g" \
-        "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+    local configs=(
+      "s|{identity_db_url}|jdbc:mysql://$db_instance_ip:3306/IDENTITY_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
+      "s|{session_db_url}|jdbc:mysql://$session_db_instance_ip:3306/SESSION_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
+      "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
+      "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
+      "s|{db_driver}|com.mysql.jdbc.Driver|g"
+    )
+    
+    for config in "${configs[@]}"; do
+      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    done
 }
 
 function update_mssql_config() {
 
-    sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:sqlserver://$db_instance_ip|g" \
-        "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-    sed -i "s|jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:sqlserver://$session_db_instance_ip|g" \
-        "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+    local configs=(
+      "s|{identity_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{session_db_url}|jdbc:sqlserver://$session_db_instance_ip:1433;databaseName=SESSION_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{user_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=UM_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{reg_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=REG_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{db_driver}|com.microsoft.sqlserver.jdbc.SQLServerDriver|g"
+    )
+    
+    for config in "${configs[@]}"; do
+      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    done
 }
 
 function usage() {
@@ -171,9 +185,9 @@ echo "Applying basic parameter changes..."
 echo "-------------------------------------------"
 sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
-sed -i 's|.jks|'"$keystore_extension"'|g' \
+sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-sed -i "s|JKS|$keystore_type|g" \
+sed -i "s|{keystore_type}|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 if [ "$db_type" == "mysql" ]; then
     update_mysql_config

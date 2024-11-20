@@ -74,7 +74,7 @@ fi
 copy_is_server_edit_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup/update-is-conf.sh ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_is_server_resources_command="scp -r -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/setup/resources ubuntu@$wso2_is_ip:/home/ubuntu/"
 copy_is_server_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/wso2is.zip ubuntu@$wso2_is_ip:/home/ubuntu/wso2is.zip"
-copy_mysql_connector_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-java-*.jar ubuntu@$wso2_is_ip:/home/ubuntu/"
+copy_mysql_connector_command="scp -i ~/private_key.pem -o "StrictHostKeyChecking=no" /home/ubuntu/mysql-connector-j-*.jar ubuntu@$wso2_is_ip:/home/ubuntu/"
 
 echo ""
 echo "Copying Is server setup files..."

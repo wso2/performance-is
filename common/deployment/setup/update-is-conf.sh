@@ -108,14 +108,14 @@ sudo chown -R ubuntu:ubuntu wso2is
 echo ""
 echo "changing permission for mysql connector"
 echo "-------------------------------------------"
-chmod 644 mysql-connector-java-*.jar
+chmod 644 mysql-connector-j-*.jar
 
 carbon_home=$(realpath ~/wso2is)
 
 echo ""
 echo "Adding mysql connector to the pack..."
 echo "-------------------------------------------"
-cp mysql-connector-java-*.jar "$carbon_home"/repository/components/lib/
+cp mysql-connector-j-*.jar "$carbon_home"/repository/components/lib/
 
 echo ""
 echo "Adding deployment toml file to the pack..."

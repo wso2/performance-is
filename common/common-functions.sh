@@ -76,3 +76,66 @@ function exit_handler() {
 
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$script_start_time"))"
 }
+
+function ssh_bastion_cmd() {
+
+    local ssh_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $1"
+    echo "$ssh_command"
+    $ssh_command || echo "Remote ssh command failed."
+}
+
+function scp_bastion_cmd() {
+
+    local scp_command="scp -i $key_file -o "StrictHostKeyChecking=no" $1 ubuntu@$bastion_node_ip:$2"
+    echo "$scp_command"
+    $scp_command || echo "Remote scp command failed."
+}
+
+function scp_r_bastion_cmd() {
+
+    local scp_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $1 ubuntu@$bastion_node_ip:$2"
+    echo "$scp_command"
+    $scp_command || echo "Remote scp command failed."
+}
+
+function download_bastion_cmd() {
+
+    local scp_command="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:$1 $2"
+    echo "$scp_command"
+    "$scp_command" || echo "Download failed."
+}
+
+function get_private_ip() {
+
+    local stack_id=$1
+    local auto_scaling_grp_id=$2
+    local wso2is_auto_scaling_grp
+    local wso2is_instance
+    local wso2_is_ip
+
+    wso2is_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id "$auto_scaling_grp_id" | jq -r '.StackResources[].PhysicalResourceId')"
+    wso2is_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
+    wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    echo "$wso2_is_ip"
+}
+
+function execute_db_command() {
+
+    local db_host="$1"
+    local sql_file="$2"
+    # Construct the database-specific command
+    local db_command=""
+    case "$db_type" in
+        mysql)
+            db_command="mysql -h \"$db_host\" -u wso2carbon -pwso2carbon < \"$sql_file\""
+            ;;
+        mssql)
+            db_command="/opt/mssql-tools/bin/sqlcmd -S \"$db_host\" -U wso2carbon -P wso2carbon -i \"$sql_file\""
+            ;;
+        *)
+            echo "Unsupported database type: $db_type"
+            return 1
+            ;;
+    esac
+    ssh_bastion_cmd "$db_command"
+}

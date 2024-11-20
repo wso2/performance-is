@@ -21,7 +21,6 @@ script_start_time=$(date +%s)
 timestamp=$(date +%Y-%m-%d--%H-%M-%S)
 
 random_number=$RANDOM
-# random_number=21265
 
 key_file=""
 certificate_name=""
@@ -43,9 +42,11 @@ default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 default_keystore_type="JKS"
 keystore_type="$default_keystore_type"
+default_db_type="mysql"
+db_type="$default_db_type"
 
 results_dir="$PWD/results-$timestamp"
-default_minimum_stack_creation_wait_time=10
+default_minimum_stack_creation_wait_time=5
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {
@@ -77,10 +78,11 @@ function usage() {
     echo "-h: Display this help and exit."
     echo "-g: Number of IS nodes."
     echo "-t: Keystore type. Default: $default_keystore_type."
+    echo "-m: Database type. Default $default_db_type."
     echo ""
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:h" opts; do
+while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:m:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -126,6 +128,9 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:h" opts; do
         ;;
     g)
         no_of_nodes=${OPTARG}
+        ;;
+    m)
+        db_type=${OPTARG}
         ;;
     h)
         usage
@@ -231,7 +236,9 @@ if ! [[ $minimum_stack_creation_wait_time =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
-if [[ $no_of_nodes -eq 2 ]]; then
+if [[ $no_of_nodes -eq 1 ]]; then
+    no_of_nodes_string="single"
+elif [[ $no_of_nodes -eq 2 ]]; then
     no_of_nodes_string="two"
 elif [[ $no_of_nodes -eq 3 ]]; then
     no_of_nodes_string="three"
@@ -258,7 +265,11 @@ echo "Results will be downloaded to $results_dir"
 
 echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
-tar -xf target/is-performance-${no_of_nodes_string}node-cluster*.tar.gz -C "$results_dir"
+if [[ $no_of_nodes -eq 1 ]]; then
+    tar -xf target/is-performance-singlenode-*.tar.gz -C "$results_dir"
+else
+    tar -xf target/is-performance-${no_of_nodes_string}node-cluster*.tar.gz -C "$results_dir"
+fi
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
 estimate_command="$results_dir/jmeter/run-performance-tests.sh -t ${run_performance_tests_options[*]}"
@@ -283,8 +294,13 @@ echo ""
 echo "Preparing cloud formation template..."
 echo "============================================"
 echo "random_number: $random_number"
-template_file_name="new-$no_of_nodes-node-cluster.yml"
-cp "$no_of_nodes-node-cluster.yml" "$template_file_name"
+if [[ $no_of_nodes -eq 1 ]]; then
+    template_file_name="new-single-node.yml"
+    cp single-node.yaml "$template_file_name"
+else
+    template_file_name="new-$no_of_nodes-node-cluster.yml"
+    cp "$no_of_nodes-node-cluster.yml" "$template_file_name"
+fi
 sed -i "s/suffix/$random_number/" "$template_file_name"
 
 echo ""
@@ -349,43 +365,42 @@ bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$s
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
-echo ""
-echo "Getting NGinx Instance Private IP..."
-nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
-echo "NGinx Instance Private IP: $nginx_instance_ip"
-
-echo ""
-echo "Getting WSO2 IS Node 1 Private IP..."
-wso2is_1_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode1AutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-wso2is_1_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_1_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-wso2_is_1_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_1_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
-echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
+if [[ $no_of_nodes -gt 1 ]]; then
+    echo ""
+    echo "Getting NGinx Instance Private IP..."
+    nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+    nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    echo "NGinx Instance Private IP: $nginx_instance_ip"
+else
+    echo ""
+    echo "Getting WSO2 IS Node Private IP..."
+    wso2_is_ip=$(get_private_ip "$stack_id" "WSO2ISNodeAutoScalingGroup$random_number")
+    echo "WSO2 IS Node Private IP: $wso2_is_ip"
+fi
 
 if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
+    echo "Getting WSO2 IS Node 1 Private IP..."
+    wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
+    echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
+
+    echo ""
     echo "Getting WSO2 IS Node 2 Private IP..."
-    wso2is_2_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode2AutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-    wso2is_2_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_2_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-    wso2_is_2_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_2_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    wso2_is_2_ip=$(get_private_ip "$stack_id" "WSO2ISNode2AutoScalingGroup$random_number")
     echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 3 Private IP..."
-    wso2is_3_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode3AutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-    wso2is_3_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_3_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-    wso2_is_3_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_3_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    wso2_is_3_ip=$(get_private_ip "$stack_id" "WSO2ISNode3AutoScalingGroup$random_number")
     echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
 fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 4 Private IP..."
-    wso2is_4_auto_scaling_grp="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISNode4AutoScalingGroup"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-    wso2is_4_instance="$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$wso2is_4_auto_scaling_grp" | jq -r '.AutoScalingGroups[].Instances[].InstanceId')"
-    wso2_is_4_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_4_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+    wso2_is_4_ip=$(get_private_ip "$stack_id" "WSO2ISNode4AutoScalingGroup$random_number")
     echo "WSO2 IS Node 4 Private IP: $wso2_is_4_ip"
 fi
 
@@ -405,11 +420,15 @@ if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
     exit 1
 fi
-if [[ -z $nginx_instance_ip ]]; then
+if [[ $no_of_nodes -eq 1 && -z $wso2_is_ip ]]; then
+    echo "WSO2 node IP could not be found. Exiting..."
+    exit 1
+fi
+if [[ $no_of_nodes -gt 1 && -z $nginx_instance_ip ]]; then
     echo "Load balancer IP could not be found. Exiting..."
     exit 1
 fi
-if [[ -z $wso2_is_1_ip ]]; then
+if [[ $no_of_nodes -gt 1 && -z $wso2_is_1_ip ]]; then
     echo "WSO2 node 1 IP could not be found. Exiting..."
     exit 1
 fi
@@ -437,37 +456,26 @@ fi
 echo ""
 echo "Copying files to Bastion node..."
 echo "============================================"
-copy_setup_files_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_repo_setup_command="scp -i $key_file -o "StrictHostKeyChecking=no" target/is-performance-*.tar.gz \
-    ubuntu@$bastion_node_ip:/home/ubuntu"
+scp_r_bastion_cmd "$results_dir/setup" "/home/ubuntu/"
+scp_bastion_cmd "target/is-performance-*.tar.gz" "/home/ubuntu"
 
-echo "$copy_setup_files_command"
-$copy_setup_files_command
-echo "$copy_repo_setup_command"
-$copy_repo_setup_command
+scp_bastion_cmd "$jmeter_setup" "/home/ubuntu/"
+scp_bastion_cmd "$is_setup" "/home/ubuntu/wso2is.zip"
+scp_bastion_cmd "$key_file" "/home/ubuntu/private_key.pem"
+scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 
-copy_jmeter_setup_command="scp -i $key_file -o StrictHostKeyChecking=no $jmeter_setup ubuntu@$bastion_node_ip:/home/ubuntu/"
-copy_is_pack_command="scp -i $key_file -o "StrictHostKeyChecking=no" $is_setup ubuntu@$bastion_node_ip:/home/ubuntu/wso2is.zip"
-copy_key_file_command="scp -i $key_file -o "StrictHostKeyChecking=no" $key_file ubuntu@$bastion_node_ip:/home/ubuntu/private_key.pem"
-copy_connector_command="scp -r -i $key_file -o "StrictHostKeyChecking=no" $results_dir/lib/* ubuntu@$bastion_node_ip:/home/ubuntu/"
 
-echo "$copy_jmeter_setup_command"
-$copy_jmeter_setup_command
-echo "$copy_is_pack_command"
-$copy_is_pack_command
-echo "$copy_key_file_command"
-$copy_key_file_command
-echo "$copy_connector_command"
-$copy_connector_command
-
-echo ""
-echo "Running Bastion Node setup script..."
-echo "============================================"
-setup_bastion_node_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
-echo "$setup_bastion_node_command"
-# Handle any error and let the script continue.
-$setup_bastion_node_command || echo "Remote ssh command failed."
+if [[ $no_of_nodes -eq 1 ]]; then
+    echo ""
+    echo "Running Bastion Node setup script..."
+    echo "============================================"
+    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host -s $session_rds_host"
+else
+    echo ""
+    echo "Running Bastion Node setup script..."
+    echo "============================================"
+    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
+fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
@@ -478,77 +486,59 @@ fi
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
-create_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $rds_host \
-    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createDB.sql"
-echo "$create_db_command"
-ssh -i "$key_file" -o "StrictHostKeyChecking=no" -t ubuntu@"$bastion_node_ip" "cd /home/ubuntu/ ; unzip -q wso2is.zip ; \
-    mv wso2is-* wso2is"
-$create_db_command
+ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/createDB.sql"
 
 echo ""
 echo "Creating session database in RDS..."
-create_session_db_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip mysql -h $session_rds_host \
-    -u wso2carbon -pwso2carbon < /home/ubuntu/workspace/setup/resources/createSessionDB.sql"
-echo "$create_session_db_command"
-$create_session_db_command
-
-echo ""
-echo "Running IS node 1 setup script..."
-echo "============================================"
-setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-    ./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-echo "$setup_is_command"
-# Handle any error and let the script continue.
-$setup_is_command || echo "Remote ssh command to setup IS node 1 through bastion failed."
+execute_db_command "$session_rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/createSessionDB.sql"
 
 if [[ $no_of_nodes -gt 1 ]]; then
+
+    echo ""
+    echo "Running IS node 1 setup script..."
+    echo "============================================"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+
     echo ""
     echo "Running IS node 2 setup script..."
     echo "============================================"
-    setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-        ./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-    echo "$setup_is_command"
-    # Handle any error and let the script continue.
-    $setup_is_command || echo "Remote ssh command to setup IS node 2 through bastion failed."
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+else 
+    echo ""
+    echo "Running IS node setup script..."
+    echo "============================================"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -p $wso2_is_ip -r $rds_host -t $keystore_type -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Running IS node 3 setup script..."
     echo "============================================"
-    setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-        ./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-    echo "$setup_is_command"
-    # Handle any error and let the script continue.
-    $setup_is_command || echo "Remote ssh command to setup IS node 3 through bastion failed."
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Running IS node 4 setup script..."
     echo "============================================"
-    setup_is_command="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip \
-        ./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
-    echo "$setup_is_command"
-    # Handle any error and let the script continue.
-    $setup_is_command || echo "Remote ssh command to setup IS node 4 through bastion failed."
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 fi
 
 echo ""
 echo "Running performance tests..."
 echo "============================================"
-scp -i "$key_file" -o StrictHostKeyChecking=no run-performance-tests.sh "ubuntu@$bastion_node_ip:/home/ubuntu/workspace/jmeter"
-run_performance_tests_command="./workspace/jmeter/run-performance-tests.sh -p 443 ${run_performance_tests_options[*]}"
-run_remote_tests="ssh -i $key_file -o "StrictHostKeyChecking=no" -t ubuntu@$bastion_node_ip $run_performance_tests_command"
-echo "$run_remote_tests"
-$run_remote_tests || echo "Remote test ssh command failed."
+scp_bastion_cmd "run-performance-tests.sh" "/home/ubuntu/workspace/jmeter"
+if [[ $no_of_nodes -eq 1 ]]; then
+    ssh_bastion_cmd "./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[*]}"
+else
+    ssh_bastion_cmd "./workspace/jmeter/run-performance-tests.sh -p 443 ${run_performance_tests_options[*]}"
+fi
 
 echo ""
 echo "Downloading results..."
 echo "============================================"
-download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
-echo "$download"
-$download || echo "Remote download failed"
+download_bastion_cmd "/home/ubuntu/results.zip" "$results_dir/"
 
 if [[ ! -f $results_dir/results.zip ]]; then
     echo ""
@@ -562,8 +552,13 @@ echo "============================================"
 cd "$results_dir"
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-"$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-    -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
+if [[ $no_of_nodes -eq 1 ]]; then
+    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
+        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+else
+    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
+        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
+fi
 
 echo "Creating summary results markdown file..."
 

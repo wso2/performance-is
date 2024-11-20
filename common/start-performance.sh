@@ -82,6 +82,23 @@ function usage() {
     echo ""
 }
 
+function execute_db_command() {
+
+    local db_host="$1"
+    local sql_file="$2"
+    # Construct the database-specific command
+    local db_command=""
+    if [[ $db_type == "mysql" ]]; then
+        db_command="mysql -h \"$db_host\" -u wso2carbon -pwso2carbon < \"$sql_file\""
+    elif [[ $db_type == "mssql" ]]; then
+        db_command="/opt/mssql-tools/bin/sqlcmd -S \"$db_host\" -U wso2carbon -P wso2carbon -i \"$sql_file\""
+    else
+        echo "Unsupported database type: $db_type"
+        return 1
+    fi
+    ssh_bastion_cmd "$db_command"
+}
+
 while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:m:h" opts; do
     case $opts in
     q)
@@ -504,7 +521,7 @@ if [[ $no_of_nodes -gt 1 ]]; then
     echo "Running IS node 2 setup script..."
     echo "============================================"
     ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-else 
+else
     echo ""
     echo "Running IS node setup script..."
     echo "============================================"

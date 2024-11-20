@@ -118,24 +118,3 @@ function get_private_ip() {
     wso2_is_ip="$(aws ec2 describe-instances --instance-ids "$wso2is_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
     echo "$wso2_is_ip"
 }
-
-function execute_db_command() {
-
-    local db_host="$1"
-    local sql_file="$2"
-    # Construct the database-specific command
-    local db_command=""
-    case "$db_type" in
-        mysql)
-            db_command="mysql -h \"$db_host\" -u wso2carbon -pwso2carbon < \"$sql_file\""
-            ;;
-        mssql)
-            db_command="/opt/mssql-tools/bin/sqlcmd -S \"$db_host\" -U wso2carbon -P wso2carbon -i \"$sql_file\""
-            ;;
-        *)
-            echo "Unsupported database type: $db_type"
-            return 1
-            ;;
-    esac
-    ssh_bastion_cmd "$db_command"
-}

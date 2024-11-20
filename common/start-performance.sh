@@ -508,7 +508,7 @@ else
     echo ""
     echo "Running IS node setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -p $wso2_is_ip -r $rds_host -t $keystore_type -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -t $keystore_type -i $wso2_is_ip -r $rds_host  -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then

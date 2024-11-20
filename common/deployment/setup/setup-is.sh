@@ -113,9 +113,9 @@ sudo -u ubuntu ssh "$is_host_alias" sudo ./setup/setup-common.sh -p zip -p jq -p
 
 setup_is_node_command=""
 
-if [[ -z $no_of_nodes ]]; then
-    echo "Please provide the number of IS nodes in the deployment."
-    exit 1
+if [[ $no_of_nodes -eq 1 ]]; then
+    setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip"
 elif [[ $no_of_nodes -eq 2 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
       ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"

@@ -388,19 +388,14 @@ if [[ $no_of_nodes -gt 1 ]]; then
     nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
     nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
     echo "NGinx Instance Private IP: $nginx_instance_ip"
-else
-    echo ""
-    echo "Getting WSO2 IS Node Private IP..."
-    wso2_is_ip=$(get_private_ip "$stack_id" "WSO2ISNodeAutoScalingGroup$random_number")
-    echo "WSO2 IS Node Private IP: $wso2_is_ip"
 fi
 
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 1 Private IP..."
-    wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
+echo ""
+echo "Getting WSO2 IS Node 1 Private IP..."
+wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
+echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
+if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 2 Private IP..."
     wso2_is_2_ip=$(get_private_ip "$stack_id" "WSO2ISNode2AutoScalingGroup$random_number")
@@ -435,10 +430,6 @@ echo "Session DB RDS Hostname: $session_rds_host"
 
 if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ $no_of_nodes -eq 1 && -z $wso2_is_ip ]]; then
-    echo "WSO2 node IP could not be found. Exiting..."
     exit 1
 fi
 if [[ $no_of_nodes -gt 1 && -z $nginx_instance_ip ]]; then
@@ -481,16 +472,12 @@ scp_bastion_cmd "$is_setup" "/home/ubuntu/wso2is.zip"
 scp_bastion_cmd "$key_file" "/home/ubuntu/private_key.pem"
 scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 
-
+echo ""
+echo "Running Bastion Node setup script..."
+echo "============================================"
 if [[ $no_of_nodes -eq 1 ]]; then
-    echo ""
-    echo "Running Bastion Node setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip  -l $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 else
-    echo ""
-    echo "Running Bastion Node setup script..."
-    echo "============================================"
     ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
 fi
 
@@ -525,7 +512,7 @@ else
     echo ""
     echo "Running IS node setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -t $keystore_type -i $wso2_is_ip -r $rds_host  -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -t $keystore_type -i $wso2_is_1_ip -r $rds_host  -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then

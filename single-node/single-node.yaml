@@ -448,7 +448,7 @@ Resources:
       - WSO2ISSecurityGroupsuffix
       - WSO2ISVPCInternetGatewayAttachmentsuffix
       - WSO2ISDBInstancesuffix
-  WSO2ISNodeAutoScalingGroupsuffix:
+  WSO2ISNode1AutoScalingGroupsuffix:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
       LaunchConfigurationName: !Ref WSO2ISNodeLaunchConfigurationsuffix

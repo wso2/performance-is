@@ -198,31 +198,6 @@ if [[ ${key_file: -4} != ".pem" ]]; then
     exit 1
 fi
 
-if [[ -z $db_username ]]; then
-    echo "Please provide the database username."
-    exit 1
-fi
-
-if [[ -z $db_password ]]; then
-    echo "Please provide the database password."
-    exit 1
-fi
-
-if [[ -z $db_storage ]]; then
-    echo "Please provide the database storage size."
-    exit 1
-fi
-
-if [[ -z $session_db_storage ]]; then
-    echo "Please provide the session database storage size."
-    exit 1
-fi
-
-if [[ -z $db_instance_type ]]; then
-    echo "Please provide the database instance type."
-    exit 1
-fi
-
 if [[ -z $jmeter_setup ]]; then
     echo "Please provide the path to JMeter setup."
     exit 1
@@ -230,16 +205,6 @@ fi
 
 if [[ -z $certificate_name ]]; then
     echo "Please provide the name of the IAM certificate."
-    exit 1
-fi
-
-if [[ -z $wso2_is_instance_type ]]; then
-    echo "Please provide the AWS instance type for WSO2 IS nodes."
-    exit 1
-fi
-
-if [[ -z $bastion_instance_type ]]; then
-    echo "Please provide the AWS instance type for the bastion node."
     exit 1
 fi
 
@@ -502,31 +467,31 @@ if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Running IS node 1 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 
     echo ""
     echo "Running IS node 2 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 else
     echo ""
     echo "Running IS node setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -t $keystore_type -i $wso2_is_1_ip -r $rds_host  -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is -t $keystore_type -i $wso2_is_1_ip -r $rds_host  -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Running IS node 3 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Running IS node 4 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 fi
 
 echo ""

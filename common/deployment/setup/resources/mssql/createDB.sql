@@ -7,6 +7,8 @@ USE IDENTITY_DB;
 GO
 :r /home/ubuntu/wso2is/dbscripts/identity/mssql.sql
 :r /home/ubuntu/wso2is/dbscripts/consent/mssql.sql
+GO
+:r /home/ubuntu/workspace/is/truncate_non_empty_table.sql
 
 USE UM_DB;
 GO

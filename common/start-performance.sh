@@ -91,7 +91,7 @@ function execute_db_command() {
     if [[ $db_type == "mysql" ]]; then
         db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
     elif [[ $db_type == "mssql" ]]; then
-        db_command="/opt/mssql-tools/bin/sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
+        db_command="sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1
@@ -309,6 +309,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=DBType,ParameterValue=$db_type \
         ParameterKey=SessionDBUsername,ParameterValue=$db_username \
         ParameterKey=SessionDBPassword,ParameterValue=$db_password \
         ParameterKey=SessionDBAllocationStorage,ParameterValue=$session_db_storage \

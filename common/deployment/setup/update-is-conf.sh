@@ -47,10 +47,10 @@ function add_mssql_connector() {
 function update_mysql_config() {
 
     local configs=(
-      "s|{identity_db_url}|jdbc:mysql://$db_instance_ip:3306/IDENTITY_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
-      "s|{session_db_url}|jdbc:mysql://$session_db_instance_ip:3306/SESSION_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
-      "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
-      "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false&amp;rewriteBatchedStatements=true|g"
+      "s|{identity_db_url}|jdbc:mysql://$db_instance_ip:3306/IDENTITY_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{session_db_url}|jdbc:mysql://$session_db_instance_ip:3306/SESSION_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
       "s|{db_driver}|com.mysql.jdbc.Driver|g"
     )
     
@@ -58,6 +58,7 @@ function update_mysql_config() {
       sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
     done
 }
+
 
 function update_mssql_config() {
 

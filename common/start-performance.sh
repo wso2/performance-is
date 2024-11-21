@@ -89,9 +89,9 @@ function execute_db_command() {
     # Construct the database-specific command
     local db_command=""
     if [[ $db_type == "mysql" ]]; then
-        db_command="mysql -h \"$db_host\" -u wso2carbon -pwso2carbon < \"$sql_file\""
+        db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
     elif [[ $db_type == "mssql" ]]; then
-        db_command="/opt/mssql-tools/bin/sqlcmd -S \"$db_host\" -U wso2carbon -P wso2carbon -i \"$sql_file\""
+        db_command="/opt/mssql-tools/bin/sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1
@@ -181,7 +181,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Pass the modified options to the command
-run_performance_tests_options=("-g ${no_of_nodes} -r ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -r ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

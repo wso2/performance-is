@@ -178,26 +178,19 @@ sudo chown -R ubuntu:ubuntu apache-jmeter-*
 sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
 
-echo ""
-echo "Coping files to NGinx instance..."
-echo "============================================"
-sudo -u ubuntu scp -r /home/ubuntu/workspace/setup/resources/ $lb_alias:/home/ubuntu/
-sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/ubuntu/
-
-echo ""
-echo "Setting up NGinx..."
-echo "============================================"
-
-if [[ $no_of_nodes -eq 1 ]]; then
+if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
-    echo "Setting up IS instance..."
+    echo "Coping files to NGinx instance..."
     echo "============================================"
-    sudo -u ubuntu ssh $wso2is_host_alias mkdir sar setup
-    sudo -u ubuntu scp workspace/setup/setup-common.sh $wso2is_host_alias:/home/ubuntu/setup/
-    sudo -u ubuntu scp workspace/sar/install-sar.sh $wso2is_host_alias:/home/ubuntu/sar/
-    sudo -u ubuntu scp workspace/is/restart-is.sh $wso2is_host_alias:/home/ubuntu/
-    sudo -u ubuntu ssh $wso2is_host_alias sudo ./setup/setup-common.sh -p zip -p jq -p bc
-elif [[ $no_of_nodes -eq 2 ]]; then
+    sudo -u ubuntu scp -r /home/ubuntu/workspace/setup/resources/ $lb_alias:/home/ubuntu/
+    sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/ubuntu/
+
+    echo ""
+    echo "Setting up NGinx..."
+    echo "============================================"
+fi
+
+if [[ $no_of_nodes -eq 2 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip"
 elif [[ $no_of_nodes -eq 3 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip" -j "$wso2_is_3_ip"

@@ -98,13 +98,6 @@ function scp_r_bastion_cmd() {
     $scp_command || echo "Remote scp command failed."
 }
 
-function download_bastion_cmd() {
-
-    local scp_command="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:$1 $2"
-    echo "$scp_command"
-    "$scp_command" || echo "Download failed."
-}
-
 function get_private_ip() {
 
     local stack_id=$1

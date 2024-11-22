@@ -512,7 +512,9 @@ fi
 echo ""
 echo "Downloading results..."
 echo "============================================"
-download_bastion_cmd "/home/ubuntu/results.zip" "$results_dir/"
+download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
+echo "$download"
+$download || echo "Remote download failed"
 
 if [[ ! -f $results_dir/results.zip ]]; then
     echo ""

@@ -348,6 +348,7 @@ bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$s
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
+nginx_instance_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Getting NGinx Instance Private IP..."
@@ -361,6 +362,7 @@ echo "Getting WSO2 IS Node 1 Private IP..."
 wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
 echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
+wso2_is_2_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 2 Private IP..."
@@ -368,6 +370,7 @@ if [[ $no_of_nodes -gt 1 ]]; then
     echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
 fi
 
+wso2_is_3_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 3 Private IP..."
@@ -375,6 +378,7 @@ if [[ $no_of_nodes -gt 2 ]]; then
     echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
 fi
 
+wso2_is_4_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 4 Private IP..."

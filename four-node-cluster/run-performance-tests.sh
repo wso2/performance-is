@@ -25,8 +25,6 @@ wso2is_3_host_alias=wso2is3
 wso2is_4_host_alias=wso2is4
 lb_ssh_host_alias=loadbalancer
 rds_ssh_host_alias=rds
-db_username="wso2carbon"
-db_password="wso2carbon"
 
 # Execute common script
 . $script_dir/perf-test-is.sh "$@"
@@ -44,7 +42,7 @@ function before_execute_test_scenario() {
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    mysql -u $db_username -h "$rds_host" "IDENTITY_DB" -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
+    clean_database "$@" "$rds_host"
 }
 
 function after_execute_test_scenario() {

@@ -112,6 +112,22 @@ function get_ssh_hostname() {
     ssh -G "$1" | awk '/^hostname / { print $2 }'
 }
 
+function clean_database() {
+
+    db_type=$1
+    rds_host=$2
+
+    echo "Cleaning databases..."
+    if [[ $db_type == "mysql" ]]; then
+        mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/clean-database.sql || echo "Cleaning database failed."
+    elif [[ $db_type == "mssql" ]]; then
+        sqlcmd -S "$rds_host" -U wso2carbon -P wso2carbon -d IDENTITY_DB -i /home/ubuntu/workspace/is/clean-database-mssql.sql || echo "Cleaning database failed."
+    else
+        echo "Unknown database type: $db_type"
+        exit 1
+    fi
+}
+
 lb_host=$(get_ssh_hostname "$lb_ssh_host_alias")
 
 function usage() {
@@ -130,11 +146,12 @@ function usage() {
     echo "-e: Scenario name to to be excluded. You can give multiple options to filter scenarios."
     echo "-t: Estimate time without executing tests."
     echo "-p: Identity Server Port. Default $default_is_port."
+    echo "-b: Database type."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -195,6 +212,9 @@ while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:h" opts; do
         ;;
     k)
         jwt_token_client_secret=${OPTARG}
+        ;;
+    b)
+        db_type=${OPTARG}
         ;;
     y)
         token_issuer=${OPTARG}
@@ -259,6 +279,11 @@ fi
 
 if ! [[ $jmeter_client_heap_size =~ $heap_regex ]]; then
     echo "Please specify a valid heap for JMeter Client."
+    exit 1
+fi
+
+if [[ -z $db_type ]]; then
+    echo "Please provide the database type."
     exit 1
 fi
 
@@ -620,7 +645,7 @@ function test_scenarios() {
                       jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount"
                 fi
 
-                before_execute_test_scenario
+                before_execute_test_scenario "$db_type"
 
                 export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size  -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
 

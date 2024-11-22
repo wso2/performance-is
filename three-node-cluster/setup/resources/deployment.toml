@@ -24,8 +24,8 @@ IsBulkImportSupported=false
 #data_source = "WSO2USER_DB"
 
 [database.identity_db]
-driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/IDENTITY_DB?useSSL=false&amp;rewriteBatchedStatements=true"
+driver = "{db_driver}"
+url = "{identity_db_url}"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -41,8 +41,8 @@ validationQueryTimeout="1"
 commitOnReturn=false
 
 [database.shared_db]
-driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/REG_DB?useSSL=false&amp;rewriteBatchedStatements=true"
+driver = "{db_driver}"
+url = "{reg_db_url}"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -58,8 +58,8 @@ validationQueryTimeout="1"
 commitOnReturn=false
 
 [database.user]
-driver = "com.mysql.jdbc.Driver"
-url = "jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/UM_DB?useSSL=false&amp;rewriteBatchedStatements=true"
+driver = "{db_driver}"
+url = "{user_db_url}"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
@@ -79,11 +79,11 @@ data_source="jdbc/WSO2SessionDB"
 
 [datasource.WSO2SessionDB]
 id = "WSO2SessionDB"
-url = "jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com:3306/SESSION_DB?useSSL=false&amp;rewriteBatchedStatements=true"
+url = "{session_db_url}"
 validation_query = "SELECT 1"
 username = "wso2carbon"
 password = "wso2carbon"
-driver = "com.mysql.jdbc.Driver"
+driver = "{db_driver}"
 jmxEnabled = false
 [datasource.WSO2SessionDB.pool_options]
 maxActive = "1500"
@@ -107,14 +107,14 @@ prompt = true
 wsdl.enable=false
 
 [keystore.primary]
-file_name = "wso2carbon.jks"
+file_name = "wso2carbon{keystore_extension}"
 password = "wso2carbon"
-type="JKS"
+type="{keystore_type}"
 
 [truststore]
-file_name="client-truststore.jks"
+file_name="client-truststore{keystore_extension}"
 password="wso2carbon"
-type="JKS"
+type="{keystore_type}"
 
 [account_recovery.endpoint.auth]
 hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"

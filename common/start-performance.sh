@@ -46,7 +46,7 @@ default_db_type="mysql"
 db_type="$default_db_type"
 
 results_dir="$PWD/results-$timestamp"
-default_minimum_stack_creation_wait_time=5
+default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {
@@ -89,9 +89,9 @@ function execute_db_command() {
     # Construct the database-specific command
     local db_command=""
     if [[ $db_type == "mysql" ]]; then
-        db_command="mysql -h \"$db_host\" -u wso2carbon -pwso2carbon < \"$sql_file\""
+        db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
     elif [[ $db_type == "mssql" ]]; then
-        db_command="/opt/mssql-tools/bin/sqlcmd -S \"$db_host\" -U wso2carbon -P wso2carbon -i \"$sql_file\""
+        db_command="sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1
@@ -181,7 +181,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Pass the modified options to the command
-run_performance_tests_options=("-g ${no_of_nodes} -r ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -r ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -198,31 +198,6 @@ if [[ ${key_file: -4} != ".pem" ]]; then
     exit 1
 fi
 
-if [[ -z $db_username ]]; then
-    echo "Please provide the database username."
-    exit 1
-fi
-
-if [[ -z $db_password ]]; then
-    echo "Please provide the database password."
-    exit 1
-fi
-
-if [[ -z $db_storage ]]; then
-    echo "Please provide the database storage size."
-    exit 1
-fi
-
-if [[ -z $session_db_storage ]]; then
-    echo "Please provide the session database storage size."
-    exit 1
-fi
-
-if [[ -z $db_instance_type ]]; then
-    echo "Please provide the database instance type."
-    exit 1
-fi
-
 if [[ -z $jmeter_setup ]]; then
     echo "Please provide the path to JMeter setup."
     exit 1
@@ -230,16 +205,6 @@ fi
 
 if [[ -z $certificate_name ]]; then
     echo "Please provide the name of the IAM certificate."
-    exit 1
-fi
-
-if [[ -z $wso2_is_instance_type ]]; then
-    echo "Please provide the AWS instance type for WSO2 IS nodes."
-    exit 1
-fi
-
-if [[ -z $bastion_instance_type ]]; then
-    echo "Please provide the AWS instance type for the bastion node."
     exit 1
 fi
 
@@ -344,6 +309,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
+        ParameterKey=DBType,ParameterValue=$db_type \
         ParameterKey=SessionDBUsername,ParameterValue=$db_username \
         ParameterKey=SessionDBPassword,ParameterValue=$db_password \
         ParameterKey=SessionDBAllocationStorage,ParameterValue=$session_db_storage \
@@ -382,31 +348,29 @@ bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$s
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
+nginx_instance_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Getting NGinx Instance Private IP..."
     nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
     nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
     echo "NGinx Instance Private IP: $nginx_instance_ip"
-else
-    echo ""
-    echo "Getting WSO2 IS Node Private IP..."
-    wso2_is_ip=$(get_private_ip "$stack_id" "WSO2ISNodeAutoScalingGroup$random_number")
-    echo "WSO2 IS Node Private IP: $wso2_is_ip"
 fi
 
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 1 Private IP..."
-    wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
+echo ""
+echo "Getting WSO2 IS Node 1 Private IP..."
+wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
+echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
+wso2_is_2_ip="x.x.x.x"
+if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 2 Private IP..."
     wso2_is_2_ip=$(get_private_ip "$stack_id" "WSO2ISNode2AutoScalingGroup$random_number")
     echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
 fi
 
+wso2_is_3_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 3 Private IP..."
@@ -414,6 +378,7 @@ if [[ $no_of_nodes -gt 2 ]]; then
     echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
 fi
 
+wso2_is_4_ip="x.x.x.x"
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Getting WSO2 IS Node 4 Private IP..."
@@ -437,27 +402,23 @@ if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -eq 1 && -z $wso2_is_ip ]]; then
-    echo "WSO2 node IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ $no_of_nodes -gt 1 && -z $nginx_instance_ip ]]; then
+if [[ -z $nginx_instance_ip ]]; then
     echo "Load balancer IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 1 && -z $wso2_is_1_ip ]]; then
+if [[ -z $wso2_is_1_ip ]]; then
     echo "WSO2 node 1 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 1 && -z $wso2_is_2_ip ]]; then
+if [[ -z $wso2_is_2_ip ]]; then
     echo "WSO2 node 2 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 2 && -z $wso2_is_3_ip ]]; then
+if [[ -z $wso2_is_3_ip ]]; then
     echo "WSO2 node 3 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 3 && -z $wso2_is_4_ip ]]; then
+if [[ -z $wso2_is_4_ip ]]; then
     echo "WSO2 node 4 IP could not be found. Exiting..."
     exit 1
 fi
@@ -481,16 +442,12 @@ scp_bastion_cmd "$is_setup" "/home/ubuntu/wso2is.zip"
 scp_bastion_cmd "$key_file" "/home/ubuntu/private_key.pem"
 scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 
-
+echo ""
+echo "Running Bastion Node setup script..."
+echo "============================================"
 if [[ $no_of_nodes -eq 1 ]]; then
-    echo ""
-    echo "Running Bastion Node setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_ip  -l $wso2_is_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip  -l $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 else
-    echo ""
-    echo "Running Bastion Node setup script..."
-    echo "============================================"
     ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
 fi
 
@@ -515,31 +472,31 @@ if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Running IS node 1 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 
     echo ""
     echo "Running IS node 2 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 else
     echo ""
     echo "Running IS node setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is -t $keystore_type -i $wso2_is_ip -r $rds_host  -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is -t $keystore_type -i $wso2_is_1_ip -r $rds_host  -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Running IS node 3 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Running IS node 4 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
 fi
 
 echo ""
@@ -555,7 +512,9 @@ fi
 echo ""
 echo "Downloading results..."
 echo "============================================"
-download_bastion_cmd "/home/ubuntu/results.zip" "$results_dir/"
+download="scp -i $key_file -o "StrictHostKeyChecking=no" ubuntu@$bastion_node_ip:/home/ubuntu/results.zip $results_dir/"
+echo "$download"
+$download || echo "Remote download failed"
 
 if [[ ! -f $results_dir/results.zip ]]; then
     echo ""

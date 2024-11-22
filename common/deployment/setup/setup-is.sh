@@ -33,10 +33,11 @@ function usage() {
     echo "-s: The IP address of session DB RDS."
     echo "-h: Display this help and exit."
     echo "-t: Keystore type."
+    echo "-m: Database type."
     echo ""
 }
 
-while getopts "a:n:w:i:j:k:r:s:t:h" opts; do
+while getopts "a:n:w:i:j:k:r:s:t:m:h" opts; do
     case $opts in
     a)
         is_host_alias=${OPTARG}
@@ -64,6 +65,9 @@ while getopts "a:n:w:i:j:k:r:s:t:h" opts; do
         ;;
     t)
         keystore_type=${OPTARG}
+        ;;
+    m)
+        db_type=${OPTARG}
         ;;
     h)
         usage
@@ -96,6 +100,11 @@ if [[ -z $keystore_type ]]; then
     exit 1
 fi
 
+if [[ -z $db_type ]]; then
+    echo "Please provide the database type."
+    exit 1
+fi
+
 echo ""
 echo "Copying Is server setup files..."
 echo "-------------------------------------------"
@@ -104,6 +113,7 @@ sudo -u ubuntu scp setup/update-is-conf.sh "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp -r setup/resources/ "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp wso2is.zip "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp mysql-connector-j-*.jar "$is_host_alias":/home/ubuntu/
+sudo -u ubuntu scp mssql-jdbc-*.jar "$is_host_alias":/home/ubuntu/
 
 sudo -u ubuntu ssh "$is_host_alias" mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh "$is_host_alias":/home/ubuntu/setup/
@@ -115,16 +125,16 @@ setup_is_node_command=""
 
 if [[ $no_of_nodes -eq 1 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip"
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip"
 elif [[ $no_of_nodes -eq 2 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
 elif [[ $no_of_nodes -eq 3 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
 elif [[ $no_of_nodes -eq 4 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip"
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip"
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1

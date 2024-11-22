@@ -19,6 +19,62 @@
 # edit is server script.
 # ----------------------------------------------------------------------------
 
+function add_mysql_connector() {
+
+    echo ""
+    echo "Changing permission for MySQL connector"
+    echo "-------------------------------------------"
+    chmod 644 mysql-connector-j-*.jar
+
+    echo ""
+    echo "Adding MySQL connector to the pack..."
+    echo "-------------------------------------------"
+    cp mysql-connector-j-*.jar "$carbon_home"/repository/components/lib/
+}
+
+function add_mssql_connector() {
+    echo ""
+    echo "Changing permission for MSSQL connector"
+    echo "-------------------------------------------"
+    chmod 644 mssql-jdbc-*.jar
+
+    echo ""
+    echo "Adding MSSQL connector to the pack..."
+    echo "-------------------------------------------"
+    cp mssql-jdbc-*.jar "$carbon_home"/repository/components/lib/
+}
+
+function update_mysql_config() {
+
+    local configs=(
+      "s|{identity_db_url}|jdbc:mysql://$db_instance_ip:3306/IDENTITY_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{session_db_url}|jdbc:mysql://$session_db_instance_ip:3306/SESSION_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
+      "s|{db_driver}|com.mysql.jdbc.Driver|g"
+    )
+    
+    for config in "${configs[@]}"; do
+      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    done
+}
+
+
+function update_mssql_config() {
+
+    local configs=(
+      "s|{identity_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{session_db_url}|jdbc:sqlserver://$session_db_instance_ip:1433;databaseName=SESSION_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{user_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=UM_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{reg_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=REG_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
+      "s|{db_driver}|com.microsoft.sqlserver.jdbc.SQLServerDriver|g"
+    )
+    
+    for config in "${configs[@]}"; do
+      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    done
+}
+
 function usage() {
     echo ""
     echo "Usage: "
@@ -32,10 +88,11 @@ function usage() {
     echo "-w: The IP of wso2is node 2."
     echo "-h: Display this help and exit."
     echo "-t: Keystore type."
+    echo "-m: Database type."
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:s:t:h" opts; do
+while getopts "n:w:i:j:k:r:s:t:m:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -61,6 +118,9 @@ while getopts "n:w:i:j:k:r:s:t:h" opts; do
     t)
         keystore_type=${OPTARG}
         ;;
+    m)
+        db_type=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -85,7 +145,7 @@ fi
 if [[ -z $keystore_type ]]; then
     echo "Please provide the keystore type."
     exit 1
-elif [[ $keystore_type -eq "PKCS12" ]]; then
+elif [[ $keystore_type == "PKCS12" ]]; then
     keystore_type="PKCS12"
     keystore_extension=".p12"
 else
@@ -105,17 +165,16 @@ mv wso2is-* wso2is
 
 sudo chown -R ubuntu:ubuntu wso2is
 
-echo ""
-echo "changing permission for mysql connector"
-echo "-------------------------------------------"
-chmod 644 mysql-connector-j-*.jar
-
 carbon_home=$(realpath ~/wso2is)
 
-echo ""
-echo "Adding mysql connector to the pack..."
-echo "-------------------------------------------"
-cp mysql-connector-j-*.jar "$carbon_home"/repository/components/lib/
+if [ "$db_type" == "mysql" ]; then
+    add_mysql_connector
+elif [ "$db_type" == "mssql" ]; then
+    add_mssql_connector
+else
+    echo "Unsupported database type: $db_type"
+    exit 1
+fi
 
 echo ""
 echo "Adding deployment toml file to the pack..."
@@ -127,14 +186,18 @@ echo "Applying basic parameter changes..."
 echo "-------------------------------------------"
 sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
-sed -i "s|jdbc:mysql://wso2isdbinstance2.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$db_instance_ip|g" \
+sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-sed -i "s|jdbc:mysql://wso2isdbinstance3.cd3cwezibdu8.us-east-1.rds.amazonaws.com|jdbc:mysql://$session_db_instance_ip|g" \
+sed -i "s|{keystore_type}|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-sed -i 's|.jks|'"$keystore_extension"'|g' \
-  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-sed -i "s|JKS|$keystore_type|g" \
-  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+if [ "$db_type" == "mysql" ]; then
+    update_mysql_config
+elif [ "$db_type" == "mssql" ]; then
+    update_mssql_config
+else
+    echo "Unsupported database type: $db_type"
+    exit 1
+fi
 
 if [[ -z $no_of_nodes ]]; then
     echo "Please provide the number of IS nodes in the deployment."

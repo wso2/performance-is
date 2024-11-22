@@ -46,7 +46,7 @@ default_db_type="mysql"
 db_type="$default_db_type"
 
 results_dir="$PWD/results-$timestamp"
-default_minimum_stack_creation_wait_time=5
+default_minimum_stack_creation_wait_time=10
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {

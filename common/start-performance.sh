@@ -402,23 +402,23 @@ if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 1 && -z $nginx_instance_ip ]]; then
+if [[ -z $nginx_instance_ip ]]; then
     echo "Load balancer IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 1 && -z $wso2_is_1_ip ]]; then
+if [[ -z $wso2_is_1_ip ]]; then
     echo "WSO2 node 1 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 1 && -z $wso2_is_2_ip ]]; then
+if [[ -z $wso2_is_2_ip ]]; then
     echo "WSO2 node 2 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 2 && -z $wso2_is_3_ip ]]; then
+if [[ -z $wso2_is_3_ip ]]; then
     echo "WSO2 node 3 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ $no_of_nodes -gt 3 && -z $wso2_is_4_ip ]]; then
+if [[ -z $wso2_is_4_ip ]]; then
     echo "WSO2 node 4 IP could not be found. Exiting..."
     exit 1
 fi

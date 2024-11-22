@@ -119,15 +119,13 @@ function clean_database() {
 
     echo "Cleaning databases..."
     if [[ $db_type == "mysql" ]]; then
-        db_command="mysql -u wso2carbon -h $rds_host IDENTITY_DB -pwso2carbon < /home/ubuntu/workspace/is/clean-database.sql"
+        mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/clean-database.sql || echo "Cleaning database failed."
     elif [[ $db_type == "mssql" ]]; then
-        db_command="sqlcmd -S $rds_host -U wso2carbon -P wso2carbon -d IDENTITY_DB -i /home/ubuntu/workspace/is/clean-database-mssql.sql"
+        sqlcmd -S "$rds_host" -U wso2carbon -P wso2carbon -d IDENTITY_DB -i /home/ubuntu/workspace/is/clean-database-mssql.sql || echo "Cleaning database failed."
     else
         echo "Unknown database type: $db_type"
         exit 1
     fi
-    echo "$db_command"
-    $db_command || echo "Cleaning database failed."; exit 1
 }
 
 lb_host=$(get_ssh_hostname "$lb_ssh_host_alias")

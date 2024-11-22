@@ -9,6 +9,7 @@ GO
 :r /home/ubuntu/wso2is/dbscripts/consent/mssql.sql
 GO
 :r /home/ubuntu/workspace/is/truncate_non_empty_table.sql
+GO
 
 USE UM_DB;
 GO

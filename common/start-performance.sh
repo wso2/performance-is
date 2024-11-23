@@ -23,7 +23,6 @@ timestamp=$(date +%Y-%m-%d--%H-%M-%S)
 random_number=$RANDOM
 
 key_file=""
-certificate_name=""
 jmeter_setup=""
 is_setup=""
 default_db_username="wso2carbon"
@@ -52,13 +51,12 @@ minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
+    echo "$0 -k <key_file> -j <jmeter_setup_path> -n <IS_zip_file_path>"
     echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-s <session_db_storage>] [-e <db_instance_type>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
-    echo "-c: The name of the IAM certificate."
     echo "-y: The token issuer type."
     echo "-q: User tag who triggered the Jenkins build"
     echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
@@ -99,16 +97,13 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:m:h" opts; do
+while getopts "q:k:j:n:u:p:d:e:i:b:w:s:t:g:m:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
         ;;
     k)
         key_file=${OPTARG}
-        ;;
-    c)
-        certificate_name=${OPTARG}
         ;;
     j)
         jmeter_setup=${OPTARG}
@@ -200,11 +195,6 @@ fi
 
 if [[ -z $jmeter_setup ]]; then
     echo "Please provide the path to JMeter setup."
-    exit 1
-fi
-
-if [[ -z $certificate_name ]]; then
-    echo "Please provide the name of the IAM certificate."
     exit 1
 fi
 
@@ -303,7 +293,6 @@ stack_create_start_time=$(date +%s)
 stack_name="is-performance-$no_of_nodes_string-node--$timestamp--$random_number"
 create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
     --template-body file://$template_file_name --parameters \
-        ParameterKey=CertificateName,ParameterValue=$certificate_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \

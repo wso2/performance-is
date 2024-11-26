@@ -689,7 +689,7 @@ Mappings:
       FromPort: '1433'
       ToPort: '1433'
       DBType: 'sqlserver-se'
-      DBName: !Ref "AWS::NoValue"
+      DBName: ''
     postgres:
       Version: '14.14-R1'
       License: 'postgresql-license'

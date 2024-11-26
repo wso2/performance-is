@@ -808,7 +808,7 @@ Mappings:
       DBType: 'sqlserver-se'
       DBName: ''
     postgres:
-      Version: '14.14-R1'
+      Version: '14.14'
       License: 'postgresql-license'
       ParameterGroup: 'perf-test-param-group-postgres'
       FromPort: '5432'

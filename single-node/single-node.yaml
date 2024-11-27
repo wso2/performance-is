@@ -24,7 +24,6 @@ Metadata:
           - KeyPairName
           - WSO2InstanceType
           - BastionInstanceType
-          - OSType
       - Label:
           default: Network Configuration
         Parameters:
@@ -34,7 +33,6 @@ Metadata:
         Parameters:
           - DBUsername
           - DBPassword
-          - DBEngine
           - DBInstanceType
           - DBAllocationStorage
           - DBIops
@@ -44,14 +42,12 @@ Metadata:
         Parameters:
           - SessionDBUsername
           - SessionDBPassword
-          - SessionDBEngine
           - SessionDBInstanceType
           - SessionDBAllocationStorage
           - SessionDBIops
       - Label:
           default: Other Configuration
         Parameters:
-          - JDK
           - UserTag
     ParameterLabels:
       CertificateName:
@@ -66,14 +62,10 @@ Metadata:
         default: Username
       SessionDBPassword:
         default: Password
-      JDK:
-        default: JDK Version
       UserTag:
         default: User Tag
       WSO2InstanceType:
         default: Instance Type
-      DBEngine:
-        default: DB Engine
       DBAllocationStorage:
         default: Allocation Storage
       DBIops:
@@ -82,18 +74,12 @@ Metadata:
         default: DB Instance Type
       DBType:
         default: DB Type
-      SessionDBEngine:
-        default: Session DB Engine
       SessionDBAllocationStorage:
         default: Session DB Allocation Storage
       SessionDBIops:
         default: Session DB Allocation IOPS
       SessionDBInstanceType:
         default: Session DB Instance Type
-      JDKVersion:
-        default: JDK Version
-      OSType:
-        default: OS Type
       BastionInstanceType:
         default: Bastion Instance Type
 Resources:
@@ -212,8 +198,8 @@ Resources:
       GroupDescription: DB Security Group2
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: !If [ IsMySQL, '3306', !If [ IsSQLServer, '1433', '5432' ] ]
-          ToPort: !If [ IsMySQL, '3306', !If [ IsSQLServer, '1433', '5432' ] ]
+          FromPort: !FindInMap [DBTypeMap, !Ref DBType, FromPort]
+          ToPort: !FindInMap [DBTypeMap, !Ref DBType, ToPort]
           CidrIp: 0.0.0.0/0
   WSO2ISSessionDBInstanceSecurityGroupsuffix:
     Type: 'AWS::EC2::SecurityGroup'
@@ -222,8 +208,8 @@ Resources:
       GroupDescription: Session DB Security Group
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: !If [ IsMySQL, '3306', !If [ IsSQLServer, '1433', '5432' ] ]
-          ToPort: !If [ IsMySQL, '3306', !If [ IsSQLServer, '1433', '5432' ] ]
+          FromPort: !FindInMap [DBTypeMap, !Ref DBType, FromPort]
+          ToPort: !FindInMap [DBTypeMap, !Ref DBType, ToPort]
           CidrIp: 0.0.0.0/0
   WSO2ISDBInstancesuffix:
     Type: 'AWS::RDS::DBInstance'
@@ -235,17 +221,17 @@ Resources:
       AllocatedStorage: !Ref DBAllocationStorage
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISDBInstancesuffix
-      DBName: !If [ IsSQLServer, !Ref "AWS::NoValue", WSO2_IS_DB_2 ]
-      EngineVersion: !If [ IsMySQL, '8.0.36', !If [ IsSQLServer, '14.00.3480.1.v1', '14.14-R1' ] ]
-      Engine: !If [ IsMySQL, 'mysql', !If [ IsSQLServer, 'sqlserver-se', 'postgres' ] ]
+      DBName: !FindInMap [DBTypeMap, !Ref DBType, DBName]
+      EngineVersion: !FindInMap [DBTypeMap, !Ref DBType, Version]
+      Engine: !FindInMap [DBTypeMap, !Ref DBType, DBType]
       EnablePerformanceInsights: 'false'
-      LicenseModel: !If [ IsMySQL, 'general-public-license', !If [ IsSQLServer, 'license-included', 'postgresql-license' ] ]
+      LicenseModel: !FindInMap [DBTypeMap, !Ref DBType, License]
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
       Iops: !Ref DBIops
       StorageType: io1
-      DBParameterGroupName: !If [ IsMySQL, 'perf-test-param-group', !If [ IsSQLServer, 'perf-test-param-group-sqlserver', 'perf-test-param-group-postgres'] ]
+      DBParameterGroupName: !FindInMap [DBTypeMap, !Ref DBType, ParameterGroup]
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISSessionDBInstancesuffix:
     Type: 'AWS::RDS::DBInstance'
@@ -257,17 +243,17 @@ Resources:
       AllocatedStorage: !Ref SessionDBAllocationStorage
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISSessionDBInstancesuffix
-      DBName: !If [ IsSQLServer, !Ref "AWS::NoValue", WSO2_IS_DB_SESSION ]
-      EngineVersion: !If [ IsMySQL, '8.0.36', !If [ IsSQLServer, '14.00.3480.1.v1', '14.14-R1' ] ]
-      Engine: !If [ IsMySQL, 'mysql', !If [ IsSQLServer, 'sqlserver-se', 'postgres' ] ]
+      DBName: !FindInMap [DBTypeMap, !Ref DBType, DBName]
+      EngineVersion: !FindInMap [DBTypeMap, !Ref DBType, Version]
+      Engine: !FindInMap [DBTypeMap, !Ref DBType, DBType]
       EnablePerformanceInsights: 'false'
-      LicenseModel: !If [ IsMySQL, 'general-public-license', !If [ IsSQLServer, 'license-included', 'postgresql-license' ] ]
+      LicenseModel: !FindInMap [DBTypeMap, !Ref DBType, License]
       MasterUsername: !Ref SessionDBUsername
       MasterUserPassword: !Ref SessionDBPassword
       MultiAZ: 'false'
       Iops: !Ref SessionDBIops
       StorageType: io1
-      DBParameterGroupName: !If [ IsMySQL, 'perf-test-param-group', !If [ IsSQLServer, 'perf-test-param-group-sqlserver', 'perf-test-param-group-postgres' ] ]
+      DBParameterGroupName: !FindInMap [DBTypeMap, !Ref DBType, ParameterGroup]
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
   WSO2ISDBSubnetGroupsuffix:
     Type: 'AWS::RDS::DBSubnetGroup'
@@ -521,9 +507,6 @@ Parameters:
     Type: String
     MinLength: 4
     AllowedPattern: '[A-Za-z0-9\-]+'
-  DBEngine:
-    Type: String
-    Default: MySQL_8.0
   DBPassword:
     Type: String
     MinLength: 8
@@ -550,6 +533,7 @@ Parameters:
     AllowedValues:
       - mysql
       - mssql
+      - postgres
     Default: mysql
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
@@ -563,9 +547,6 @@ Parameters:
     Type: String
     MinLength: 4
     AllowedPattern: '[A-Za-z0-9\-]+'
-  SessionDBEngine:
-    Type: String
-    Default: MySQL_8.0
   SessionDBPassword:
     Type: String
     MinLength: 8
@@ -599,22 +580,10 @@ Parameters:
     Description: Provide IOps size in numbers
     Type: Number
     Default: 1000
-  JDKVersion:
-    Type: String
-    Default: Oracle_JDK_8
-    AllowedValues:
-      - Open_JDK_8
-      - Oracle_JDK_8
   UserTag:
     Description: User tag to be used for tagging AWS resources
     Type: String
     Default: user@wso2.com
-  OSType:
-    Type: String
-    Default: Ubuntu_18.04
-    AllowedValues:
-      - Ubuntu_18.04
-      - CentOS_7
   BastionInstanceType:
     Type: String
     Default: c6i.xlarge
@@ -644,6 +613,28 @@ Mappings:
       AMI: ami-0e81aa4c57820bb57
     us-west-2:
       AMI: ami-03fa1f014b48fa6bd
-Conditions:
-  IsMySQL: !Equals [!Ref DBType, mysql]
-  IsSQLServer: !Equals [!Ref DBType, mssql]
+  DBTypeMap:
+    mysql:
+      Version: '8.0.36'
+      License: 'general-public-license'
+      ParameterGroup: 'perf-test-param-group'
+      FromPort: '3306'
+      ToPort: '3306'
+      DBType: 'mysql'
+      DBName: 'WSO2_IS_DB_2'
+    mssql:
+      Version: '14.00.3480.1.v1'
+      License: 'license-included'
+      ParameterGroup: 'perf-test-param-group-sqlserver'
+      FromPort: '1433'
+      ToPort: '1433'
+      DBType: 'sqlserver-se'
+      DBName: ''
+    postgres:
+      Version: '14.14'
+      License: 'postgresql-license'
+      ParameterGroup: 'perf-test-param-group-postgres'
+      FromPort: '5432'
+      ToPort: '5432'
+      DBType: 'postgres'
+      DBName: 'WSO2_IS_DB_2'

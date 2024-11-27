@@ -92,6 +92,8 @@ function execute_db_command() {
         db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
     elif [[ $db_type == "mssql" ]]; then
         db_command="sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
+    elif [[ $db_type == "postgres" ]]; then
+        db_command="psql -h $db_host -U wso2carbon -d postgres -f $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1

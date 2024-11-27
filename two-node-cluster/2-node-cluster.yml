@@ -376,34 +376,36 @@ Resources:
           GroupSet:
             - !Ref BastionSecurityGroupsuffix
       UserData: !Base64
-        'Fn::Join':
+        'Fn::Sub':
           - |+
-
-          - - '#!/bin/bash'
-            - 'export PATH=~/.local/bin:$PATH'
-            - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-            - curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-            - apt-get update
-            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
-            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-            - 'export PATH=/opt/mssql-tools/bin:$PATH'
-            - echo "export PATH=$PATH" >>/etc/environment
-            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
-            - sudo mkdir /usr/lib/jvm
-            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
-            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
-            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
-            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
-            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
-            - sudo chmod a+x /usr/bin/java
-            - sudo chmod a+x /usr/bin/javac
-            - sudo chmod a+x /usr/bin/javaws
-            - export JAVA_HOME=/usr/lib/jvm/jdk
-            - sudo su
-            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
-            - source /etc/environment
-            - exit
+            #!/bin/bash
+            export PATH=~/.local/bin:$PATH
+            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+            curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            DEBIAN_FRONTEND=noninteractive apt install -y postgresql-client
+            DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
+            DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+            export PATH=/opt/mssql-tools/bin:$PATH
+            echo "export PATH=$PATH" >>/etc/environment
+            curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            sudo mkdir /usr/lib/jvm
+            sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            sudo chmod a+x /usr/bin/java
+            sudo chmod a+x /usr/bin/javac
+            sudo chmod a+x /usr/bin/javaws
+            export JAVA_HOME=/usr/lib/jvm/jdk
+            sudo su
+            echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
+            echo "export PGPASSWORD=${DBPassword}" >>/etc/environment
+            source /etc/environment
+            exit
+          - DBPassword: !Ref DBPassword
 
   WSO2NGinxInstancesuffix:
     Type: 'AWS::EC2::Instance'
@@ -461,34 +463,36 @@ Resources:
       SecurityGroups:
         - !Ref WSO2ISSecurityGroupsuffix
       UserData: !Base64
-        'Fn::Join':
+        'Fn::Sub':
           - |+
-
-          - - '#!/bin/bash'
-            - 'export PATH=~/.local/bin:$PATH'
-            - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-            - curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-            - apt-get update
-            - DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
-            - DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            - DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-            - 'export PATH=/opt/mssql-tools/bin:$PATH'
-            - echo "export PATH=$PATH" >>/etc/environment
-            - curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
-            - sudo mkdir /usr/lib/jvm
-            - sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
-            - sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
-            - sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
-            - sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
-            - sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
-            - sudo chmod a+x /usr/bin/java
-            - sudo chmod a+x /usr/bin/javac
-            - sudo chmod a+x /usr/bin/javaws
-            - export JAVA_HOME=/usr/lib/jvm/jdk
-            - sudo su
-            - echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
-            - source /etc/environment
-            - exit
+            #!/bin/bash
+            export PATH=~/.local/bin:$PATH
+            curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+            curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
+            DEBIAN_FRONTEND=noninteractive apt install -y postgresql-client
+            DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
+            DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
+            export PATH=/opt/mssql-tools/bin:$PATH
+            echo "export PATH=$PATH" >>/etc/environment
+            curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            sudo mkdir /usr/lib/jvm
+            sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
+            sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk
+            sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk/bin/java" 1
+            sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk/bin/javac" 1
+            sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk/bin/javaws" 1
+            sudo chmod a+x /usr/bin/java
+            sudo chmod a+x /usr/bin/javac
+            sudo chmod a+x /usr/bin/javaws
+            export JAVA_HOME=/usr/lib/jvm/jdk
+            sudo su
+            echo "export JAVA_HOME=/usr/lib/jvm/jdk" >>/etc/environment
+            echo "export PGPASSWORD=${DBPassword}" >>/etc/environment
+            source /etc/environment
+            exit
+          - DBPassword: !Ref DBPassword
     DependsOn:
       - WSO2ISSecurityGroupsuffix
       - WSO2ISVPCInternetGatewayAttachmentsuffix

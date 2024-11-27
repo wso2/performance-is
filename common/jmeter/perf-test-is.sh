@@ -122,6 +122,8 @@ function clean_database() {
         mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/clean-database.sql || echo "Cleaning database failed."
     elif [[ $db_type == "mssql" ]]; then
         sqlcmd -S "$rds_host" -U wso2carbon -P wso2carbon -d IDENTITY_DB -i /home/ubuntu/workspace/is/clean-database-mssql.sql || echo "Cleaning database failed."
+    elif [[ $db_type == "postgres" ]]; then
+        psql -h $rds_host -U wso2carbon -d "IDENTITY_DB" -f /home/ubuntu/workspace/is/clean-database-postgres.sql
     else
         echo "Unknown database type: $db_type"
         exit 1

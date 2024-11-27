@@ -27,6 +27,10 @@ Metadata:
           - WSO2InstanceType
           - BastionInstanceType
       - Label:
+          default: Network Configuration
+        Parameters:
+          - CertificateName
+      - Label:
           default: Database Credentials
         Parameters:
           - DBUsername
@@ -48,6 +52,8 @@ Metadata:
         Parameters:
           - UserTag
     ParameterLabels:
+      CertificateName:
+        default: SSL Certificate Name
       KeyPairName:
         default: Key Pair Name
       DBUsername:
@@ -546,6 +552,10 @@ Parameters:
     Description: >-
       The private key used to log in to instances through SSH
     Type: 'AWS::EC2::KeyPair::KeyName'
+  CertificateName:
+    Description: A valid SSL certificate used for HTTPS
+    Type: String
+    MinLength: 1
   WSO2InstanceType:
     Type: String
     Default: c6i.xlarge

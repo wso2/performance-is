@@ -663,6 +663,7 @@ Parameters:
     AllowedValues:
       - mysql
       - mssql
+      - postgres
     Default: mysql
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes

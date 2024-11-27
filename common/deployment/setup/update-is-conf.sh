@@ -44,6 +44,18 @@ function add_mssql_connector() {
     cp mssql-jdbc-*.jar "$carbon_home"/repository/components/lib/
 }
 
+function add_postgres_connector() {
+    echo ""
+    echo "Changing permission for Postgres connector"
+    echo "-------------------------------------------"
+    chmod 644 postgresql-*.jar
+
+    echo ""
+    echo "Adding Postgres connector to the pack..."
+    echo "-------------------------------------------"
+    cp postgresql-*.jar "$carbon_home"/repository/components/lib/
+}
+
 function update_mysql_config() {
 
     local configs=(
@@ -70,6 +82,21 @@ function update_mssql_config() {
       "s|{db_driver}|com.microsoft.sqlserver.jdbc.SQLServerDriver|g"
     )
     
+    for config in "${configs[@]}"; do
+      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    done
+}
+
+function update_postgres_config() {
+
+    local configs=(
+      "s|{identity_db_url}|jdbc:postgresql://$db_instance_ip:5432/IDENTITY_DB|g"
+      "s|{session_db_url}|jdbc:postgresql://$session_db_instance_ip:5432/SESSION_DB|g"
+      "s|{user_db_url}|jdbc:postgresql://$db_instance_ip:5432/UM_DB|g"
+      "s|{reg_db_url}|jdbc:postgresql://$db_instance_ip:5432/REG_DB|g"
+      "s|{db_driver}|org.postgresql.Driver|g"
+    )
+
     for config in "${configs[@]}"; do
       sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
     done
@@ -167,10 +194,12 @@ sudo chown -R ubuntu:ubuntu wso2is
 
 carbon_home=$(realpath ~/wso2is)
 
-if [ "$db_type" == "mysql" ]; then
+if [[ $db_type == "mysql" ]]; then
     add_mysql_connector
-elif [ "$db_type" == "mssql" ]; then
+elif [[ $db_type == "mssql" ]]; then
     add_mssql_connector
+elif [[ $db_type == "postgres" ]]; then
+    add_postgres_connector
 else
     echo "Unsupported database type: $db_type"
     exit 1
@@ -190,10 +219,12 @@ sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|{keystore_type}|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-if [ "$db_type" == "mysql" ]; then
+if [[ $db_type == "mysql" ]]; then
     update_mysql_config
-elif [ "$db_type" == "mssql" ]; then
+elif [[ $db_type == "mssql" ]]; then
     update_mssql_config
+elif [[ $db_type == "postgres" ]]; then
+    update_postgres_config
 else
     echo "Unsupported database type: $db_type"
     exit 1

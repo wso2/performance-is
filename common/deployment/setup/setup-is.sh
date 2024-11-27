@@ -114,6 +114,7 @@ sudo -u ubuntu scp -r setup/resources/ "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp wso2is.zip "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp mysql-connector-j-*.jar "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp mssql-jdbc-*.jar "$is_host_alias":/home/ubuntu/
+sudo -u ubuntu scp postgresql-*.jar "$is_host_alias":/home/ubuntu/
 
 sudo -u ubuntu ssh "$is_host_alias" mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh "$is_host_alias":/home/ubuntu/setup/

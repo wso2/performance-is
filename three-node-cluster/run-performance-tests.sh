@@ -24,6 +24,7 @@ wso2is_2_host_alias=wso2is2
 wso2is_3_host_alias=wso2is3
 lb_ssh_host_alias=loadbalancer
 rds_ssh_host_alias=rds
+session_rds_ssh_host_alias=sessionrds
 
 # Execute common script
 . $script_dir/perf-test-is.sh "$@"
@@ -40,7 +41,8 @@ function before_execute_test_scenario() {
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    clean_database "$@" "$rds_host"
+    session_rds_host=$(get_ssh_hostname $session_rds_ssh_host_alias)
+    clean_database "$@" "$rds_host" "$session_rds_host"
 }
 
 function after_execute_test_scenario() {

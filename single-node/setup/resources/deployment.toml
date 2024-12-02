@@ -16,7 +16,9 @@ type = "database_unique_id"
 #connection_password = "admin"
 #base_dn = "dc=wso2,dc=org"
 [user_store.properties]
-CaseInsensitiveUsername = false
+CaseInsensitiveUsername = "{case_insensitive}"
+CaseInsensitiveAttributes = "{case_insensitive}"
+UseCaseSensitiveUsernameForCacheKeys = false
 SCIMEnabled=true
 IsBulkImportSupported=false
 

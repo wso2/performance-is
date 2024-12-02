@@ -210,10 +210,10 @@ function before_execute_test_scenario() {
     echo "Cleaning databases..."
     if [ "$databaseType" == "mysql" ] ; then
       echo "Database Type MySQL."
-      mysql -u $db_username -h "$rds_host" $databaseName -p$db_password < /home/ubuntu/workspace/is/clean-database.sql
+      mysql -u $db_username -h "$rds_host" $databaseName -p$db_password < /home/ubuntu/workspace/is/mysql/clean_database.sql
     else
       echo "Database Type MSSQL."
-      sqlcmd -S "$rds_host" -U $db_username -P $db_password -d $databaseName -i /home/ubuntu/workspace/is/clean-database-mssql.sql
+      sqlcmd -S "$rds_host" -U $db_username -P $db_password -d $databaseName -i /home/ubuntu/workspace/is/mssql/clean_database.sql
     fi
 }
 

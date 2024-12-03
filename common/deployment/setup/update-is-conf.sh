@@ -116,10 +116,11 @@ function usage() {
     echo "-h: Display this help and exit."
     echo "-t: Keystore type."
     echo "-m: Database type."
+    echo "-c: Case insensitivity of the username and attributes."
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:s:t:m:h" opts; do
+while getopts "n:w:i:j:k:r:s:t:m:c:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
@@ -147,6 +148,9 @@ while getopts "n:w:i:j:k:r:s:t:m:h" opts; do
         ;;
     m)
         db_type=${OPTARG}
+        ;;
+    c)
+        is_case_insensitive_username_and_attributes=${OPTARG}
         ;;
     h)
         usage
@@ -218,6 +222,8 @@ sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
 sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|{keystore_type}|$keystore_type|g" \
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
+sed -i "s|{is_case_insensitive_username_and_attributes}|$is_case_insensitive_username_and_attributes|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 if [[ $db_type == "mysql" ]]; then
     update_mysql_config

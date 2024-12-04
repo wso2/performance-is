@@ -39,7 +39,7 @@ bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
-use_db_snapshot="false"
+use_db_snapshot="true"
 db_snapshot_identifier=""
 
 results_dir="$PWD/results-$timestamp"

@@ -39,7 +39,7 @@ bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
-use_db_snapshot="true"
+use_db_snapshot="false"
 db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
@@ -183,6 +183,8 @@ done
 if [[ $db_snapshot_id == "-" ]]; then
     db_snapshot_id=""
     use_db_snapshot="false"
+else
+    use_db_snapshot="true"
 fi
 
 # Pass the modified options to the command

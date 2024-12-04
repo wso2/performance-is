@@ -30,10 +30,6 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-default_db_storage="100"
-db_storage=$default_db_storage
-default_session_db_storage="100"
-session_db_storage=$default_session_db_storage
 default_db_instance_type=db.m6i.2xlarge
 db_instance_type=$default_db_instance_type
 default_is_instance_type=c5.xlarge
@@ -43,6 +39,8 @@ bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
+use_db_snapshot="false"
+db_snapshot_identifier=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -52,7 +50,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-d <db_storage>] [-s <session_db_storage>] [-e <db_instance_type>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <use_db_snapshot>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
@@ -67,8 +65,7 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-d: The database storage in GB. Default: $default_db_storage."
-    echo "-s: The session database storage in GB. Default: $default_session_db_storage."
+    echo "-s: Use existing snapshot for the database."
     echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
@@ -77,8 +74,8 @@ function usage() {
     echo "-v: The required testing mode [FULL/QUICK]"
     echo "-h: Display this help and exit."
     echo "-g: Number of IS nodes."
-    echo "-t: Keystore type. Default: $default_keystore_type."
-    echo "-m: Database type. Default $default_db_type."
+    echo "-t: Keystore type. Default: PKCS12."
+    echo "-m: Database type. Default: mysql."
     echo "-l: Case insensitivity of the username and attributes. Default: false."
     echo ""
 }
@@ -102,7 +99,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:m:l:h" opts; do
+while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -125,11 +122,8 @@ while getopts "q:k:c:j:n:u:p:d:e:i:b:w:s:t:g:m:l:h" opts; do
     p)
         db_password=${OPTARG}
         ;;
-    d)
-        db_storage=${OPTARG}
-        ;;
     s)
-        session_db_storage=${OPTARG}
+        use_db_snapshot=${OPTARG}
         ;;
     e)
         db_instance_type=${OPTARG}
@@ -237,6 +231,11 @@ else
     exit 1
 fi
 
+# Use existing database snapshot
+if [[ $use_db_snapshot == "true" && $db_type == "mysql" ]]; then
+    db_snapshot_identifier="wso2isusersnapshot1m"
+fi
+
 key_filename=$(basename "$key_file")
 key_name=${key_filename%.*}
 
@@ -313,15 +312,14 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=KeyPairName,ParameterValue=$key_name \
         ParameterKey=DBUsername,ParameterValue=$db_username \
         ParameterKey=DBPassword,ParameterValue=$db_password \
-        ParameterKey=DBAllocationStorage,ParameterValue=$db_storage \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=DBType,ParameterValue=$db_type \
         ParameterKey=SessionDBUsername,ParameterValue=$db_username \
         ParameterKey=SessionDBPassword,ParameterValue=$db_password \
-        ParameterKey=SessionDBAllocationStorage,ParameterValue=$session_db_storage \
         ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
+        ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_identifier \
         ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
 

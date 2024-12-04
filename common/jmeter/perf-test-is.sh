@@ -452,14 +452,19 @@ function run_jmeter_scripts() {
 
     local scripts=("$@")
     local setup_dir="/home/ubuntu/workspace/jmeter/setup"
-    local additional_params="$additional_jmeter_params"
+    declare -a jmeter_params=("host=$lb_host" "port=$is_port" "tokenIssuer=$token_issuer" "noOfNodes=$noOfNodes" "userCount=$userCount")
+    jmeter_params+=("${additional_jmeter_params[@]}")
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
         test_data_store="test-data/$script"
         mkdir -p "$test_data_store"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfNodes=$noOfNodes $additional_params -n -t $script_file"
-        command+=" -JuserCount=$userCount -l test_data_store/results.jtl"
+
+        local command="jmeter -n -t $script_file"
+        for param in "${jmeter_params[@]}"; do
+            command+=" -J$param"
+        done
+        command+=" -l test_data_store/results.jtl"
         echo "$command"
         echo ""
         $command
@@ -472,6 +477,7 @@ function run_b2b_test_data_scripts() {
     echo "Running b2b test data setup scripts"
     echo "=========================================================================================="
     declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_B2B_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
+    declare -ag additional_jmeter_params=()
     run_jmeter_scripts "${scripts[@]}"
 }
 
@@ -480,7 +486,7 @@ function run_test_data_scripts() {
     echo "Running test data setup scripts"
     echo "=========================================================================================="
     declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
-    additional_jmeter_params="-JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret"
+    declare -ag additional_jmeter_params=("jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
     run_jmeter_scripts "${scripts[@]}"
 }
 
@@ -489,7 +495,7 @@ function run_tenant_test_data_scripts() {
     echo "Running tenant test data setup scripts"
     echo "=========================================================================================="
     declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx" "TestData_Add_Tenant_SAML_Apps.jmx" "TestData_Add_Tenant_Device_Flow_OAuth_Apps.jmx" "TestData_Add_Tenant_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
-    additional_jmeter_params="-JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret"
+    declare -ag additional_jmeter_params=("noOfTenants=$noOfTenants" "spCount=$spCount" "idpCount=$idpCount" "jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
     run_jmeter_scripts "${scripts[@]}"
 }
 
@@ -634,11 +640,11 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment" "-JuserCount=$userCount")
+                declare -a jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment" "userCount=$userCount")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
-                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount"
+                    jmeter_params+=("tenantMode=true" "noOfTenants=$noOfTenants" "spCount=$spCount" "idpCount=$idpCount")
                 fi
 
                 before_execute_test_scenario "$db_type"

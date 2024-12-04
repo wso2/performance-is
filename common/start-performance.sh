@@ -40,7 +40,7 @@ keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
 use_db_snapshot="true"
-db_snapshot_identifier=""
+db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -50,7 +50,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <use_db_snapshot>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
@@ -65,7 +65,7 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-s: Use existing snapshot for the database."
+    echo "-s: The database snapshot ID. Default: -."
     echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
@@ -123,7 +123,7 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:h" opts; do
         db_password=${OPTARG}
         ;;
     s)
-        use_db_snapshot=${OPTARG}
+        db_snapshot_id=${OPTARG}
         ;;
     e)
         db_instance_type=${OPTARG}
@@ -180,6 +180,11 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+if [[ $db_snapshot_id == "-" ]]; then
+    db_snapshot_id=""
+    use_db_snapshot="false"
+fi
+
 # Pass the modified options to the command
 run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${modified_options[@]}")
 
@@ -229,11 +234,6 @@ elif [[ $no_of_nodes -eq 4 ]]; then
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1
-fi
-
-# Use existing database snapshot
-if [[ $use_db_snapshot == "true" && $db_type == "mysql" ]]; then
-    db_snapshot_identifier="wso2isusersnapshot1m"
 fi
 
 key_filename=$(basename "$key_file")
@@ -319,7 +319,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
-        ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_identifier \
+        ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_id \
         ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
 
@@ -461,7 +461,7 @@ if [[ $no_of_nodes -gt 3 ]]; then
     sleep 5m
 fi
 
-if [[ $use_db_snapshot != "true" ]]; then
+if [[ $use_db_snapshot == "false" ]]; then
     echo ""
     echo "Creating databases in RDS..."
     echo "============================================"

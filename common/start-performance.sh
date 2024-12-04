@@ -181,7 +181,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -r ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

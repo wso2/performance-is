@@ -88,6 +88,7 @@ spCount=10
 idpCount=1
 userCount=1000
 mode=""
+use_db_snapshot="false"
 deployment=""
 
 # JWT Bearer Grant Flow
@@ -153,11 +154,12 @@ function usage() {
     echo "-t: Estimate time without executing tests."
     echo "-p: Identity Server Port. Default $default_is_port."
     echo "-b: Database type."
+    echo "-a: Use existing snapshot for the database."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -212,6 +214,9 @@ while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    a)
+        use_db_snapshot=${OPTARG}
         ;;
     x)
         enable_burst=${OPTARG}
@@ -490,6 +495,15 @@ function run_test_data_scripts() {
     run_jmeter_scripts "${scripts[@]}"
 }
 
+function run_test_data_scripts_with_user_snapshot() {
+
+    echo "Running test data setup scripts with snapshot"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -ag additional_jmeter_params=("jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
+    run_jmeter_scripts "${scripts[@]}"
+}
+
 function run_tenant_test_data_scripts() {
 
     echo "Running tenant test data setup scripts"
@@ -591,6 +605,8 @@ function initiailize_test() {
 
         if [ $mode == "B2B" ]; then
             run_b2b_test_data_scripts
+        elif [ $use_db_snapshot == "true" ]; then
+            run_test_data_scripts_with_user_snapshot
         else
             run_test_data_scripts
             #run_tenant_test_data_scripts

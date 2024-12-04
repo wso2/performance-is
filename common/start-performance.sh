@@ -180,11 +180,12 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ $db_snapshot_id == "-" ]]; then
+# TODO: add snapshot support for other db types
+if [[ $db_snapshot_id != "-" && $db_type == "mysql" ]]; then
+    use_db_snapshot="true"
+else
     db_snapshot_id=""
     use_db_snapshot="false"
-else
-    use_db_snapshot="true"
 fi
 
 # Pass the modified options to the command
@@ -463,11 +464,13 @@ if [[ $no_of_nodes -gt 3 ]]; then
     sleep 5m
 fi
 
-if [[ $use_db_snapshot == "false" ]]; then
-    echo ""
-    echo "Creating databases in RDS..."
-    echo "============================================"
-    ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+echo ""
+echo "Creating databases in RDS..."
+echo "============================================"
+ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+if [[ $use_db_snapshot == "true" ]]; then
+    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/mysql/create_database_from_snapshot.sql"
+else
     execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 fi
 

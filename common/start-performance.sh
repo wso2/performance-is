@@ -40,7 +40,7 @@ keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
 use_db_snapshot="false"
-db_snapshot_id=""
+db_snapshot_id="wso2isusersnapshot1m"
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10

@@ -461,11 +461,13 @@ if [[ $no_of_nodes -gt 3 ]]; then
     sleep 5m
 fi
 
-echo ""
-echo "Creating databases in RDS..."
-echo "============================================"
-ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
-execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
+if [[ $use_db_snapshot != "true" ]]; then
+    echo ""
+    echo "Creating databases in RDS..."
+    echo "============================================"
+    ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
+fi
 
 echo ""
 echo "Creating session database in RDS..."

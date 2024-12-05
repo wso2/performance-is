@@ -27,6 +27,7 @@ Metadata:
           - KeyPairName
           - WSO2InstanceType
           - BastionInstanceType
+          - EnableHighConcurrencyMode
       - Label:
           default: Network Configuration
         Parameters:
@@ -37,8 +38,6 @@ Metadata:
           - DBUsername
           - DBPassword
           - DBInstanceType
-          - DBAllocationStorage
-          - DBIops
           - DBType
           - DBSnapshotId
       - Label:
@@ -47,8 +46,6 @@ Metadata:
           - SessionDBUsername
           - SessionDBPassword
           - SessionDBInstanceType
-          - SessionDBAllocationStorage
-          - SessionDBIops
       - Label:
           default: Other Configuration
         Parameters:
@@ -248,7 +245,7 @@ Resources:
       VPCSecurityGroups:
         - !Ref WSO2ISDBInstanceSecurityGroupsuffix
       DBInstanceClass: !Ref DBInstanceType
-      AllocatedStorage: !Ref DBAllocationStorage
+      AllocatedStorage: !FindInMap [HighConcurrencyModeMap, !Ref EnableHighConcurrencyMode, DBAllocationStorage]
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISDBInstancesuffix
       DBSnapshotIdentifier: !Ref DBSnapshotId
@@ -259,7 +256,7 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'false'
-      Iops: !Ref DBIops
+      Iops: !FindInMap [HighConcurrencyModeMap, !Ref EnableHighConcurrencyMode, DBIops]
       StorageType: io1
       DBParameterGroupName: !FindInMap [DBTypeMap, !Ref DBType, ParameterGroup]
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
@@ -270,7 +267,7 @@ Resources:
       VPCSecurityGroups:
         - !Ref WSO2ISSessionDBInstanceSecurityGroupsuffix
       DBInstanceClass: !Ref SessionDBInstanceType
-      AllocatedStorage: !Ref SessionDBAllocationStorage
+      AllocatedStorage: !FindInMap [HighConcurrencyModeMap, !Ref EnableHighConcurrencyMode, SessionDBAllocationStorage]
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISSessionDBInstancesuffix
       EngineVersion: !FindInMap [DBTypeMap, !Ref DBType, Version]
@@ -280,7 +277,7 @@ Resources:
       MasterUsername: !Ref SessionDBUsername
       MasterUserPassword: !Ref SessionDBPassword
       MultiAZ: 'false'
-      Iops: !Ref SessionDBIops
+      Iops: !FindInMap [HighConcurrencyModeMap, !Ref EnableHighConcurrencyMode, SessionDBIops]
       StorageType: io1
       DBParameterGroupName: !FindInMap [DBTypeMap, !Ref DBType, ParameterGroup]
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroupsuffix
@@ -645,6 +642,12 @@ Parameters:
     Type: String
     MinLength: 8
     NoEcho: true
+  EnableHighConcurrencyMode:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
   DBInstanceType:
     Type: String
     Default: db.m6i.2xlarge
@@ -673,14 +676,6 @@ Parameters:
     Description: Snapshot ID to restore the database from
     Type: String
     Default: ''
-  DBAllocationStorage:
-    Description: Provide storage size in Gigabytes
-    Type: Number
-    Default: 100
-  DBIops:
-    Description: Provide IOps size in numbers
-    Type: Number
-    Default: 1000
   SessionDBUsername:
     Type: String
     MinLength: 4
@@ -710,14 +705,6 @@ Parameters:
       - db.m6i.xlarge
       - db.m6i.2xlarge
       - db.m6i.4xlarge
-  SessionDBAllocationStorage:
-    Description: Provide storage size in Gigabytes
-    Type: Number
-    Default: 100
-  SessionDBIops:
-    Description: Provide IOps size in numbers
-    Type: Number
-    Default: 1000
   UserTag:
     Description: User tag to be used for tagging AWS resources
     Type: String
@@ -773,3 +760,14 @@ Mappings:
       FromPort: '5432'
       ToPort: '5432'
       DBType: 'postgres'
+  HighConcurrencyModeMap:
+    "true":
+      DBIops: 5000
+      SessionDBIops: 5000
+      DBAllocationStorage: 100
+      SessionDBAllocationStorage: 100
+    "false":
+      DBIops: 1000
+      SessionDBIops: 1000
+      DBAllocationStorage: 100
+      SessionDBAllocationStorage: 100

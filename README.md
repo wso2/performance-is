@@ -80,7 +80,7 @@ See usage:
 -n: The is server zip
 -u: The database username. Default: wso2carbon.
 -p: The database password. Default: wso2carbon.
--s: Use existing snapshot for the database.
+-s: The database snapshot ID. Default: -.
 -e: The database instance type. Default: db.m6i.2xlarge.
 -i: The instance type used for IS nodes. Default: c6i.xlarge.
 -b: The instance type used for the bastion node. Default: c6i.xlarge.

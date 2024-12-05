@@ -66,7 +66,7 @@ See usage:
 ./start-performance.sh -k <key_file>
    -c <certificate_name> -j <jmeter_setup_path>
    [-n <IS_zip_file_path>]
-   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]
+   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]
    [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]
    [-l <is_case_insensitive_username_and_attributes>]
    [-w <minimum_stack_creation_wait_time>] [-h]
@@ -75,6 +75,7 @@ See usage:
 -c: The name of the IAM certificate.
 -y: The token issuer type.
 -q: User tag who triggered the Jenkins build
+-r: Concurrency (50-500, 500-3000, 50-3000)
 -j: The path to JMeter setup.
 -c: The name of the IAM certificate.
 -n: The is server zip

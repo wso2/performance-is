@@ -26,6 +26,7 @@ key_file=""
 certificate_name=""
 jmeter_setup=""
 is_setup=""
+concurrency=""
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
@@ -39,6 +40,7 @@ bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
+enable_high_concurrency=false
 use_db_snapshot=false
 db_snapshot_id=""
 
@@ -50,7 +52,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
@@ -59,7 +61,7 @@ function usage() {
     echo "-c: The name of the IAM certificate."
     echo "-y: The token issuer type."
     echo "-q: User tag who triggered the Jenkins build"
-    echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
+    echo "-r: Concurrency (50-500, 500-3000, 50-3000)"
     echo "-m: Enable burst traffic"
     echo "-j: The path to JMeter setup."
     echo "-n: The is server zip"
@@ -99,7 +101,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:h" opts; do
+while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -121,6 +123,9 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:h" opts; do
         ;;
     p)
         db_password=${OPTARG}
+        ;;
+    r)
+        concurrency=${OPTARG}
         ;;
     s)
         db_snapshot_id=${OPTARG}
@@ -189,7 +194,7 @@ else
 fi
 
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency} -v ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -237,6 +242,11 @@ elif [[ $no_of_nodes -eq 4 ]]; then
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1
+fi
+
+# Enable high concurrency mode if the concurrency type contains 1000 or more
+if [[ $concurrency =~ ^([0-9]{4}-[0-9]{3}|[0-9]{3}-[0-9]{4}|[0-9]{4}-[0-9]{4})$ ]]; then
+    enable_high_concurrency=true
 fi
 
 key_filename=$(basename "$key_file")
@@ -323,6 +333,7 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
         ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_id \
+        ParameterKey=EnableHighConcurrencyMode,ParameterValue=$enable_high_concurrency \
         ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
 

@@ -66,7 +66,7 @@ See usage:
 ./start-performance.sh -k <key_file>
    -c <certificate_name> -j <jmeter_setup_path>
    [-n <IS_zip_file_path>]
-   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <use_db_snapshot>]
+   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]
    [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]
    [-l <is_case_insensitive_username_and_attributes>]
    [-w <minimum_stack_creation_wait_time>] [-h]

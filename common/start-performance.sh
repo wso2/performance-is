@@ -39,7 +39,7 @@ bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
-use_db_snapshot="false"
+use_db_snapshot=false
 db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
@@ -182,10 +182,10 @@ done
 
 # TODO: add snapshot support for other db types
 if [[ $db_snapshot_id != "-" && $db_type == "mysql" ]]; then
-    use_db_snapshot="true"
+    use_db_snapshot=true
 else
     db_snapshot_id=""
-    use_db_snapshot="false"
+    use_db_snapshot=false
 fi
 
 # Pass the modified options to the command
@@ -468,7 +468,7 @@ echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
 ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
-if [[ $use_db_snapshot == "true" ]]; then
+if $use_db_snapshot; then
     execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/mysql/create_database_from_snapshot.sql"
 else
     execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"

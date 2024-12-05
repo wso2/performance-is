@@ -26,7 +26,7 @@ key_file=""
 certificate_name=""
 jmeter_setup=""
 is_setup=""
-concurrency_type=""
+concurrency=""
 default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
@@ -52,7 +52,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
@@ -61,7 +61,7 @@ function usage() {
     echo "-c: The name of the IAM certificate."
     echo "-y: The token issuer type."
     echo "-q: User tag who triggered the Jenkins build"
-    echo "-r: Concurrency type (50-500, 500-3000, 50-3000)"
+    echo "-r: Concurrency (50-500, 500-3000, 50-3000)"
     echo "-m: Enable burst traffic"
     echo "-j: The path to JMeter setup."
     echo "-n: The is server zip"
@@ -125,7 +125,7 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
         db_password=${OPTARG}
         ;;
     r)
-        concurrency_type=${OPTARG}
+        concurrency=${OPTARG}
         ;;
     s)
         db_snapshot_id=${OPTARG}
@@ -194,7 +194,7 @@ else
 fi
 
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency_type} -v ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency} -v ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -245,7 +245,7 @@ else
 fi
 
 # Enable high concurrency mode if the concurrency type contains 1000 or more
-if [[ $concurrency_type =~ ^([0-9]{4}-[0-9]{3}|[0-9]{3}-[0-9]{4}|[0-9]{4}-[0-9]{4})$ ]]; then
+if [[ $concurrency =~ ^([0-9]{4}-[0-9]{3}|[0-9]{3}-[0-9]{4}|[0-9]{4}-[0-9]{4})$ ]]; then
     enable_high_concurrency=true
 fi
 

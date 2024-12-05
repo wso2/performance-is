@@ -37,7 +37,6 @@ function before_execute_test_scenario() {
     ssh $wso2is_1_host_alias "./restart-is.sh -m $heap"
     ssh $wso2is_2_host_alias "./restart-is.sh -m $heap"
     ssh $wso2is_3_host_alias "./restart-is.sh -m $heap"
-    jmeter_params+=("port=443")
 
     echo "Cleaning databases..."
     rds_host=$(get_ssh_hostname $rds_ssh_host_alias)

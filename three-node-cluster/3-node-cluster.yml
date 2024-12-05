@@ -40,6 +40,7 @@ Metadata:
           - DBAllocationStorage
           - DBIops
           - DBType
+          - DBSnapshotId
       - Label:
           default: Session Database Credentials
         Parameters:
@@ -250,7 +251,7 @@ Resources:
       AllocatedStorage: !Ref DBAllocationStorage
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISDBInstancesuffix
-      DBName: !FindInMap [DBTypeMap, !Ref DBType, DBName]
+      DBSnapshotIdentifier: !Ref DBSnapshotId
       EngineVersion: !FindInMap [DBTypeMap, !Ref DBType, Version]
       Engine: !FindInMap [DBTypeMap, !Ref DBType, DBType]
       EnablePerformanceInsights: 'false'
@@ -272,7 +273,6 @@ Resources:
       AllocatedStorage: !Ref SessionDBAllocationStorage
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISSessionDBInstancesuffix
-      DBName: !FindInMap [DBTypeMap, !Ref DBType, DBName]
       EngineVersion: !FindInMap [DBTypeMap, !Ref DBType, Version]
       Engine: !FindInMap [DBTypeMap, !Ref DBType, DBType]
       EnablePerformanceInsights: 'false'
@@ -669,6 +669,10 @@ Parameters:
       - mssql
       - postgres
     Default: mysql
+  DBSnapshotId:
+    Description: Snapshot ID to restore the database from
+    Type: String
+    Default: ''
   DBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
@@ -709,7 +713,7 @@ Parameters:
   SessionDBAllocationStorage:
     Description: Provide storage size in Gigabytes
     Type: Number
-    Default: 50
+    Default: 100
   SessionDBIops:
     Description: Provide IOps size in numbers
     Type: Number
@@ -755,7 +759,6 @@ Mappings:
       FromPort: '3306'
       ToPort: '3306'
       DBType: 'mysql'
-      DBName: 'WSO2_IS_DB_2'
     mssql:
       Version: '14.00.3480.1.v1'
       License: 'license-included'
@@ -763,7 +766,6 @@ Mappings:
       FromPort: '1433'
       ToPort: '1433'
       DBType: 'sqlserver-se'
-      DBName: ''
     postgres:
       Version: '14.14'
       License: 'postgresql-license'
@@ -771,4 +773,3 @@ Mappings:
       FromPort: '5432'
       ToPort: '5432'
       DBType: 'postgres'
-      DBName: 'WSO2_IS_DB_2'

@@ -88,6 +88,7 @@ spCount=10
 idpCount=1
 userCount=1000
 mode=""
+use_db_snapshot="false"
 deployment=""
 
 # JWT Bearer Grant Flow
@@ -153,11 +154,12 @@ function usage() {
     echo "-t: Estimate time without executing tests."
     echo "-p: Identity Server Port. Default $default_is_port."
     echo "-b: Database type."
+    echo "-a: Use existing snapshot for the database."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -212,6 +214,9 @@ while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:h" opts; do
         ;;
     v)
         mode=${OPTARG}
+        ;;
+    a)
+        use_db_snapshot=${OPTARG}
         ;;
     x)
         enable_burst=${OPTARG}
@@ -448,18 +453,22 @@ function print_durations() {
     printf "Script execution time: %s\n" "$(format_time $(measure_time "$test_start_time"))"
 }
 
-function run_b2b_test_data_scripts() {
+function run_jmeter_scripts() {
 
-    echo "Running b2b test data setup scripts"
-    echo "=========================================================================================="
-    declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_B2B_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
-    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+    local scripts=("$@")
+    local setup_dir="/home/ubuntu/workspace/jmeter/setup"
+    declare -a jmeter_params=("host=$lb_host" "port=$is_port" "tokenIssuer=$token_issuer" "noOfNodes=$noOfNodes" "userCount=$userCount")
+    jmeter_params+=("${additional_jmeter_params[@]}")
 
     for script in "${scripts[@]}"; do
         script_file="$setup_dir/$script"
         test_data_store="test-data/$script"
-        mkdir -p $test_data_store
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfNodes=$noOfNodes -n -t $script_file"
+        mkdir -p "$test_data_store"
+
+        local command="jmeter -n -t $script_file"
+        for param in "${jmeter_params[@]}"; do
+            command+=" -J$param"
+        done
         command+=" -l test_data_store/results.jtl"
         echo "$command"
         echo ""
@@ -468,22 +477,31 @@ function run_b2b_test_data_scripts() {
     done
 }
 
+function run_b2b_test_data_scripts() {
+
+    echo "Running b2b test data setup scripts"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_Sub_Orgs.jmx" "TestData_Add_B2B_OAuth_Apps.jmx" "TestData_SCIM2_Add_Sub_Org_Users.jmx")
+    declare -ag additional_jmeter_params=()
+    run_jmeter_scripts "${scripts[@]}"
+}
+
 function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
     declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
-#    declare -a scripts=("TestData_Add_Super_Tenant_Users.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Tenants.jmx" "TestData_Add_Tenant_Users.jmx")
-    setup_dir="/home/ubuntu/workspace/jmeter/setup"
+    declare -ag additional_jmeter_params=("jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
+    run_jmeter_scripts "${scripts[@]}"
+}
 
-    for script in "${scripts[@]}"; do
-        script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
-        echo "$command"
-        echo ""
-        $command
-        echo ""
-    done
+function run_test_data_scripts_with_user_snapshot() {
+
+    echo "Running test data setup scripts with snapshot"
+    echo "=========================================================================================="
+    declare -a scripts=("TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -ag additional_jmeter_params=("jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
+    run_jmeter_scripts "${scripts[@]}"
 }
 
 function run_tenant_test_data_scripts() {
@@ -491,16 +509,8 @@ function run_tenant_test_data_scripts() {
     echo "Running tenant test data setup scripts"
     echo "=========================================================================================="
     declare -a scripts=( "TestData_Add_Tenants.jmx" "TestData_SCIM2_Add_Tenant_Users.jmx" "TestData_Add_Tenant_OAuth_Apps.jmx" "TestData_Add_Tenant_SAML_Apps.jmx" "TestData_Add_Tenant_Device_Flow_OAuth_Apps.jmx" "TestData_Add_Tenant_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
-    setup_dir="/home/ubuntu/workspace/jmeter/setup"
-
-    for script in "${scripts[@]}"; do
-        script_file="$setup_dir/$script"
-        command="jmeter -Jhost=$lb_host -Jport=$is_port -JtokenIssuer=$token_issuer -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount -JjwtTokenUserPassword=$jwt_token_user_password -JjwtTokenClientSecret=$jwt_token_client_secret -JnoOfNodes=$noOfNodes -n -t $script_file"
-        echo "$command"
-        echo ""
-        $command
-        echo ""
-    done
+    declare -ag additional_jmeter_params=("noOfTenants=$noOfTenants" "spCount=$spCount" "idpCount=$idpCount" "jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
+    run_jmeter_scripts "${scripts[@]}"
 }
 
 function initiailize_test() {
@@ -595,6 +605,8 @@ function initiailize_test() {
 
         if [ $mode == "B2B" ]; then
             run_b2b_test_data_scripts
+        elif [ $use_db_snapshot == "true" ]; then
+            run_test_data_scripts_with_user_snapshot
         else
             run_test_data_scripts
             #run_tenant_test_data_scripts
@@ -644,11 +656,11 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "-Jport=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment")
+                declare -a jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment" "userCount=$userCount")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
-                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount"
+                    jmeter_params+=("tenantMode=true" "noOfTenants=$noOfTenants" "spCount=$spCount" "idpCount=$idpCount")
                 fi
 
                 before_execute_test_scenario "$db_type"

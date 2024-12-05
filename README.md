@@ -63,25 +63,33 @@ mvn clean install
 See usage:
 
 ```console
-./start-performance.sh -k <key_file> -a <aws_access_key> -s <aws_access_secret>
+./start-performance.sh -k <key_file>
    -c <certificate_name> -j <jmeter_setup_path>
    [-n <IS_zip_file_path>]
-   [-u <db_username>] [-p <db_password>]
-   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>]
+   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>]
+   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]
+   [-l <is_case_insensitive_username_and_attributes>]
    [-w <minimum_stack_creation_wait_time>] [-h]
 
 -k: The Amazon EC2 key file to be used to access the instances.
--a: The AWS access key.
--s: The AWS access secret.
+-c: The name of the IAM certificate.
+-y: The token issuer type.
+-q: User tag who triggered the Jenkins build
 -j: The path to JMeter setup.
 -c: The name of the IAM certificate.
 -n: The is server zip
 -u: The database username. Default: wso2carbon.
 -p: The database password. Default: wso2carbon.
+-s: The database snapshot ID. Default: -.
+-e: The database instance type. Default: db.m6i.2xlarge.
 -i: The instance type used for IS nodes. Default: c6i.xlarge.
 -b: The instance type used for the bastion node. Default: c6i.xlarge.
 -w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status.
     Default: 10 minutes.
+-g: Number of IS nodes.
+-t: Keystore type. Default: PKCS12.
+-m: Database type. Default: mysql.
+-l: Case insensitivity of the username and attributes. Default: false.
 -h: Display this help and exit.
 ```
 

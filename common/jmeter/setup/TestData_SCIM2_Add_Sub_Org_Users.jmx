@@ -486,7 +486,7 @@ vars.put(&quot;subOrgFiler&quot;, new String(subOrgFiler));
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-   &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
+   &quot;schemas&quot;:[&quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;, &quot;urn:scim:wso2:schema&quot;, &quot;urn:scim:wso2:schema&quot;],&#xd;
    &quot;userName&quot;:&quot;${usernamePrefix}${user_index}&quot;,&#xd;
    &quot;password&quot;:&quot;${userPassword}&quot;,&#xd;
    &quot;name&quot;:{&#xd;
@@ -497,7 +497,7 @@ vars.put(&quot;subOrgFiler&quot;, new String(subOrgFiler));
       &quot;accountLocked&quot;:&quot;false&quot;&#xd;
    },&#xd;
    &quot;emails&quot;:[&quot;${useremailPrefix}${user_index}@test.com&quot;],&#xd;
-   &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: &#xd;
+   &quot;urn:scim:wso2:schema&quot;: &#xd;
    {&#xd;
    		&quot;country&quot;:&quot;Sri Lanka&quot;&#xd;
    },&#xd;

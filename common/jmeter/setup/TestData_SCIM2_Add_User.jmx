@@ -350,7 +350,7 @@
             &quot;data&quot;: {&#xd;
                 &quot;schemas&quot;: [&#xd;
                     &quot;urn:ietf:params:scim:schemas:core:2.0:User&quot;,&#xd;
-                    &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;,&#xd;
+                    &quot;urn:scim:wso2:schema&quot;,&#xd;
                     &quot;urn:scim:wso2:schema&quot;&#xd;
                 ],&#xd;
                 &quot;userName&quot;: &quot;${usernamePrefix}${user_index}&quot;,&#xd;
@@ -365,7 +365,7 @@
                 &quot;emails&quot;: [&#xd;
                     &quot;${useremailPrefix}${user_index}@test.com&quot;&#xd;
                 ],&#xd;
-                &quot;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&quot;: {&#xd;
+                &quot;urn:scim:wso2:schema&quot;: {&#xd;
                     &quot;country&quot;: &quot;Sri Lanka&quot;&#xd;
                 },&#xd;
                 &quot;roles&quot;: [&#xd;

@@ -92,7 +92,7 @@ use_db_snapshot="false"
 deployment=""
 
 # Use delays inside tests to mimic user input
-use_delay=false
+use_delay=true
 
 # JWT Bearer Grant Flow
 jwt_token_client_secret=""

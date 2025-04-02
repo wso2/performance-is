@@ -42,6 +42,7 @@ db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
 enable_high_concurrency=false
 use_db_snapshot=false
+use_delay=false
 db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
@@ -54,8 +55,8 @@ function usage() {
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
     echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
-    echo "   [-l <is_case_insensitive_username_and_attributes>]"
-    echo "   [-w <minimum_stack_creation_wait_time>] [-h]"
+    echo "   [-l <is_case_insensitive_username_and_attributes>] [-z <use_delay>] [-q <user_tag>]"
+    echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
@@ -74,11 +75,12 @@ function usage() {
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-v: The required testing mode [FULL/QUICK]"
-    echo "-h: Display this help and exit."
+    echo "-t: Keystore type. Default: $keystore_type."
     echo "-g: Number of IS nodes."
-    echo "-t: Keystore type. Default: PKCS12."
-    echo "-m: Database type. Default: mysql."
-    echo "-l: Case insensitivity of the username and attributes. Default: false."
+    echo "-m: Database type. Default: $db_type."
+    echo "-l: Case insensitivity of the username and attributes. Default: $is_case_insensitive_username_and_attributes."
+    echo "-z: Use delays inside tests to mimic user input. Default: $use_delay."
+    echo "-h: Display this help and exit."
     echo ""
 }
 
@@ -101,7 +103,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
+while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:z:r:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -153,6 +155,9 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
         ;;
     l)
         is_case_insensitive_username_and_attributes=${OPTARG}
+        ;;
+    z)
+        use_delay=${OPTARG}
         ;;
     h)
         usage

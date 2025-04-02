@@ -124,6 +124,11 @@
             <stringProp name="Argument.value">${__P(noOfNodes,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="useDelay" elementType="Argument">
+            <stringProp name="Argument.name">useDelay</stringProp>
+            <stringProp name="Argument.value">${__P(useDelay,true)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -563,7 +568,7 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
           </HTTPSamplerProxy>
           <hashTree>
             <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">6000</stringProp>
+              <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
               <stringProp name="RandomTimer.range">2000</stringProp>
             </GaussianRandomTimer>
             <hashTree/>
@@ -842,7 +847,7 @@ if (federatedIDPRedirectURL_g.equals(&quot;2&quot;)) {
             </HTTPSamplerProxy>
             <hashTree>
               <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-                <stringProp name="ConstantTimer.delay">2000</stringProp>
+                <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
                 <stringProp name="RandomTimer.range">1000</stringProp>
               </GaussianRandomTimer>
               <hashTree/>
@@ -1424,7 +1429,7 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
             </HTTPSamplerProxy>
             <hashTree>
               <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-                <stringProp name="ConstantTimer.delay">6000</stringProp>
+                <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
                 <stringProp name="RandomTimer.range">2000</stringProp>
               </GaussianRandomTimer>
               <hashTree/>
@@ -1703,7 +1708,7 @@ if (federatedIDPRedirectURL_g.equals(&quot;2&quot;)) {
               </HTTPSamplerProxy>
               <hashTree>
                 <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-                  <stringProp name="ConstantTimer.delay">2000</stringProp>
+                  <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
                   <stringProp name="RandomTimer.range">1000</stringProp>
                 </GaussianRandomTimer>
                 <hashTree/>

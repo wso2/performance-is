@@ -125,6 +125,11 @@
             <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="useDelay" elementType="Argument">
+            <stringProp name="Argument.name">useDelay</stringProp>
+            <stringProp name="Argument.value">${__P(useDelay,true)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -391,7 +396,7 @@ ${password}
         </HTTPSamplerProxy>
         <hashTree>
           <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-            <stringProp name="ConstantTimer.delay">6000</stringProp>
+            <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
             <stringProp name="RandomTimer.range">2000</stringProp>
           </GaussianRandomTimer>
           <hashTree/>
@@ -690,7 +695,7 @@ ${password}
           </HTTPSamplerProxy>
           <hashTree>
             <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">6000</stringProp>
+              <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
               <stringProp name="RandomTimer.range">2000</stringProp>
             </GaussianRandomTimer>
             <hashTree/>

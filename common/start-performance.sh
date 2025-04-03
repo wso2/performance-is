@@ -371,14 +371,11 @@ bastion_instance="$(aws cloudformation describe-stack-resources --stack-name "$s
 bastion_node_ip="$(aws ec2 describe-instances --instance-ids "$bastion_instance" | jq -r '.Reservations[].Instances[].PublicIpAddress')"
 echo "Bastion Node Public IP: $bastion_node_ip"
 
-nginx_instance_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Getting NGinx Instance Private IP..."
-    nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-    nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
-    echo "NGinx Instance Private IP: $nginx_instance_ip"
-fi
+echo ""
+echo "Getting NGinx Instance Private IP..."
+nginx_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2NGinxInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
+nginx_instance_ip="$(aws ec2 describe-instances --instance-ids "$nginx_instance" | jq -r '.Reservations[].Instances[].PrivateIpAddress')"
+echo "NGinx Instance Private IP: $nginx_instance_ip"
 
 echo ""
 echo "Getting WSO2 IS Node 1 Private IP..."
@@ -468,11 +465,7 @@ scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
-if [[ $no_of_nodes -eq 1 ]]; then
-    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip  -l $wso2_is_1_ip -r $rds_host -s $session_rds_host"
-else
-    ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
-fi
+ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
@@ -494,22 +487,16 @@ echo ""
 echo "Creating session database in RDS..."
 execute_db_command "$session_rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_session_database.sql"
 
+echo ""
+echo "Running IS node 1 setup script..."
+echo "============================================"
+ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+
 if [[ $no_of_nodes -gt 1 ]]; then
-
-    echo ""
-    echo "Running IS node 1 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-
     echo ""
     echo "Running IS node 2 setup script..."
     echo "============================================"
     ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-else
-    echo ""
-    echo "Running IS node setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is -t $keystore_type -i $wso2_is_1_ip -r $rds_host  -s $session_rds_host"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
@@ -530,11 +517,7 @@ echo ""
 echo "Running performance tests..."
 echo "============================================"
 scp_bastion_cmd "run-performance-tests.sh" "/home/ubuntu/workspace/jmeter"
-if [[ $no_of_nodes -eq 1 ]]; then
-    ssh_bastion_cmd "./workspace/jmeter/run-performance-tests.sh ${run_performance_tests_options[*]}"
-else
-    ssh_bastion_cmd "./workspace/jmeter/run-performance-tests.sh -p 443 ${run_performance_tests_options[*]}"
-fi
+ssh_bastion_cmd "./workspace/jmeter/run-performance-tests.sh -p 443 ${run_performance_tests_options[*]}"
 
 echo ""
 echo "Downloading results..."

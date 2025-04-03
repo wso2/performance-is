@@ -27,7 +27,6 @@ wso2_is_4_ip=""
 lb_host=""
 rds_host=""
 session_rds_host=""
-wso2is_host_alias=wso2is
 wso2is_1_host_alias=wso2is1
 wso2is_2_host_alias=wso2is2
 wso2is_3_host_alias=wso2is3
@@ -131,8 +130,8 @@ elif [[ $no_of_nodes -eq 1 ]]; then
                 -i /home/ubuntu \
                 -c /home/ubuntu \
                 -f /home/ubuntu/apache-jmeter-*.tgz \
-                -a $wso2is_host_alias -n "$wso2_is_1_ip" \
-                -a loadbalancer -n "$wso2_is_1_ip"\
+                -a $wso2is_1_host_alias -n "$wso2_is_1_ip" \
+                -a $lb_alias -n "$lb_host"\
                 -a rds -n "$rds_host"\
                 -a sessionrds -n "$session_rds_host"
 elif [[ $no_of_nodes -eq 2 ]]; then
@@ -178,19 +177,19 @@ sudo chown -R ubuntu:ubuntu apache-jmeter-*
 sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
 
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Coping files to NGinx instance..."
-    echo "============================================"
-    sudo -u ubuntu scp -r /home/ubuntu/workspace/setup/resources/ $lb_alias:/home/ubuntu/
-    sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/ubuntu/
+echo ""
+echo "Coping files to NGinx instance..."
+echo "============================================"
+sudo -u ubuntu scp -r /home/ubuntu/workspace/setup/resources/ $lb_alias:/home/ubuntu/
+sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/ubuntu/
 
-    echo ""
-    echo "Setting up NGinx..."
-    echo "============================================"
-fi
+echo ""
+echo "Setting up NGinx..."
+echo "============================================"
 
-if [[ $no_of_nodes -eq 2 ]]; then
+if [[ $no_of_nodes -eq 1 ]]; then
+    sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip"
+elif [[ $no_of_nodes -eq 2 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip"
 elif [[ $no_of_nodes -eq 3 ]]; then
     sudo -u ubuntu ssh $lb_alias ./setup-nginx.sh -n "$no_of_nodes" -i "$wso2_is_1_ip" -w "$wso2_is_2_ip" -j "$wso2_is_3_ip"

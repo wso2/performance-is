@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# 'suffix' in each component name will be replaced by a random value to enable multiple stacks at the same time.
+
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   WSO2 Identity Server single node deployment
@@ -97,13 +99,13 @@ Resources:
         - '0'
         - !GetAZs ''
   WSO2ISPublicSubnet2suffix:
-      Type: 'AWS::EC2::Subnet'
-      Properties:
-        VpcId: !Ref WSO2ISVPCsuffix
-        CidrBlock: 10.0.252.0/24
-        AvailabilityZone: !Select
-          - '1'
-          - !GetAZs ''
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref WSO2ISVPCsuffix
+      CidrBlock: 10.0.252.0/24
+      AvailabilityZone: !Select
+        - '1'
+        - !GetAZs ''
   WSO2ISPublicInternetGatewaysuffix:
     Type: 'AWS::EC2::InternetGateway'
   WSO2ISPublicRouteTablesuffix:
@@ -266,10 +268,10 @@ Resources:
       VpcId: !Ref WSO2ISVPCsuffix
       GroupDescription: EFS Security Group
       SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
-        CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '2049'
+          ToPort: '2049'
+          CidrIp: 0.0.0.0/0
   WSO2ISEFSFileSystemsuffix:
     Type: 'AWS::EFS::FileSystem'
     Properties:
@@ -298,6 +300,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
           CidrIp: 0.0.0.0/0
   WSO2ISSecurityGroupsuffix:
     Type: 'AWS::EC2::SecurityGroup'
@@ -337,6 +343,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: '8140'
           ToPort: '8140'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '4000'
+          ToPort: '4000'
           CidrIp: 0.0.0.0/0
   WSO2BastionInstancesuffix:
     Type: 'AWS::EC2::Instance'
@@ -393,6 +403,42 @@ Resources:
             source /etc/environment
             exit
           - DBPassword: !Ref DBPassword
+
+  WSO2NGinxInstancesuffix:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2ISAMIRegionMapsuffix
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref BastionInstanceType
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: suffix_WSO2NGinxInstance
+        - Key: User
+          Value: !Ref UserTag
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          # Uncomment public subnet to assign a public IP to the IS instance.
+          # SubnetId: !Ref WSO2ISPublicSubnet1suffix
+          SubnetId: !Ref WSO2ISPrivateSubnet1suffix
+          GroupSet:
+            - !Ref BastionSecurityGroupsuffix
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - 'export PATH=~/.local/bin:$PATH'
+            - apt-get update
+            - DEBIAN_FRONTEND=noninteractive apt-get install -yq nginx
+            - mkdir -p /etc/nginx/ssl/is
 
   WSO2ISNodeLaunchConfigurationsuffix:
     Type: 'AWS::AutoScaling::LaunchConfiguration'

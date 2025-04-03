@@ -50,9 +50,6 @@
             <outputDirectory>setup</outputDirectory>
             <filtered>true</filtered>
             <fileMode>0775</fileMode>
-            <excludes>
-                <exclude>setup-nginx.sh</exclude>
-            </excludes>
         </fileSet>
         <fileSet>
             <directory>../common/jmeter</directory>

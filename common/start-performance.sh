@@ -42,7 +42,7 @@ db_type="mysql"
 is_case_insensitive_username_and_attributes="false"
 enable_high_concurrency=false
 use_db_snapshot=false
-use_delay=false
+use_delay=true
 db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"

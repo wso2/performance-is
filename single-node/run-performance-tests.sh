@@ -21,7 +21,7 @@
 
 script_dir=$(dirname "$0")
 
-wso2is_host_alias=wso2is
+wso2is_host_alias=wso2is1
 lb_ssh_host_alias=loadbalancer
 rds_ssh_host_alias=rds
 session_rds_ssh_host_alias=sessionrds

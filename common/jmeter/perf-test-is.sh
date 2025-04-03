@@ -91,6 +91,9 @@ mode=""
 use_db_snapshot="false"
 deployment=""
 
+# Use delays inside tests to mimic user input
+use_delay=true
+
 # JWT Bearer Grant Flow
 jwt_token_client_secret=""
 jwt_token_user_password=""
@@ -155,11 +158,12 @@ function usage() {
     echo "-p: Identity Server Port. Default $default_is_port."
     echo "-b: Database type."
     echo "-a: Use existing snapshot for the database."
+    echo "-z: Use delays inside tests to mimic user input."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:z:h" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -192,19 +196,22 @@ while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:h" opts; do
         deployment=${OPTARG}
         ;;
     n)
-        noOfTenants=("${OPTARG}")
+        noOfTenants=${OPTARG}
         ;;
     s)
-        spCount=("${OPTARG}")
+        spCount=${OPTARG}
         ;;
     q)
-        idpCount=("${OPTARG}")
+        idpCount=${OPTARG}
         ;;
     u)
-        userCount=("${OPTARG}")
+        userCount=${OPTARG}
         ;;
     t)
         estimate=true
+        ;;
+    z)
+        use_delay=${OPTARG}
         ;;
     p)
         is_port=${OPTARG}
@@ -656,7 +663,7 @@ function test_scenarios() {
                 mkdir -p "$report_location"
 
                 time=$(expr "$test_duration" \* 60)
-                declare -a jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment" "userCount=$userCount")
+                declare -a jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "noOfNodes=$noOfNodes" "noOfBurst=$burstTraffic" "deployment=$deployment" "userCount=$userCount" "useDelay=$use_delay")
 
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then

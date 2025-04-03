@@ -76,8 +76,8 @@ if [[ -z $no_of_nodes ]]; then
     exit 1
 fi
 
+sudo sed -i 's$server xxx.xxx.xxx.1:9443$server '$wso2_is_1_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
 if [[ $no_of_nodes -gt 1 ]]; then
-    sudo sed -i 's$server xxx.xxx.xxx.1:9443$server '$wso2_is_1_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
     sudo sed -i 's$server xxx.xxx.xxx.2:9443$server '$wso2_is_2_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
 fi
 if [[ $no_of_nodes -gt 2 ]]; then

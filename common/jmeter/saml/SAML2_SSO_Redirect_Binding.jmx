@@ -396,8 +396,8 @@ ${password}
         </HTTPSamplerProxy>
         <hashTree>
           <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-            <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
-            <stringProp name="RandomTimer.range">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
+            <stringProp name="ConstantTimer.delay">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
+            <stringProp name="RandomTimer.range">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
           </GaussianRandomTimer>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200" enabled="true">
@@ -695,8 +695,8 @@ ${password}
           </HTTPSamplerProxy>
           <hashTree>
             <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
-              <stringProp name="RandomTimer.range">${__groovy(${useDelay}.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
+              <stringProp name="ConstantTimer.delay">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
+              <stringProp name="RandomTimer.range">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
             </GaussianRandomTimer>
             <hashTree/>
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200" enabled="true">

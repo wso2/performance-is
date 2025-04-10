@@ -39,10 +39,10 @@ default_db_username="wso2carbon"
 db_username="$default_db_username"
 default_db_password="wso2carbon"
 db_password="$default_db_password"
-db_instance_type=db.m5.2xlarge
-default_is_instance_type=c5.xlarge
+db_instance_type=db.m6i.2xlarge
+default_is_instance_type=c6i.xlarge
 wso2_is_instance_type="$default_is_instance_type"
-default_bastion_instance_type=c5.xlarge
+default_bastion_instance_type=c6i.xlarge
 bastion_instance_type="$default_bastion_instance_type"
 mode=""
 

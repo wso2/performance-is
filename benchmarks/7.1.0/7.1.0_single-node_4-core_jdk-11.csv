@@ -4,11 +4,6 @@ Client Credentials Grant Type,100,165
 Client Credentials Grant Type,150,275
 Client Credentials Grant Type,300,691
 Client Credentials Grant Type,500,1127
-Client Credentials Grant Type,1000,1943
-Client Credentials Grant Type,1500,2655
-Client Credentials Grant Type,2000,3375
-Client Credentials Grant Type,2500,4031
-Client Credentials Grant Type,3000,4799
 OIDC Auth Code Grant Redirect With Consent,50,31
 OIDC Auth Code Grant Redirect With Consent,100,30
 OIDC Auth Code Grant Redirect With Consent,150,31
@@ -54,11 +49,6 @@ OIDC Password Grant Type,100,307
 OIDC Password Grant Type,150,489
 OIDC Password Grant Type,300,1143
 OIDC Password Grant Type,500,1847
-OIDC Password Grant Type,1000,3727
-OIDC Password Grant Type,1500,4895
-OIDC Password Grant Type,2000,6111
-OIDC Password Grant Type,2500,7423
-OIDC Password Grant Type,3000,8831
 SAML2 SSO Redirect Binding,50,42
 SAML2 SSO Redirect Binding,100,40
 SAML2 SSO Redirect Binding,150,41
@@ -74,8 +64,3 @@ Token Exchange Grant,100,337
 Token Exchange Grant,150,543
 Token Exchange Grant,300,1159
 Token Exchange Grant,500,2023
-Token Exchange Grant,1000,3839
-Token Exchange Grant,1500,5343
-Token Exchange Grant,2000,6431
-Token Exchange Grant,2500,7551
-Token Exchange Grant,3000,8895

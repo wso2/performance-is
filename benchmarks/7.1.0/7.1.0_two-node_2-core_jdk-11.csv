@@ -1,0 +1,81 @@
+Scenario Name,Concurrent Users,95th Percentile of Response Time (ms)
+Client Credentials Grant Type,50,165
+Client Credentials Grant Type,100,407
+Client Credentials Grant Type,150,679
+Client Credentials Grant Type,300,1511
+Client Credentials Grant Type,500,2319
+Client Credentials Grant Type,1000,5471
+Client Credentials Grant Type,1500,7903
+Client Credentials Grant Type,2000,10687
+Client Credentials Grant Type,2500,12927
+Client Credentials Grant Type,3000,16767
+OIDC Auth Code Grant Redirect With Consent,50,52
+OIDC Auth Code Grant Redirect With Consent,100,52
+OIDC Auth Code Grant Redirect With Consent,150,51
+OIDC Auth Code Grant Redirect With Consent,300,51
+OIDC Auth Code Grant Redirect With Consent,500,59
+OIDC Auth Code Grant Redirect With Consent,1000,4878
+OIDC Auth Code Grant Redirect With Consent,1500,12958
+OIDC Auth Code Grant Redirect With Consent,2000,21822
+OIDC Auth Code Grant Redirect With Consent,2500,29438
+OIDC Auth Code Grant Redirect With Consent,3000,35710
+OIDC Auth Code Grant Redirect Without Consent,50,79
+OIDC Auth Code Grant Redirect Without Consent,100,81
+OIDC Auth Code Grant Redirect Without Consent,150,71
+OIDC Auth Code Grant Redirect Without Consent,300,78
+OIDC Auth Code Grant Redirect Without Consent,500,107
+OIDC Auth Code Grant Redirect Without Consent,1000,14477
+OIDC Auth Code Grant Redirect Without Consent,1500,23357
+OIDC Auth Code Grant Redirect Without Consent,2000,44221
+OIDC Auth Code Grant Redirect Without Consent,2500,65725
+OIDC Auth Code Grant Redirect Without Consent,3000,69053
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,50,81
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,100,83
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,150,75
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,300,79
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,500,149
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,1000,11645
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,1500,26109
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,2000,39805
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,2500,51453
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes,3000,60413
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,50,69
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,100,67
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,150,68
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,300,74
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,500,151
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,1000,12573
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,1500,24477
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,2000,35965
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,2500,49789
+OIDC Auth Code Grant Redirect Without Consent Retrieve User Attributes Groups and Roles,3000,64381
+OIDC Password Grant Type,50,307
+OIDC Password Grant Type,100,675
+OIDC Password Grant Type,150,1071
+OIDC Password Grant Type,300,2367
+OIDC Password Grant Type,500,4351
+OIDC Password Grant Type,1000,9599
+OIDC Password Grant Type,1500,16639
+OIDC Password Grant Type,2000,22783
+OIDC Password Grant Type,2500,32639
+OIDC Password Grant Type,3000,35071
+SAML2 SSO Redirect Binding,50,34
+SAML2 SSO Redirect Binding,100,33
+SAML2 SSO Redirect Binding,150,33
+SAML2 SSO Redirect Binding,300,35
+SAML2 SSO Redirect Binding,500,40
+SAML2 SSO Redirect Binding,1000,531
+SAML2 SSO Redirect Binding,1500,10943
+SAML2 SSO Redirect Binding,2000,20991
+SAML2 SSO Redirect Binding,2500,29055
+SAML2 SSO Redirect Binding,3000,43007
+Token Exchange Grant,50,267
+Token Exchange Grant,100,627
+Token Exchange Grant,150,995
+Token Exchange Grant,300,2191
+Token Exchange Grant,500,3727
+Token Exchange Grant,1000,8191
+Token Exchange Grant,1500,14143
+Token Exchange Grant,2000,18687
+Token Exchange Grant,2500,15167
+Token Exchange Grant,3000,36863

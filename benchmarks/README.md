@@ -4,6 +4,11 @@
 ### Guide to the Existing Performance Results
 | Server version             | Deployment     | Updated on | IS Instance Type   | RDS Instance Type | JDK version | Link                                                                         |
 |----------------------------|----------------|------------|--------------------|-------------------|-------------|------------------------------------------------------------------------------|
+| 7.1.0 GA | Single node | 2025/03/01 | c6i.xlarge (4 core) | db.m6i.2xlarge | JDK 11 | [:arrow_upper_right:](7.1.0/7.1.0_single-node_4-core_jdk-11.md) |
+| 7.1.0 GA | 2-node cluster | 2025/03/01 | c6i.xlarge (4 core) | db.m6i.2xlarge | JDK 11 | [:arrow_upper_right:](7.1.0/7.1.0_two-node_4-core_jdk-11.md) |
+| 7.1.0 GA | 2-node cluster | 2025/03/01 | c6i.large (2 core) | db.m6i.2xlarge | JDK 11 | [:arrow_upper_right:](7.1.0/7.1.0_two-node_2-core_jdk-11.md) |
+| 7.1.0 GA | 3-node cluster | 2025/03/01 | c6i.xlarge (4 core) | db.m6i.2xlarge | JDK 11 | [:arrow_upper_right:](7.1.0/7.1.0_three-node_4-core_jdk-11.md) |
+| 7.1.0 GA | 4-node cluster | 2025/03/01 | c6i.xlarge (4 core) | db.m6i.2xlarge | JDK 11 | [:arrow_upper_right:](7.1.0/7.1.0_four-node_4-core_jdk-11.md) |
 | 7.0.0 GA | Single node | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](7.0.0/7.0.0_single-node_4-core_jdk-11.md) |
 | 7.0.0 GA | Single node | 2024/03/01 | c5.large (2 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](7.0.0/7.0.0_single-node_2-core_jdk-11.md) |
 | 7.0.0 GA | 2-node cluster | 2024/03/01 | c5.xlarge (4 core) | db.m4.2xlarge | JDK 11 | [:arrow_upper_right:](7.0.0/7.0.0_two-node_4-core_jdk-11.md) |

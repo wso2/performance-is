@@ -427,6 +427,12 @@ Resources:
         - !Ref 'AWS::Region'
         - AMI
       InstanceType: !Ref BastionInstanceType
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 50
+            VolumeType: gp2
+            DeleteOnTermination: 'true'
       KeyName: !Ref KeyPairName
       Monitoring: 'false'
       Tags:
@@ -482,7 +488,7 @@ Resources:
         - WSO2ISAMIRegionMapsuffix
         - !Ref 'AWS::Region'
         - AMI
-      InstanceType: !Ref BastionInstanceType
+      InstanceType: !Ref WSO2InstanceType
       KeyName: !Ref KeyPairName
       Monitoring: 'false'
       Tags:
@@ -785,6 +791,7 @@ Parameters:
       - c5.2xlarge
       - c6i.large
       - c6i.xlarge
+      - c6i.2xlarge
     ConstraintDescription: Must be a valid EC2 instance type
 Mappings:
   WSO2ISAMIRegionMapsuffix:

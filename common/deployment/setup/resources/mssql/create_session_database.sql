@@ -4,7 +4,7 @@ GO
 USE SESSION_DB;
 GO
 
-:r /home/ubuntu/workspace/is/truncate_non_empty_table.sql
+:r /home/ubuntu/workspace/is/mssql/truncate_non_empty_table.sql
 GO
 
 IF NOT EXISTS (SELECT * FROM SYS.OBJECTS WHERE OBJECT_ID = OBJECT_ID(N'[DBO].[IDN_AUTH_SESSION_STORE]') AND TYPE IN (N'U'))

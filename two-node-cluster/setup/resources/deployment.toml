@@ -22,8 +22,8 @@ UseCaseSensitiveUsernameForCacheKeys = false
 SCIMEnabled=true
 IsBulkImportSupported=false
 
-#[realm_manager]
-#data_source = "WSO2USER_DB"
+[realm_manager]
+data_source = "WSO2USER_DB"
 
 [database.identity_db]
 driver = "{db_driver}"

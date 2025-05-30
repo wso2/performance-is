@@ -161,3 +161,12 @@ declare -A test_scenario15=(
     [skip]=false
     [modes]="B2B"
 )
+declare -A test_scenario16=(
+    [name]="16-App_Native_Auth"
+    [display_name]="App Native Authentication"
+    [description]="Perform a username and password login with app native authentication."
+    [jmx]="app-native-auth/App_Native_Auth.jmx.jmx"
+    [tenantMode]=false
+    [skip]=false
+    [modes]="FULL PUBLISH"
+)

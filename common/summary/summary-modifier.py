@@ -105,7 +105,11 @@ scenarios = {
         "6. Common Auth Redirect call to the Parent Org",
         "7. Post Authentication Redirect call to Parent Org",
         "8. Send Consent Approve Request",
-        "9. Get tokens Request"]}
+        "9. Get tokens Request"],
+    "App Native Authentication": [
+        "1 Send request to authorize end point",
+        "2 Submit username and password",
+        "3 Get tokens"]}
 
 scenarios_critical_requests = scenarios.copy()
 

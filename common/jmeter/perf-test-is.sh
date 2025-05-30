@@ -497,7 +497,8 @@ function run_test_data_scripts() {
 
     echo "Running test data setup scripts"
     echo "=========================================================================================="
-    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    # declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps.jmx" "TestData_Add_OAuth_Apps_Requesting_Claims.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx" "TestData_Add_SAML_Apps.jmx" "TestData_Add_Device_Flow_OAuth_Apps.jmx" "TestData_Add_OAuth_Idps.jmx" "TestData_Get_OAuth_Jwt_Token.jmx")
+    declare -a scripts=("TestData_SCIM2_Add_User.jmx" "TestData_Add_OAuth_Apps_Without_Consent.jmx")
     declare -ag additional_jmeter_params=("jwtTokenUserPassword=$jwt_token_user_password" "jwtTokenClientSecret=$jwt_token_client_secret")
     run_jmeter_scripts "${scripts[@]}"
 }
@@ -610,14 +611,15 @@ function initiailize_test() {
         cp "$0" results
         mv test-metadata.json results/
 
-        if [ $mode == "B2B" ]; then
-            run_b2b_test_data_scripts
-        elif [ $use_db_snapshot == "true" ]; then
-            run_test_data_scripts_with_user_snapshot
-        else
-            run_test_data_scripts
-            #run_tenant_test_data_scripts
-        fi
+        run_test_data_scripts
+        # if [ $mode == "B2B" ]; then
+        #     run_b2b_test_data_scripts
+        # elif [ $use_db_snapshot == "true" ]; then
+        #     run_test_data_scripts_with_user_snapshot
+        # else
+        #     run_test_data_scripts
+        #     #run_tenant_test_data_scripts
+        # fi
     fi
 }
 

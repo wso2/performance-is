@@ -138,6 +138,34 @@ function clean_database() {
     fi
 }
 
+function backup_refresh_tokens() {
+
+    db_type=$1
+    rds_host=$2
+
+    echo "Backing up refresh tokens..."
+    if [[ $db_type == "mysql" ]]; then
+        mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/mysql/backup_refresh_tokens.sql || echo "Refresh token backup failed."
+    else
+        echo "Unknown database type: $db_type"
+        exit 1
+    fi
+}
+
+function restore_refresh_tokens() {
+
+    db_type=$1
+    rds_host=$2
+
+    echo "Restoring refresh tokens..."
+    if [[ $db_type == "mysql" ]]; then
+        mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/mysql/restore_refresh_tokens.sql || echo "Refresh token restore failed."
+    else
+        echo "Unknown database type: $db_type"
+        exit 1
+    fi
+}
+
 lb_host=$(get_ssh_hostname "$lb_ssh_host_alias")
 
 function usage() {
@@ -612,6 +640,8 @@ function initiailize_test() {
         mv test-metadata.json results/
 
         run_test_data_scripts
+        rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
+        backup_refresh_tokens "$db_type" "$rds_host"
         # if [ $mode == "B2B" ]; then
         #     run_b2b_test_data_scripts
         # elif [ $use_db_snapshot == "true" ]; then

@@ -161,11 +161,20 @@
 #     [skip]=false
 #     [modes]="B2B"
 # )
-declare -A test_scenario16=(
-    [name]="16-App_Native_Auth"
-    [display_name]="App Native Authentication"
-    [description]="Perform a username and password login with app native authentication."
-    [jmx]="app-native-auth/App_Native_Auth.jmx"
+# declare -A test_scenario16=(
+#     [name]="16-App_Native_Auth"
+#     [display_name]="App Native Authentication"
+#     [description]="Perform a username and password login with app native authentication."
+#     [jmx]="app-native-auth/App_Native_Auth.jmx"
+#     [tenantMode]=false
+#     [skip]=false
+#     [modes]="FULL PUBLISH"
+# )
+declare -A test_scenario17=(
+    [name]="17-oauth_refresh_token_grant"
+    [display_name]="OAuth Refresh Token Grant"
+    [description]="Obtain an access token and an id token using the OAuth 2.0 refresh token grant type."
+    [jmx]="oauth/OAuth_Refresh_Token_Grant.jmx"
     [tenantMode]=false
     [skip]=false
     [modes]="FULL PUBLISH"

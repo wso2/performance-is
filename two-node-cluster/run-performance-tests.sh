@@ -38,10 +38,10 @@ function before_execute_test_scenario() {
     ssh $wso2is_1_host_alias "./restart-is.sh -m $heap"
     ssh $wso2is_2_host_alias "./restart-is.sh -m $heap"
 
-    echo "Cleaning databases..."
-    rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    session_rds_host=$(get_ssh_hostname $session_rds_ssh_host_alias)
-    clean_database "$@" "$rds_host" "$session_rds_host"
+    # echo "Cleaning databases..."
+    # rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
+    # session_rds_host=$(get_ssh_hostname $session_rds_ssh_host_alias)
+    # clean_database "$@" "$rds_host" "$session_rds_host"
 }
 
 function after_execute_test_scenario() {

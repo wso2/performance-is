@@ -109,7 +109,9 @@ scenarios = {
     "App Native Authentication": [
         "1 Send request to authorize end point",
         "2 Submit username and password",
-        "3 Get tokens"]}
+        "3 Get tokens"],
+    "OIDC Password Grant Type": [
+        "1 GetToken_Refresh_Token_Grant"]}
 
 scenarios_critical_requests = scenarios.copy()
 

@@ -70,8 +70,9 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="noOfThreads" elementType="Argument">
             <stringProp name="Argument.name">noOfThreads</stringProp>
-            <stringProp name="Argument.value">${__P(concurrency,100)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">${__P(concurrency,100)}</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
           </elementProp>
           <elementProp name="noOfUsers" elementType="Argument">
             <stringProp name="Argument.name">noOfUsers</stringProp>
@@ -119,9 +120,9 @@
             <stringProp name="Argument.value">${__P(deployment,&quot;active-passive&quot;)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="loopCount" elementType="Argument">
-            <stringProp name="Argument.name">loopCount</stringProp>
-            <stringProp name="Argument.value">${__P(loopCount,100)}</stringProp>
+          <elementProp name="refreshTokenCount" elementType="Argument">
+            <stringProp name="Argument.name">refreshTokenCount</stringProp>
+            <stringProp name="Argument.value">${__P(refreshTokenCount,10000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -141,6 +142,20 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </SetupThreadGroup>
       <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">int concurrency = Integer.parseInt(vars.get(&quot;noOfThreads&quot;))
+int tokenCount = Integer.parseInt(vars.get(&quot;refreshTokenCount&quot;))
+
+int calculatedLoopCount = (int) Math.ceil(tokenCount / (double) concurrency)
+
+vars.put(&quot;loopCount&quot;, Integer.toString(calculatedLoopCount))
+log.info(&quot;✅ loopCount dynamically set to: &quot; + calculatedLoopCount)</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Create tokenQueue" enabled="true">
           <stringProp name="cacheKey">true</stringProp>
           <stringProp name="filename"></stringProp>
@@ -507,6 +522,10 @@ if (ctx.getThreadNum() == 0) { // Only one thread writes
         </objProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
+      <hashTree/>
+      <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+        <stringProp name="ConstantTimer.delay">300</stringProp>
+      </ConstantTimer>
       <hashTree/>
     </hashTree>
   </hashTree>

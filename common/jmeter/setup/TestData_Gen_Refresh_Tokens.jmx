@@ -122,7 +122,7 @@
           </elementProp>
           <elementProp name="refreshTokenCount" elementType="Argument">
             <stringProp name="Argument.name">refreshTokenCount</stringProp>
-            <stringProp name="Argument.value">${__P(refreshTokenCount,10000)}</stringProp>
+            <stringProp name="Argument.value">${__P(refreshTokenCount,1000000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -153,7 +153,7 @@ int tokenCount = Integer.parseInt(vars.get(&quot;refreshTokenCount&quot;))
 int calculatedLoopCount = (int) Math.ceil(tokenCount / (double) concurrency)
 
 vars.put(&quot;loopCount&quot;, Integer.toString(calculatedLoopCount))
-log.info(&quot;✅ loopCount dynamically set to: &quot; + calculatedLoopCount)</stringProp>
+log.info(&quot;loopCount dynamically set to: &quot; + calculatedLoopCount)</stringProp>
         </JSR223Sampler>
         <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - Create tokenQueue" enabled="true">

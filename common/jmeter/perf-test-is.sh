@@ -504,7 +504,7 @@ function run_jmeter_scripts() {
         for param in "${jmeter_params[@]}"; do
             command+=" -J$param"
         done
-        command+=" -l test_data_store/results.jtl"
+        command+=" -l test_data_store/results.jtl -q jmeter.properties"
         echo "$command"
         echo ""
         $command

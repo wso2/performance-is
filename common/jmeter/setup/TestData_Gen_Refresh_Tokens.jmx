@@ -125,6 +125,16 @@
             <stringProp name="Argument.value">${__P(refreshTokenCount,1000000)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="nenoOfThreads" elementType="Argument">
+            <stringProp name="Argument.name">nenoOfThreads</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="neloopCount" elementType="Argument">
+            <stringProp name="Argument.name">neloopCount</stringProp>
+            <stringProp name="Argument.value">10000</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -173,10 +183,10 @@ if (props.get(&quot;tokenQueue&quot;) == null) {
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Password Grant" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <stringProp name="LoopController.loops">${loopCount}</stringProp>
+          <stringProp name="LoopController.loops">${neloopCount}</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${noOfThreads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${nenoOfThreads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUpPeriod}</stringProp>
         <longProp name="ThreadGroup.start_time">1394208748000</longProp>
         <longProp name="ThreadGroup.end_time">1394208748000</longProp>

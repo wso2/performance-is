@@ -132,7 +132,7 @@
           </elementProp>
           <elementProp name="neloopCount" elementType="Argument">
             <stringProp name="Argument.name">neloopCount</stringProp>
-            <stringProp name="Argument.value">15000</stringProp>
+            <stringProp name="Argument.value">1500</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

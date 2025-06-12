@@ -471,7 +471,8 @@ if (y == 0) {
     }&#xd;
   },&#xd;
   &quot;advancedConfigurations&quot;: {&#xd;
-  	&quot;skipLoginConsent&quot;: true	&#xd;
+  	&quot;skipLoginConsent&quot;: true,&#xd;
+  	&quot;enableAPIBasedAuthentication&quot;: true&#xd;
   },&#xd;
   &quot;authenticationSequence&quot;: {&#xd;
     &quot;type&quot;: &quot;DEFAULT&quot;,&#xd;
@@ -552,7 +553,7 @@ if (cm != null) {
         </JSR223PostProcessor>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>

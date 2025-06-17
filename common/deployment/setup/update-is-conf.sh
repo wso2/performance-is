@@ -258,6 +258,6 @@ echo "-------------------------------------------"
 ./wso2is/bin/wso2server.sh start
 sleep 100s
 ./wso2is/bin/wso2server.sh stop
-sleep 100s
+sleep 10s
 ./wso2is/bin/wso2server.sh start
-sleep 100s
+sleep 60s

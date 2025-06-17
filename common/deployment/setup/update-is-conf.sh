@@ -257,6 +257,10 @@ echo "Starting WSO2 IS server..."
 echo "-------------------------------------------"
 ./wso2is/bin/wso2server.sh start
 sleep 100s
+
+echo ""
+echo "Restarting WSO2 IS server..."
+echo "-------------------------------------------"
 ./wso2is/bin/wso2server.sh stop
 sleep 10s
 ./wso2is/bin/wso2server.sh start

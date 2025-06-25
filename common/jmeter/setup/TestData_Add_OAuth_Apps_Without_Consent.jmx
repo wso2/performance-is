@@ -373,7 +373,7 @@ if (y == 0) {
                 &quot;claim&quot;: {&#xd;
                     &quot;uri&quot;: &quot;http://wso2.org/claims/roles&quot;&#xd;
                 },&#xd;
-                &quot;mandatory&quot;: true&#xd;
+                &quot;mandatory&quot;: false&#xd;
             },&#xd;
             {&#xd;
                 &quot;claim&quot;: {&#xd;
@@ -391,7 +391,7 @@ if (y == 0) {
                 &quot;claim&quot;: {&#xd;
                     &quot;uri&quot;: &quot;http://wso2.org/claims/groups&quot;&#xd;
                 },&#xd;
-                &quot;mandatory&quot;: true&#xd;
+                &quot;mandatory&quot;: false&#xd;
             },&#xd;
             {&#xd;
                 &quot;claim&quot;: {&#xd;

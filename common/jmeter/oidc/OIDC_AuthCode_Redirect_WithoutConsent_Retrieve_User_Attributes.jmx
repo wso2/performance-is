@@ -348,6 +348,31 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
           </RegexExtractor>
           <hashTree/>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1.1 Load login do page">
+          <stringProp name="HTTPSampler.domain">${is_host}</stringProp>
+          <stringProp name="HTTPSampler.port">${is_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/authenticationendpoint/login.do?client_id=MY_ACCOUNT&amp;code_challenge=CWl6NSiHWkjdHb1c29dS1_U0bu370MsHW3te8VN8VkA&amp;code_challenge_method=S256&amp;commonAuthCallerPath=%2Foauth2%2Fauthorize&amp;forceAuth=false&amp;passiveAuth=false&amp;redirect_uri=https%3A%2F%2Flocalhost%3A9443%2Fmyaccount&amp;response_mode=form_post&amp;response_type=code&amp;scope=openid+openid+SYSTEM&amp;state=request_0&amp;tenantDomain=carbon.super&amp;sessionDataKey=72f0d3da-faf6-4c70-9743-189b750a082b&amp;relyingParty=MY_ACCOUNT&amp;type=oidc&amp;sp=My+Account&amp;isSaaSApp=true&amp;authenticators=BasicAuthenticator%3ALOCAL</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP/1.1 200 Response Assertion">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="103171775">HTTP/1.1 200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_headers</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+            <stringProp name="Assertion.custom_message">Test failed - loading login page</stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree> 
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2 Common Auth Login HTTP Request" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments">

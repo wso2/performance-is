@@ -1,4 +1,4 @@
-create database SESSION_DB;
+create database SESSION_DB character set latin1;
 
 use SESSION_DB;
 

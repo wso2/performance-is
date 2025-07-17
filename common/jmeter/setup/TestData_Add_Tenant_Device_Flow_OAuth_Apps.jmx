@@ -216,10 +216,10 @@ if (y == 0) {
   &quot;inboundProtocolConfiguration&quot;: {&#xd;
     &quot;oidc&quot;: {&#xd;
       &quot;accessToken&quot;: {&#xd;
-        &quot;type&quot;: &quot;Default&quot;,&#xd;
+        &quot;type&quot;: &quot;JWT&quot;,&#xd;
         &quot;userAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
         &quot;applicationAccessTokenExpiryInSeconds&quot;: 3600,&#xd;
-        &quot;bindingType&quot;: &quot;device-flow&quot;,&#xd;
+        &quot;bindingType&quot;: &quot;None&quot;,&#xd;
         &quot;revokeTokensWhenIDPSessionTerminated&quot;: false,&#xd;
         &quot;validateTokenBinding&quot;: false&#xd;
       },&#xd;

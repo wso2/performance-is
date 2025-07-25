@@ -66,7 +66,7 @@ test_duration=$default_test_duration
 default_warm_up_time=5
 warm_up_time=$default_warm_up_time
 # Heap size of JMeter Client
-default_jmeter_client_heap_size=2G
+default_jmeter_client_heap_size=4G
 jmeter_client_heap_size=$default_jmeter_client_heap_size
 
 # Scenario names to include

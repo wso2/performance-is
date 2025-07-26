@@ -1,6 +1,7 @@
 # IAM Performance Test Results Comparison
 
 During each release, we execute various automated performance test scenarios and publish the results.
+This document will be helpful for capacity planning as it reflects realistic user scenarios.
 
 | Test Scenarios                                                                                           | Description                                                                                                                                                                                                                     |
 |----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -50,7 +51,7 @@ The following is the summary of performance test results collected for the measu
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.
 
-Note: Response time is calculated for the user consent providing request.
+Note: Response time is calculated for the user consent providing request. A random delay is introduced before submitting the user credentials and the consent request to simulate a real user scenario.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
@@ -80,7 +81,7 @@ Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Thre
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type.
 
-Note: Response time is calculated for the user credentials submission request.
+Note: Response time is calculated for the user credentials submission request. A random delay is introduced before submitting the user credentials request to simulate a real user scenario.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
@@ -110,7 +111,7 @@ Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Thre
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes.
 
-Note: Response time is calculated for the user credentials submission request.
+Note: Response time is calculated for the user credentials submission request. A random delay is introduced before submitting the user credentials request to simulate a real user scenario.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
@@ -140,7 +141,7 @@ Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Thre
 
 #### Obtain an access token and an id token using the OAuth 2.0 authorization code grant type. Retrieve country, email, first name and last name as user attributes. Additionally retrieve groups and roles as well.
 
-Note: Response time is calculated for the user credentials submission request.
+Note: Response time is calculated for the user credentials submission request. A random delay is introduced before submitting the user credentials request to simulate a real user scenario.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 
@@ -170,7 +171,7 @@ Concurrent Users | Single Node 4 Core | Two Node 2 Core | Two Node 4 Core | Thre
 
 #### Obtain a SAML 2 assertion response using redirect binding.
 
-Note: Response time is calculated for the user credentials submission request.
+Note: Response time is calculated for the user credentials submission request. A random delay is introduced before submitting the user credentials request to simulate a real user scenario.
 
 Performance Comparison of Different Node Configurations with 95th Percentile of Response Time (ms)
 

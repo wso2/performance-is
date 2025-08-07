@@ -805,7 +805,7 @@ Mappings:
       AMI: ami-03fa1f014b48fa6bd
   DBTypeMap:
     mysql:
-      Version: '8.0.36'
+      Version: '8.0.43'
       License: 'general-public-license'
       ParameterGroup: 'perf-test-param-group'
       FromPort: '3306'

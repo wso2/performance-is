@@ -45,9 +45,6 @@ nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -
 nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_AuthCode_Redirect_WithConsent.jtl \
     -t $jmeter_scrip_home/oidc/OIDC_AuthCode_Redirect_WithConsent.jmx > $result_dir/OIDC_AuthCode_Redirect_WithConsent.out &
 
-nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_Password_Grant.jtl \
-    -t $jmeter_scrip_home/oidc/OIDC_Password_Grant.jmx > $result_dir/OIDC_Password_Grant.out &
-
 nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/SAML2_SSO_Redirect_Binding.jtl \
     -t $jmeter_scrip_home/saml/SAML2_SSO_Redirect_Binding.jmx > $result_dir/SAML2_SSO_Redirect_Binding.out &
 

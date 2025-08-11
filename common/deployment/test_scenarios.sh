@@ -168,5 +168,5 @@ declare -A test_scenario16=(
     [jmx]="app-native-auth/App_Native_Auth.jmx"
     [tenantMode]=false
     [skip]=false
-    [modes]="FULL"
+    [modes]="FULL PUBLISH"
 )

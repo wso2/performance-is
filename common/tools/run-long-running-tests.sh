@@ -36,44 +36,20 @@ echo "      host: $host"
 echo "      port: $port"
 echo "============================================"
 
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/Authenticate_Super_Tenant_User.jtl \
-#    -t $jmeter_scrip_home/authenticate/Authenticate_Super_Tenant_User.jmx > $result_dir/Authenticate_Super_Tenant_User.out &
+nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OAuth_Client_Credentials_Grant.jtl \
+    -t $jmeter_scrip_home/oauth/OAuth_Client_Credentials_Grant.jmx > $result_dir/OAuth_Client_Credentials_Grant.out &
 
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OAuth_AuthCode_Redirect_WithConsent.jtl \
-#    -t $jmeter_scrip_home/oauth/OAuth_AuthCode_Redirect_WithConsent.jmx > $result_dir/OAuth_AuthCode_Redirect_WithConsent.out &
-
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OAuth_Implicit_Redirect_WithConsent.jtl \
-#    -t $jmeter_scrip_home/oauth/OAuth_Implicit_Redirect_WithConsent.jmx > $result_dir/OAuth_Implicit_Redirect_WithConsent.out &
-
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OAuth_Password_Grant.jtl \
-#    -t $jmeter_scrip_home/oauth/OAuth_Password_Grant.jmx > $result_dir/OAuth_Password_Grant.out &
-
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OAuth_Client_Credentials_Grant.jtl \
-#    -t $jmeter_scrip_home/oauth/OAuth_Client_Credentials_Grant.jmx > $result_dir/OAuth_Client_Credentials_Grant.out &
+nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/App_Native_Auth.jtl \
+    -t $jmeter_scrip_home/app-native-auth/App_Native_Auth.jmx > $result_dir/App_Native_Auth.out &
 
 nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_AuthCode_Redirect_WithConsent.jtl \
     -t $jmeter_scrip_home/oidc/OIDC_AuthCode_Redirect_WithConsent.jmx > $result_dir/OIDC_AuthCode_Redirect_WithConsent.out &
 
-nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_Implicit_Redirect_WithConsent.jtl \
-    -t $jmeter_scrip_home/oidc/OIDC_Implicit_Redirect_WithConsent.jmx > $result_dir/OIDC_Implicit_Redirect_WithConsent.out &
-
 nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_Password_Grant.jtl \
     -t $jmeter_scrip_home/oidc/OIDC_Password_Grant.jmx > $result_dir/OIDC_Password_Grant.out &
 
-nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jtl \
-    -t $jmeter_scrip_home/oidc/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.jmx > $result_dir/OIDC_AuthCode_Request_Path_Authenticator_WithConsent.out &
-
 nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/SAML2_SSO_Redirect_Binding.jtl \
     -t $jmeter_scrip_home/saml/SAML2_SSO_Redirect_Binding.jmx > $result_dir/SAML2_SSO_Redirect_Binding.out &
-
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/Add_Super_Tenant_Users.jtl \
-#    -t $jmeter_scrip_home/Add_Super_Tenant_Users.jmx > $result_dir/Add_Super_Tenant_Users.out &
-
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/SCIM2_Get_User_By_ID.jtl \
-#    -t $jmeter_scrip_home/scim2/SCIM2_Get_User_By_ID.jmx > $result_dir/SCIM2_Get_User_By_ID.out &
-#
-#nohup jmeter -Jconcurrency=$concurrency -Jtime=$time -Jhost=$host -Jport=$port -JconstantTPS=$constantTPS -n -l $result_dir/SCIM2_Update_User_By_ID.jtl \
-#    -t $jmeter_scrip_home/scim2/SCIM2_Update_User_By_ID.jmx > $result_dir/SCIM2_Update_User_By_ID.out &
 
 echo ""
 echo "Test started successfully"

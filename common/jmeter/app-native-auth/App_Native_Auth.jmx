@@ -403,6 +403,11 @@ if (y == 0 || &quot;active-passive&quot;.equals(deploymentType)) {
           <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
         </HTTPSamplerProxy>
         <hashTree>
+          <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 6000 : 0,)}</stringProp>
+            <stringProp name="RandomTimer.range">${__groovy(&quot;${useDelay}&quot;.equals(&quot;true&quot;) ? 2000 : 0,)}</stringProp>
+          </GaussianRandomTimer>
+          <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">

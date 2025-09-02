@@ -80,7 +80,7 @@ estimate=false
 default_estimated_processing_time_in_between_tests=220
 estimated_processing_time_in_between_tests=$default_estimated_processing_time_in_between_tests
 
-default_is_port=9443
+default_is_port=8090
 is_port=$default_is_port
 
 noOfTenants=100
@@ -120,12 +120,11 @@ function clean_database() {
 
     db_type=$1
     rds_host=$2
-    session_rds_host=$3
 
     echo "Cleaning databases..."
     if [[ $db_type == "postgres" ]]; then
-        psql -h "$rds_host" -U asgthunder -d "IDENTITY_DB" -f /home/ubuntu/workspace/is/postgres/clean_database.sql || echo "Cleaning database failed."
-        psql -h "$session_rds_host" -U asgthunder -d "SESSION_DB" -f /home/ubuntu/workspace/is/postgres/clean_session_database.sql || echo "Cleaning session database failed."
+        psql -h "$rds_host" -U asgthunder -d "thunderdb" -f /home/ubuntu/workspace/is/postgres/clean_thunder_database.sql || echo "Cleaning thunder database failed."
+        psql -h "$rds_host" -U asgthunder -d "runtimedb" -f /home/ubuntu/workspace/is/postgres/clean_runtime_database.sql || echo "Cleaning runtime database failed."
     else
         echo "Unknown database type: $db_type"
         exit 1

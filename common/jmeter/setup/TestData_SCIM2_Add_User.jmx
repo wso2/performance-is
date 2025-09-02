@@ -20,7 +20,7 @@
           </elementProp>
           <elementProp name="is_port" elementType="Argument">
             <stringProp name="Argument.name">is_port</stringProp>
-            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.value">${__P(port,8090)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="adminCredentials" elementType="Argument">
@@ -463,7 +463,7 @@
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regex Extractor - SCIM ID" enabled="true">
             <stringProp name="RegexExtractor.useHeaders">unescaped</stringProp>
             <stringProp name="RegexExtractor.refname">scimID</stringProp>
-            <stringProp name="RegexExtractor.regex">&quot;location&quot;:&quot;https://localhost:9443/scim2/Users/(.+?)&quot;</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;location&quot;:&quot;https://localhost:8090/scim2/Users/(.+?)&quot;</stringProp>
             <stringProp name="RegexExtractor.template">$1$</stringProp>
             <stringProp name="RegexExtractor.default">FALSE</stringProp>
             <stringProp name="RegexExtractor.match_number">0</stringProp>

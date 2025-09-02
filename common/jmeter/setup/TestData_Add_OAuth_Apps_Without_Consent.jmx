@@ -20,7 +20,7 @@
           </elementProp>
           <elementProp name="is_port" elementType="Argument">
             <stringProp name="Argument.name">is_port</stringProp>
-            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.value">${__P(port,8090)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="adminUsername" elementType="Argument">
@@ -444,7 +444,7 @@ if (y == 0) {
       ],&#xd;
       &quot;idToken&quot;: {&#xd;
         &quot;audience&quot;: [&#xd;
-          &quot;https://localhost:9443/oauth2/token&quot;&#xd;
+          &quot;https://localhost:8090/oauth2/token&quot;&#xd;
         ],&#xd;
         &quot;encryption&quot;: {&#xd;
           &quot;algorithm&quot;: &quot;&quot;,&#xd;

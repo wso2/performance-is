@@ -325,8 +325,8 @@ Resources:
           ToPort: '9763'
           SourceSecurityGroupId: !Ref BastionSecurityGroupsuffix
         - IpProtocol: tcp
-          FromPort: '9443'
-          ToPort: '9443'
+          FromPort: '8090'
+          ToPort: '8090'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '8243'

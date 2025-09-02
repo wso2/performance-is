@@ -20,7 +20,7 @@
           </elementProp>
           <elementProp name="is_port" elementType="Argument">
             <stringProp name="Argument.name">is_port</stringProp>
-            <stringProp name="Argument.value">${__P(port,9443)}</stringProp>
+            <stringProp name="Argument.value">${__P(port,8090)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="adminUsername" elementType="Argument">
@@ -188,7 +188,7 @@ if (y == 0) {
         &quot;certificates&quot;:[&quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlERWpDQ0FmcWdBd0lCQWdJRTQ3VnBwakFOQmdrcWhraUc5dzBCQVFRRkFEQkxNUm93R0FZRFZRUUREQkZwDQpjM0JsY21admNtMWhibU5sZEdWemRERU5NQXNHQTFVRUN3d0VUbTl1WlRFUE1BMEdBMVVFQ2d3R1RtOXVaU0JNDQpNUTB3Q3dZRFZRUUdFd1JPYjI1bE1CNFhEVEl6TURFek1ERXpNamsxT1ZvWERUTXpNREl5TmpFek1qazFPVm93DQpTekVhTUJnR0ExVUVBd3dSYVhOd1pYSm1iM0p0WVc1alpYUmxjM1F4RFRBTEJnTlZCQXNNQkU1dmJtVXhEekFODQpCZ05WQkFvTUJrNXZibVVnVERFTk1Bc0dBMVVFQmhNRVRtOXVaVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEDQpnZ0VQQURDQ0FRb0NnZ0VCQUpFdnRFTDdMMGNuSTNuMDBhY3FTaU4rNitaVXJoQkFtSUZkdW1SL1BXSnBpdytEDQphQ0xkUWR2NUlqdG51MEF0bnFSZEtRa001amRSRGhRNXpNRTM5VFV2QzFLc0RWNERJQ0E5TFlxdXdoZVVQRGRVDQpzWjlqVE1BRHBmMzZxOFVzV2hWcnF3V3Y2VCt0VUhwa2Nrb1FnWnZ1YU5PTHdKMkhMVmNkaFVYUVVydFFkdjZVDQp0WEN1ZXZMR1lRNTA2bG84MElQNitIRjdna3Vka2ZmSmdXdFgrT3JMK1czcWIzaTF3cDB4cWxxam1WVW53U3ZjDQpzd1FtRUZPckNGSEk0NXpBSjdzWmVNNHBOVXBXc3lSa2VYQ3RLZG5BNzZ1MlZrU3dFU3l5MW5oUUZkemhEemRYDQpsUTVJa1ZHUWVJbkV5ek5TVi9lMHhRcFZrTVc5VUY5RlIyN0hhWFVDQXdFQUFUQU5CZ2txaGtpRzl3MEJBUVFGDQpBQU9DQVFFQWlUTzd2bWpDMUxZcDZDMzVNcVJOdkc2dkhDbjRwRjZodFBaRlFYSjlDT2wxaUlpYWZMWFRRNGlmDQpOM29rN0xpclpyRUlVdmhvZFlPTk4xcXRwdHAvcnhCUk0rdHBicjlpcGFrb0w3dnBpWFV1UFpDbHM4MC8vREtGDQpBUjNtUmtLdEpkQWx3cC9XTUVxd21rWHFEd1dycjUyYUZlYzZCTlhLd1FUTjRBYUpJbjNNdTJCSmM0VVVSdDRDDQpCclhndmswbzBYWHZ0YkQ1M2kxZUlSQ2FIUlBwbkhYaHhYdHE4aVY2MU53UU1nOWwvb0NGSXM1YzlDeFJUQXNNDQpRQjVkTktTRlhiTlZiMGlsM0JTaFp1K1czZG9qMitKMGJqdmJ1TEp6K01ZRnQ0N1RoVnp0WnlKb1JGV0lBNm1DDQpFa20rQ3BPalkxd0VwMnJrVjZLNkl4K3UwcStUTVE9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ0K&quot;]&#xd;
     },&#xd;
     &quot;idpIssuerName&quot;: &quot;${idpIssuerName}&quot;,&#xd;
-    &quot;alias&quot;: &quot;https://localhost:9443/oauth2/token&quot;,&#xd;
+    &quot;alias&quot;: &quot;https://localhost:8090/oauth2/token&quot;,&#xd;
     &quot;claims&quot;: {&#xd;
         &quot;provisioningClaims&quot;: [],&#xd;
         &quot;roleClaim&quot;: {&#xd;
@@ -204,7 +204,7 @@ if (y == 0) {
         &quot;defaultAuthenticatorId&quot;: &quot;&quot;&#xd;
     },&#xd;
     &quot;homeRealmIdentifier&quot;: &quot;&quot;,&#xd;
-    &quot;image&quot;: &quot;https://localhost:9443/console/libs/themes/default/assets/images/identity-providers/expert.svg&quot;,&#xd;
+    &quot;image&quot;: &quot;https://localhost:8090/console/libs/themes/default/assets/images/identity-providers/expert.svg&quot;,&#xd;
     &quot;isFederationHub&quot;: false,&#xd;
     &quot;isPrimary&quot;: false,&#xd;
     &quot;name&quot;: &quot;${idpName}&quot;,&#xd;

@@ -37,11 +37,8 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c6i.2xlarge
 bastion_instance_type="$default_bastion_instance_type"
-keystore_type="JKS"
 db_type="postgres"
-is_case_insensitive_username_and_attributes="false"
 enable_high_concurrency=false
-use_db_snapshot=false
 db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
@@ -53,8 +50,8 @@ function usage() {
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
     echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
-    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
-    echo "   [-l <is_case_insensitive_username_and_attributes>] [-q <user_tag>]"
+    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-m <db_type>]"
+    echo "   [-q <user_tag>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
@@ -74,10 +71,8 @@ function usage() {
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-v: The required testing mode [FULL/QUICK]"
-    echo "-t: Keystore type. Default: $keystore_type."
     echo "-g: Number of IS nodes."
     echo "-m: Database type. Default: $db_type."
-    echo "-l: Case insensitivity of the username and attributes. Default: $is_case_insensitive_username_and_attributes."
     echo "-h: Display this help and exit."
     echo ""
 }
@@ -97,7 +92,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
+while getopts "q:k:c:j:n:u:p:s:e:i:b:w:g:m:r:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -138,17 +133,11 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
-    t)
-        keystore_type=${OPTARG}
-        ;;
     g)
         no_of_nodes=${OPTARG}
         ;;
     m)
         db_type=${OPTARG}
-        ;;
-    l)
-        is_case_insensitive_username_and_attributes=${OPTARG}
         ;;
     h)
         usage
@@ -365,41 +354,11 @@ echo "Getting WSO2 IS Node 1 Private IP..."
 wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
 echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
-wso2_is_2_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 2 Private IP..."
-    wso2_is_2_ip=$(get_private_ip "$stack_id" "WSO2ISNode2AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
-fi
-
-wso2_is_3_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 2 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 3 Private IP..."
-    wso2_is_3_ip=$(get_private_ip "$stack_id" "WSO2ISNode3AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
-fi
-
-wso2_is_4_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 4 Private IP..."
-    wso2_is_4_ip=$(get_private_ip "$stack_id" "WSO2ISNode4AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 4 Private IP: $wso2_is_4_ip"
-fi
-
 echo ""
 echo "Getting RDS Hostname..."
 rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
-
-echo ""
-echo "Getting Session DB RDS Hostname..."
-session_rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISSessionDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-session_rds_host="$(aws rds describe-db-instances --db-instance-identifier "$session_rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
-echo "Session DB RDS Hostname: $session_rds_host"
 
 if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
@@ -413,24 +372,8 @@ if [[ -z $wso2_is_1_ip ]]; then
     echo "WSO2 node 1 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ -z $wso2_is_2_ip ]]; then
-    echo "WSO2 node 2 IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $wso2_is_3_ip ]]; then
-    echo "WSO2 node 3 IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $wso2_is_4_ip ]]; then
-    echo "WSO2 node 4 IP could not be found. Exiting..."
-    exit 1
-fi
 if [[ -z $rds_host ]]; then
     echo "RDS host could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $session_rds_host ]]; then
-    echo "Session RDS host could not be found. Exiting..."
     exit 1
 fi
 
@@ -448,7 +391,7 @@ scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
-ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
+ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -r $rds_host -l $nginx_instance_ip"
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
@@ -463,34 +406,9 @@ ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
 execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 
 echo ""
-echo "Creating session database in RDS..."
-execute_db_command "$session_rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_session_database.sql"
-
-echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
-ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Running IS node 2 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-fi
-
-if [[ $no_of_nodes -gt 2 ]]; then
-    echo ""
-    echo "Running IS node 3 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-fi
-
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Running IS node 4 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
-fi
+ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a thunder1 -i $wso2_is_1_ip -r $rds_host
 
 echo ""
 echo "Running performance tests..."

@@ -17,7 +17,7 @@ security:
 database:
     identity:
         type: "postgres"
-        hostname: "localhost"
+        hostname: "{db_hostname}"
         port: 5432
         name: "thunderdb"
         username: "asgthunder"
@@ -25,7 +25,7 @@ database:
         sslmode: "disable"
     runtime:
         type: "postgres"
-        hostname: "localhost"
+        hostname: "{db_hostname}"
         port: 5432
         name: "runtimedb"
         username: "asgthunder"

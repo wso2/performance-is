@@ -123,15 +123,9 @@ function clean_database() {
     session_rds_host=$3
 
     echo "Cleaning databases..."
-    if [[ $db_type == "mysql" ]]; then
-        mysql -u wso2carbon -h "$rds_host" -pwso2carbon IDENTITY_DB < /home/ubuntu/workspace/is/mysql/clean_database.sql || echo "Cleaning database failed."
-        mysql -u wso2carbon -h "$session_rds_host" -pwso2carbon SESSION_DB < /home/ubuntu/workspace/is/mysql/clean_session_database.sql || echo "Cleaning session database failed."
-    elif [[ $db_type == "mssql" ]]; then
-        sqlcmd -S "$rds_host" -U wso2carbon -P wso2carbon -d IDENTITY_DB -i /home/ubuntu/workspace/is/mssql/clean_database.sql || echo "Cleaning database failed."
-        sqlcmd -S "$session_rds_host" -U wso2carbon -P wso2carbon -d SESSION_DB -i /home/ubuntu/workspace/is/mssql/clean_session_database.sql || echo "Cleaning session database failed."
-    elif [[ $db_type == "postgres" ]]; then
-        psql -h "$rds_host" -U wso2carbon -d "IDENTITY_DB" -f /home/ubuntu/workspace/is/postgres/clean_database.sql || echo "Cleaning database failed."
-        psql -h "$session_rds_host" -U wso2carbon -d "SESSION_DB" -f /home/ubuntu/workspace/is/postgres/clean_session_database.sql || echo "Cleaning session database failed."
+    if [[ $db_type == "postgres" ]]; then
+        psql -h "$rds_host" -U asgthunder -d "IDENTITY_DB" -f /home/ubuntu/workspace/is/postgres/clean_database.sql || echo "Cleaning database failed."
+        psql -h "$session_rds_host" -U asgthunder -d "SESSION_DB" -f /home/ubuntu/workspace/is/postgres/clean_session_database.sql || echo "Cleaning session database failed."
     else
         echo "Unknown database type: $db_type"
         exit 1

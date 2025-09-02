@@ -93,7 +93,7 @@ superAdminUsername="admin"
 superAdminPassword="admin"
 populateTestData=true
 rds_host=""
-databaseType="mysql"
+databaseType="postgres"
 databaseName="IDENTITY_DB"
 noOfTenants=100
 spCount=10
@@ -134,7 +134,7 @@ function usage() {
     echo "-l: Host name."
     echo "-n: RDS Host name."
     echo "-q: Populate test data. Default true."
-    echo "-b: Database Type. Default mysql."
+    echo "-b: Database Type. Default postgres."
     echo "-f: Database name. Default IDENTITY_DB."
     echo "-t: Estimate time without executing tests."
     echo "-p: Identity Server Port. Default $default_is_port."

@@ -386,11 +386,8 @@ Resources:
             curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
             curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
             apt-get update
-            DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             DEBIAN_FRONTEND=noninteractive apt install -y postgresql-client
             DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-            export PATH=/opt/mssql-tools/bin:$PATH
             echo "export PATH=$PATH" >>/etc/environment
             curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             sudo mkdir /usr/lib/jvm
@@ -473,11 +470,8 @@ Resources:
             curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
             curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
             apt-get update
-            DEBIAN_FRONTEND=noninteractive apt-get install -yq mysql-client
             DEBIAN_FRONTEND=noninteractive apt install -y postgresql-client
             DEBIAN_FRONTEND=noninteractive apt-get install -y unzip
-            DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-            export PATH=/opt/mssql-tools/bin:$PATH
             echo "export PATH=$PATH" >>/etc/environment
             curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
             sudo mkdir /usr/lib/jvm
@@ -590,10 +584,8 @@ Parameters:
   DBType:
     Type: String
     AllowedValues:
-      - mysql
-      - mssql
       - postgres
-    Default: mysql
+    Default: postgres
   DBSnapshotId:
     Description: Snapshot ID to restore the database from
     Type: String
@@ -662,20 +654,6 @@ Mappings:
     us-west-2:
       AMI: ami-03fa1f014b48fa6bd
   DBTypeMap:
-    mysql:
-      Version: '8.0.43'
-      License: 'general-public-license'
-      ParameterGroup: 'perf-test-param-group'
-      FromPort: '3306'
-      ToPort: '3306'
-      DBType: 'mysql'
-    mssql:
-      Version: '14.00.3480.1.v1'
-      License: 'license-included'
-      ParameterGroup: 'perf-test-param-group-sqlserver'
-      FromPort: '1433'
-      ToPort: '1433'
-      DBType: 'sqlserver-se'
     postgres:
       Version: '14.14'
       License: 'postgresql-license'

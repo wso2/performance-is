@@ -19,31 +19,6 @@
 # edit is server script.
 # ----------------------------------------------------------------------------
 
-function add_mysql_connector() {
-
-    echo ""
-    echo "Changing permission for MySQL connector"
-    echo "-------------------------------------------"
-    chmod 644 mysql-connector-j-*.jar
-
-    echo ""
-    echo "Adding MySQL connector to the pack..."
-    echo "-------------------------------------------"
-    cp mysql-connector-j-*.jar "$carbon_home"/repository/components/lib/
-}
-
-function add_mssql_connector() {
-    echo ""
-    echo "Changing permission for MSSQL connector"
-    echo "-------------------------------------------"
-    chmod 644 mssql-jdbc-*.jar
-
-    echo ""
-    echo "Adding MSSQL connector to the pack..."
-    echo "-------------------------------------------"
-    cp mssql-jdbc-*.jar "$carbon_home"/repository/components/lib/
-}
-
 function add_postgres_connector() {
     echo ""
     echo "Changing permission for Postgres connector"
@@ -54,37 +29,6 @@ function add_postgres_connector() {
     echo "Adding Postgres connector to the pack..."
     echo "-------------------------------------------"
     cp postgresql-*.jar "$carbon_home"/repository/components/lib/
-}
-
-function update_mysql_config() {
-
-    local configs=(
-      "s|{identity_db_url}|jdbc:mysql://$db_instance_ip:3306/IDENTITY_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
-      "s|{session_db_url}|jdbc:mysql://$session_db_instance_ip:3306/SESSION_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
-      "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
-      "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
-      "s|{db_driver}|com.mysql.jdbc.Driver|g"
-    )
-    
-    for config in "${configs[@]}"; do
-      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
-    done
-}
-
-
-function update_mssql_config() {
-
-    local configs=(
-      "s|{identity_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
-      "s|{session_db_url}|jdbc:sqlserver://$session_db_instance_ip:1433;databaseName=SESSION_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
-      "s|{user_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=UM_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
-      "s|{reg_db_url}|jdbc:sqlserver://$db_instance_ip:1433;databaseName=REG_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;|g"
-      "s|{db_driver}|com.microsoft.sqlserver.jdbc.SQLServerDriver|g"
-    )
-    
-    for config in "${configs[@]}"; do
-      sed -i "$config" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
-    done
 }
 
 function update_postgres_config() {
@@ -198,11 +142,7 @@ sudo chown -R ubuntu:ubuntu wso2is
 
 carbon_home=$(realpath ~/wso2is)
 
-if [[ $db_type == "mysql" ]]; then
-    add_mysql_connector
-elif [[ $db_type == "mssql" ]]; then
-    add_mssql_connector
-elif [[ $db_type == "postgres" ]]; then
+if [[ $db_type == "postgres" ]]; then
     add_postgres_connector
 else
     echo "Unsupported database type: $db_type"
@@ -225,11 +165,7 @@ sed -i "s|{keystore_type}|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|{is_case_insensitive_username_and_attributes}|$is_case_insensitive_username_and_attributes|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
-if [[ $db_type == "mysql" ]]; then
-    update_mysql_config
-elif [[ $db_type == "mssql" ]]; then
-    update_mssql_config
-elif [[ $db_type == "postgres" ]]; then
+if [[ $db_type == "postgres" ]]; then
     update_postgres_config
 else
     echo "Unsupported database type: $db_type"

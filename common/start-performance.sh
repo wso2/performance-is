@@ -27,9 +27,9 @@ certificate_name=""
 jmeter_setup=""
 is_setup=""
 concurrency=""
-default_db_username="wso2carbon"
+default_db_username="asgthunder"
 db_username="$default_db_username"
-default_db_password="wso2carbon"
+default_db_password="asgthunder"
 db_password="$default_db_password"
 default_db_instance_type=db.m6i.2xlarge
 db_instance_type=$default_db_instance_type
@@ -38,7 +38,7 @@ wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c6i.2xlarge
 bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
-db_type="mysql"
+db_type="postgres"
 is_case_insensitive_username_and_attributes="false"
 enable_high_concurrency=false
 use_db_snapshot=false
@@ -88,12 +88,8 @@ function execute_db_command() {
     local sql_file="$2"
     # Construct the database-specific command
     local db_command=""
-    if [[ $db_type == "mysql" ]]; then
-        db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
-    elif [[ $db_type == "mssql" ]]; then
-        db_command="sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
-    elif [[ $db_type == "postgres" ]]; then
-        db_command="psql -h $db_host -U wso2carbon -d postgres -f $sql_file"
+    if [[ $db_type == "postgres" ]]; then
+        db_command="psql -h $db_host -U asgthunder -d postgres -f $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1
@@ -185,16 +181,8 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# TODO: add snapshot support for other db types
-if [[ $db_snapshot_id != "-" && $db_type == "mysql" ]]; then
-    use_db_snapshot=true
-else
-    db_snapshot_id=""
-    use_db_snapshot=false
-fi
-
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency} -v ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -r ${concurrency} -v ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -472,11 +460,7 @@ echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
 ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
-if $use_db_snapshot; then
-    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/mysql/create_database_from_snapshot.sql"
-else
-    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
-fi
+execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 
 echo ""
 echo "Creating session database in RDS..."

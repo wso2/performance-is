@@ -205,6 +205,7 @@ fi
 
 if [[ $no_of_nodes -eq 1 ]]; then
     no_of_nodes_string="single"
+else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1
 fi
@@ -287,9 +288,6 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=DBType,ParameterValue=$db_type \
-        ParameterKey=SessionDBUsername,ParameterValue=$db_username \
-        ParameterKey=SessionDBPassword,ParameterValue=$db_password \
-        ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
         ParameterKey=EnableHighConcurrencyMode,ParameterValue=$enable_high_concurrency \

@@ -39,7 +39,6 @@ default_bastion_instance_type=c6i.2xlarge
 bastion_instance_type="$default_bastion_instance_type"
 db_type="postgres"
 enable_high_concurrency=false
-db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
 default_minimum_stack_creation_wait_time=10
@@ -49,7 +48,7 @@ function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-m <db_type>]"
     echo "   [-q <user_tag>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
@@ -64,7 +63,6 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-s: The database snapshot ID. Default: -."
     echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
@@ -92,7 +90,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:g:m:r:h" opts; do
+while getopts "q:k:c:j:n:u:p:e:i:b:w:g:m:r:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -117,9 +115,6 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:g:m:r:h" opts; do
         ;;
     r)
         concurrency=${OPTARG}
-        ;;
-    s)
-        db_snapshot_id=${OPTARG}
         ;;
     e)
         db_instance_type=${OPTARG}
@@ -210,13 +205,6 @@ fi
 
 if [[ $no_of_nodes -eq 1 ]]; then
     no_of_nodes_string="single"
-elif [[ $no_of_nodes -eq 2 ]]; then
-    no_of_nodes_string="two"
-elif [[ $no_of_nodes -eq 3 ]]; then
-    no_of_nodes_string="three"
-elif [[ $no_of_nodes -eq 4 ]]; then
-    no_of_nodes_string="four"
-else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1
 fi
@@ -244,8 +232,6 @@ echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
 if [[ $no_of_nodes -eq 1 ]]; then
     tar -xf target/is-performance-singlenode-*.tar.gz -C "$results_dir"
-else
-    tar -xf target/is-performance-${no_of_nodes_string}node-cluster*.tar.gz -C "$results_dir"
 fi
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
@@ -274,9 +260,6 @@ echo "random_number: $random_number"
 if [[ $no_of_nodes -eq 1 ]]; then
     template_file_name="new-single-node.yml"
     cp single-node.yaml "$template_file_name"
-else
-    template_file_name="new-$no_of_nodes-node-cluster.yml"
-    cp "$no_of_nodes-node-cluster.yml" "$template_file_name"
 fi
 sed -i "s/suffix/$random_number/" "$template_file_name"
 
@@ -309,7 +292,6 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
-        ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_id \
         ParameterKey=EnableHighConcurrencyMode,ParameterValue=$enable_high_concurrency \
         ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
@@ -393,12 +375,6 @@ echo "Running Bastion Node setup script..."
 echo "============================================"
 ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -r $rds_host -l $nginx_instance_ip"
 
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Sleep for FD Limit"
-    sleep 5m
-fi
-
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
@@ -438,9 +414,6 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
 if [[ $no_of_nodes -eq 1 ]]; then
     "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
         -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
-else
-    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
 fi
 
 echo "Creating summary results markdown file..."

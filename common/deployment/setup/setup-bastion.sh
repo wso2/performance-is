@@ -23,7 +23,7 @@ no_of_nodes=""
 wso2_is_1_ip=""
 lb_host=""
 rds_host=""
-wso2is_1_host_alias=wso2is1
+wso2is_1_host_alias=thunder1
 lb_alias=loadbalancer
 
 function usage() {

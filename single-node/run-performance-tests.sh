@@ -42,7 +42,7 @@ function before_execute_test_scenario() {
 
 function after_execute_test_scenario() {
 
-    is_home="/home/ubuntu/wso2is"
+    is_home="/home/ubuntu/thunder"
     write_server_metrics $wso2is_host_alias $wso2is_host_alias
     download_file "$wso2is_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_host_alias.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/gc.log $wso2is_host_alias"_gc.log"

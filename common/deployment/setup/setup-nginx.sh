@@ -25,7 +25,7 @@ function usage() {
     echo "$0 -i <IS_NODE_1_IP>"
     echo ""
     echo "-n: The number of nodes in the deployment."
-    echo "-i: The IP of wso2is node 1."
+    echo "-i: The IP of thunder node 1."
     echo "-h: Display this help and exit."
     echo ""
 }

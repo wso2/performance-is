@@ -1,10 +1,10 @@
 server:
-  hostname: "localhost"
+  hostname: "thunder.wso2.com"
   port: 8090
   # http_only: false
 
 gate_client:
-  hostname: "localhost"
+  hostname: "thunder.wso2.com"
   port: 9090
   scheme: "https"
   login_path: "/login"

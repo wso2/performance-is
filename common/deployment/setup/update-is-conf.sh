@@ -64,18 +64,18 @@ if [[ -z $db_instance_ip ]]; then
 fi
 
 echo ""
-echo "unzipping is server"
+echo "unzipping thunder server"
 echo "-------------------------------------------"
-unzip -q wso2is.zip
+unzip -q thunder.zip
 
 echo ""
 echo "changing server name"
 echo "-------------------------------------------"
-mv wso2is-* wso2is
+mv thunder-* thunder
 
-sudo chown -R ubuntu:ubuntu wso2is
+sudo chown -R ubuntu:ubuntu thunder
 
-carbon_home=$(realpath ~/wso2is)
+carbon_home=$(realpath ~/thunder)
 
 echo ""
 echo "Adding deployment yaml file to the pack..."
@@ -92,21 +92,17 @@ else
     exit 1
 fi
 
-if [[ -z $no_of_nodes ]]; then
-    echo "Please provide the number of IS nodes in the deployment."
-    exit 1
-fi
+echo ""
+echo "Starting Thunder server..."
+echo "-------------------------------------------"
 
 echo ""
-echo "Starting WSO2 IS server..."
+echo "Adding thunder.wso2.com to /etc/hosts..."
 echo "-------------------------------------------"
-./wso2is/bin/wso2server.sh start
-sleep 100s
+sudo bash -c "echo '0.0.0.0 thunder.wso2.com' >> /etc/hosts"
 
-echo ""
-echo "Restarting WSO2 IS server..."
-echo "-------------------------------------------"
-./wso2is/bin/wso2server.sh stop
-sleep 10s
-./wso2is/bin/wso2server.sh start
+cd "$carbon_home"
+bash start.sh &
+cd "../"
 sleep 60s
+

@@ -25,7 +25,7 @@ function usage() {
     echo "$0 -a <HOST_ALIAS> -i <IS_NODE_IP> -w <OTHER_IS_NODE_IP> -r <RDS_IP> "
     echo ""
     echo "-a: Host alias of the IS node to be setup."
-    echo "-i: The IP of wso2is node 1."
+    echo "-i: The IP of thunder node 1."
     echo "-r: The IP address of RDS."
     echo "-h: Display this help and exit."
     echo "-m: Database type."
@@ -81,7 +81,7 @@ echo "-------------------------------------------"
 
 sudo -u ubuntu scp setup/update-is-conf.sh "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp -r setup/resources/ "$is_host_alias":/home/ubuntu/
-sudo -u ubuntu scp wso2is.zip "$is_host_alias":/home/ubuntu/
+sudo -u ubuntu scp thunder.zip "$is_host_alias":/home/ubuntu/
 
 sudo -u ubuntu ssh "$is_host_alias" mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh "$is_host_alias":/home/ubuntu/setup/

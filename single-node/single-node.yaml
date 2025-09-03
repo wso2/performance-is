@@ -564,7 +564,7 @@ Mappings:
       AMI: ami-03fa1f014b48fa6bd
   DBTypeMap:
     postgres:
-      Version: '14.14'
+      Version: '14.19'
       License: 'postgresql-license'
       ParameterGroup: 'perf-test-param-group-postgres'
       FromPort: '5432'

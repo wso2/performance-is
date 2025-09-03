@@ -41,7 +41,7 @@ db_type="postgres"
 enable_high_concurrency=false
 
 results_dir="$PWD/results-$timestamp"
-default_minimum_stack_creation_wait_time=10
+default_minimum_stack_creation_wait_time=3
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {
@@ -364,7 +364,7 @@ scp_r_bastion_cmd "$results_dir/setup" "/home/ubuntu/"
 scp_bastion_cmd "target/is-performance-*.tar.gz" "/home/ubuntu"
 
 scp_bastion_cmd "$jmeter_setup" "/home/ubuntu/"
-scp_bastion_cmd "$is_setup" "/home/ubuntu/wso2is.zip"
+scp_bastion_cmd "$is_setup" "/home/ubuntu/thunder.zip"
 scp_bastion_cmd "$key_file" "/home/ubuntu/private_key.pem"
 scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 
@@ -376,13 +376,13 @@ ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip 
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
-ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
+ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q thunder.zip ; mv thunder-* thunder"
 execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 
 echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
-ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a thunder1 -i $wso2_is_1_ip -r $rds_host
+ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a thunder1 -i $wso2_is_1_ip -r $rds_host"
 
 echo ""
 echo "Running performance tests..."

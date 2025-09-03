@@ -79,7 +79,9 @@ rm -rf $carbon_home/repository/logs/*
 
 echo "Restarting Thunder..."
 cd "$carbon_home"
-bash start.sh &
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="thunder_${TIMESTAMP}.log"
+bash start.sh > "$LOG_FILE" 2>&1 &
 cd "../"
 
 echo "Waiting $waiting_time seconds..."

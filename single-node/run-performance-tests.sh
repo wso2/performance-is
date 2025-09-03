@@ -35,9 +35,10 @@ function before_execute_test_scenario() {
 
     ssh $wso2is_host_alias "./restart-is.sh -m $heap"
 
-    echo "Cleaning databases..."
-    rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    clean_database "$@" "$rds_host"
+    # Skipping Cleaning DBs as that is not required in Thunder
+    # echo "Cleaning databases..."
+    # rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
+    # clean_database "$@" "$rds_host"
 }
 
 function after_execute_test_scenario() {

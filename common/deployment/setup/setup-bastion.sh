@@ -116,7 +116,7 @@ sudo chown -R ubuntu:ubuntu /tmp/jmeter.log
 sudo chown -R ubuntu:ubuntu jmeter.log
 
 echo ""
-echo "Coping files to NGinx instance..."
+echo "Copying files to NGinx instance..."
 echo "============================================"
 sudo -u ubuntu scp -r /home/ubuntu/workspace/setup/resources/ $lb_alias:/home/ubuntu/
 sudo -u ubuntu scp /home/ubuntu/workspace/setup/setup-nginx.sh $lb_alias:/home/ubuntu/

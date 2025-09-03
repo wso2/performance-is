@@ -102,7 +102,11 @@ echo "-------------------------------------------"
 sudo bash -c "echo '0.0.0.0 thunder.wso2.com' >> /etc/hosts"
 
 cd "$carbon_home"
-bash start.sh &
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="thunder_${TIMESTAMP}.log"
+bash start.sh > "$LOG_FILE" 2>&1 &
 cd "../"
-sleep 60s
+echo "Waiting 30s for Thunder server to start..."
+sleep 30s
 
+echo "Updating conf completed."

@@ -302,7 +302,8 @@ stack_id="$($create_stack_command)"
 stack_id=$(echo "$stack_id" | jq -r .StackId)
 
 # Delete the stack in case of an error.
-trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
+# TODO add exit handler
+# trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
 
 echo ""
 echo "Created stack ID: $stack_id"
@@ -380,7 +381,7 @@ ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q thunder.zip ; mv thunder-* thunder"
 execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 
 echo ""
-echo "Running IS node 1 setup script..."
+echo "Running Thunder node 1 setup script..."
 echo "============================================"
 ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a thunder1 -i $wso2_is_1_ip -r $rds_host"
 

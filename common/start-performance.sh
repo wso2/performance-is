@@ -302,8 +302,7 @@ stack_id="$($create_stack_command)"
 stack_id=$(echo "$stack_id" | jq -r .StackId)
 
 # Delete the stack in case of an error.
-# TODO add exit handler
-# trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
+trap 'exit_handler "$results_dir" "$stack_id" "$script_start_time"' EXIT
 
 echo ""
 echo "Created stack ID: $stack_id"

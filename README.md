@@ -79,8 +79,8 @@ See usage:
 -j: The path to JMeter setup.
 -c: The name of the IAM certificate.
 -n: The is server zip
--u: The database username. Default: wso2carbon.
--p: The database password. Default: wso2carbon.
+-u: The database username. Default: asgthunder.
+-p: The database password. Default: asgthunder.
 -s: The database snapshot ID. Default: -.
 -e: The database instance type. Default: db.m6i.2xlarge.
 -i: The instance type used for IS nodes. Default: c6i.xlarge.
@@ -89,7 +89,7 @@ See usage:
     Default: 10 minutes.
 -g: Number of IS nodes.
 -t: Keystore type. Default: PKCS12.
--m: Database type. Default: mysql.
+-m: Database type. Default: postgres.
 -l: Case insensitivity of the username and attributes. Default: false.
 -h: Display this help and exit.
 ```

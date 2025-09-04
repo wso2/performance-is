@@ -25,20 +25,14 @@ function usage() {
     echo "$0 -a <HOST_ALIAS> -i <IS_NODE_IP> -w <OTHER_IS_NODE_IP> -r <RDS_IP> "
     echo ""
     echo "-a: Host alias of the IS node to be setup."
-    echo "-i: The IP of wso2is node 1."
-    echo "-w: The IP of wso2is node 2."
-    echo "-j: The IP of wso2is node 3."
-    echo "-k: The IP of wso2is node 4."
+    echo "-i: The IP of thunder node 1."
     echo "-r: The IP address of RDS."
-    echo "-s: The IP address of session DB RDS."
     echo "-h: Display this help and exit."
-    echo "-t: Keystore type."
     echo "-m: Database type."
-    echo "-c: Case insensitivity of the username and attributes."
     echo ""
 }
 
-while getopts "a:n:w:i:j:k:r:s:t:m:c:h" opts; do
+while getopts "a:n:i:r:m:h" opts; do
     case $opts in
     a)
         is_host_alias=${OPTARG}
@@ -49,29 +43,11 @@ while getopts "a:n:w:i:j:k:r:s:t:m:c:h" opts; do
     i)
         wso2_is_1_ip=${OPTARG}
         ;;
-    w)
-        wso2_is_2_ip=${OPTARG}
-        ;;
-    j)
-        wso2_is_3_ip=${OPTARG}
-        ;;
-    k)
-        wso2_is_4_ip=${OPTARG}
-        ;;
     r)
         db_instance_ip=${OPTARG}
         ;;
-    s)
-        session_db_instance_ip=${OPTARG}
-        ;;
-    t)
-        keystore_type=${OPTARG}
-        ;;
     m)
         db_type=${OPTARG}
-        ;;
-    c)
-        is_case_insensitive_username_and_attributes=${OPTARG}
         ;;
     h)
         usage
@@ -94,16 +70,6 @@ if [[ -z $db_instance_ip ]]; then
     exit 1
 fi
 
-if [[ -z $session_db_instance_ip ]]; then
-    echo "Please provide the session db instance IP address."
-    exit 1
-fi
-
-if [[ -z $keystore_type ]]; then
-    echo "Please provide the keystore type."
-    exit 1
-fi
-
 if [[ -z $db_type ]]; then
     echo "Please provide the database type."
     exit 1
@@ -115,10 +81,7 @@ echo "-------------------------------------------"
 
 sudo -u ubuntu scp setup/update-is-conf.sh "$is_host_alias":/home/ubuntu/
 sudo -u ubuntu scp -r setup/resources/ "$is_host_alias":/home/ubuntu/
-sudo -u ubuntu scp wso2is.zip "$is_host_alias":/home/ubuntu/
-sudo -u ubuntu scp mysql-connector-j-*.jar "$is_host_alias":/home/ubuntu/
-sudo -u ubuntu scp mssql-jdbc-*.jar "$is_host_alias":/home/ubuntu/
-sudo -u ubuntu scp postgresql-*.jar "$is_host_alias":/home/ubuntu/
+sudo -u ubuntu scp thunder.zip "$is_host_alias":/home/ubuntu/
 
 sudo -u ubuntu ssh "$is_host_alias" mkdir sar setup
 sudo -u ubuntu scp workspace/setup/setup-common.sh "$is_host_alias":/home/ubuntu/setup/
@@ -130,16 +93,7 @@ setup_is_node_command=""
 
 if [[ $no_of_nodes -eq 1 ]]; then
     setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -c $is_case_insensitive_username_and_attributes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip"
-elif [[ $no_of_nodes -eq 2 ]]; then
-    setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -c $is_case_insensitive_username_and_attributes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip"
-elif [[ $no_of_nodes -eq 3 ]]; then
-    setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -c $is_case_insensitive_username_and_attributes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip"
-elif [[ $no_of_nodes -eq 4 ]]; then
-    setup_is_node_command="ssh -i ~/private_key.pem -o "StrictHostKeyChecking=no" -t ubuntu@$wso2_is_1_ip \
-      ./update-is-conf.sh -n $no_of_nodes -c $is_case_insensitive_username_and_attributes -r $db_instance_ip -m $db_type -t $keystore_type -s $session_db_instance_ip -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip"
+      ./update-is-conf.sh -n $no_of_nodes -r $db_instance_ip -m $db_type"
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1

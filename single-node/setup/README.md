@@ -16,7 +16,6 @@ Following are the list of things done by this script.
 
 1. Install software on the bastion node
     * Git
-    * mysql-client
     * Maven
     * Java
 2. Setup is performance artifacts.

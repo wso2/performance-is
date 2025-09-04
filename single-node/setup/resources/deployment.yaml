@@ -1,0 +1,58 @@
+server:
+  hostname: "thunder.wso2.com"
+  port: 8090
+  # http_only: false
+
+gate_client:
+  hostname: "thunder.wso2.com"
+  port: 9090
+  scheme: "https"
+  login_path: "/login"
+  error_path: "/error"
+
+security:
+  cert_file: "repository/resources/security/server.cert"
+  key_file: "repository/resources/security/server.key"
+
+database:
+    identity:
+        type: "postgres"
+        hostname: "{db_hostname}"
+        port: 5432
+        name: "thunderdb"
+        username: "asgthunder"
+        password: "asgthunder"
+        sslmode: "disable"
+    runtime:
+        type: "postgres"
+        hostname: "{db_hostname}"
+        port: 5432
+        name: "runtimedb"
+        username: "asgthunder"
+        password: "asgthunder"
+        sslmode: "disable"
+
+cache:
+  disabled: false
+  type: "inmemory"
+  eviction_policy: "LRU"
+  cleanup_interval: 300
+  # properties:
+  #   - name: "ApplicationByIDCache"
+  #     disabled: false
+  #     size: 1000
+  #     ttl: 3600
+  #     eviction_policy: "LRU"
+
+oauth:
+  jwt:
+    issuer: "thunder"
+    validity_period: 3600
+  refresh_token:
+    renew_on_grant: false
+    validity_period: 86400
+
+flow:
+  graph_directory: "repository/resources/graphs/"
+  authn:
+    default_flow: "auth_flow_config_basic"

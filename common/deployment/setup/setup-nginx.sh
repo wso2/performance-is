@@ -22,33 +22,21 @@
 function usage() {
     echo ""
     echo "Usage: "
-    echo "$0 -i <IS_NODE_1_IP> -w <IS_NODE_2_IP>"
+    echo "$0 -i <IS_NODE_1_IP>"
     echo ""
     echo "-n: The number of nodes in the deployment."
-    echo "-i: The IP of wso2is node 1."
-    echo "-w: The IP of wso2is node 2."
-    echo "-j: The IP of wso2is node 3."
-    echo "-k: The IP of wso2is node 4."
+    echo "-i: The IP of thunder node 1."
     echo "-h: Display this help and exit."
     echo ""
 }
 
-while getopts "n:i:w:j:k:h" opts; do
+while getopts "n:i:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
         ;;
     i)
         wso2_is_1_ip=("${OPTARG}")
-        ;;
-    w)
-        wso2_is_2_ip=("${OPTARG}")
-        ;;
-    j)
-        wso2_is_3_ip=("${OPTARG}")
-        ;;
-    k)
-        wso2_is_4_ip=("${OPTARG}")
         ;;
     h)
         usage
@@ -76,16 +64,7 @@ if [[ -z $no_of_nodes ]]; then
     exit 1
 fi
 
-sudo sed -i 's$server xxx.xxx.xxx.1:9443$server '$wso2_is_1_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
-if [[ $no_of_nodes -gt 1 ]]; then
-    sudo sed -i 's$server xxx.xxx.xxx.2:9443$server '$wso2_is_2_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
-fi
-if [[ $no_of_nodes -gt 2 ]]; then
-    sudo sed -i 's$server xxx.xxx.xxx.3:9443$server '$wso2_is_3_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
-fi
-if [[ $no_of_nodes -gt 3 ]]; then
-    sudo sed -i 's$server xxx.xxx.xxx.4:9443$server '$wso2_is_4_ip':9443$g' /etc/nginx/conf.d/is.conf || echo "error 1"
-fi
+sudo sed -i 's$server xxx.xxx.xxx.1:8090$server '$wso2_is_1_ip':8090$g' /etc/nginx/conf.d/is.conf || echo "error 1"
 
 echo ""
 echo "Increase Open FD Limit..."

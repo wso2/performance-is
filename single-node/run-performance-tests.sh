@@ -21,10 +21,9 @@
 
 script_dir=$(dirname "$0")
 
-wso2is_host_alias=wso2is1
+wso2is_host_alias=thunder1
 lb_ssh_host_alias=loadbalancer
 rds_ssh_host_alias=rds
-session_rds_ssh_host_alias=sessionrds
 
 # Execute common script
 . $script_dir/perf-test-is.sh "$@"
@@ -36,15 +35,15 @@ function before_execute_test_scenario() {
 
     ssh $wso2is_host_alias "./restart-is.sh -m $heap"
 
-    echo "Cleaning databases..."
-    rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
-    session_rds_host=$(get_ssh_hostname $session_rds_ssh_host_alias)
-    clean_database "$@" "$rds_host" "$session_rds_host"
+    # Skipping Cleaning DBs as that is not required in Thunder
+    # echo "Cleaning databases..."
+    # rds_host=$(get_ssh_hostname $rds_ssh_host_alias)
+    # clean_database "$@" "$rds_host"
 }
 
 function after_execute_test_scenario() {
 
-    is_home="/home/ubuntu/wso2is"
+    is_home="/home/ubuntu/thunder"
     write_server_metrics $wso2is_host_alias $wso2is_host_alias
     download_file "$wso2is_host_alias" $is_home/repository/logs/wso2carbon.log "$wso2is_host_alias.log"
     download_file "$wso2is_host_alias" $is_home/repository/logs/gc.log $wso2is_host_alias"_gc.log"

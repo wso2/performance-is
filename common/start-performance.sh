@@ -27,9 +27,9 @@ certificate_name=""
 jmeter_setup=""
 is_setup=""
 concurrency=""
-default_db_username="wso2carbon"
+default_db_username="asgthunder"
 db_username="$default_db_username"
-default_db_password="wso2carbon"
+default_db_password="asgthunder"
 db_password="$default_db_password"
 default_db_instance_type=db.m6i.2xlarge
 db_instance_type=$default_db_instance_type
@@ -37,24 +37,20 @@ default_is_instance_type=c5.xlarge
 wso2_is_instance_type="$default_is_instance_type"
 default_bastion_instance_type=c6i.2xlarge
 bastion_instance_type="$default_bastion_instance_type"
-keystore_type="JKS"
-db_type="mysql"
-is_case_insensitive_username_and_attributes="false"
+db_type="postgres"
 enable_high_concurrency=false
-use_db_snapshot=false
-db_snapshot_id=""
 
 results_dir="$PWD/results-$timestamp"
-default_minimum_stack_creation_wait_time=10
+default_minimum_stack_creation_wait_time=3
 minimum_stack_creation_wait_time="$default_minimum_stack_creation_wait_time"
 
 function usage() {
     echo ""
     echo "Usage: "
     echo "$0 -k <key_file> -c <certificate_name> -j <jmeter_setup_path> -n <IS_zip_file_path>"
-    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
-    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
-    echo "   [-l <is_case_insensitive_username_and_attributes>] [-q <user_tag>]"
+    echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-r <concurrency>]"
+    echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-m <db_type>]"
+    echo "   [-q <user_tag>]"
     echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
@@ -67,17 +63,14 @@ function usage() {
     echo "-n: The is server zip"
     echo "-u: The database username. Default: $default_db_username."
     echo "-p: The database password. Default: $default_db_password."
-    echo "-s: The database snapshot ID. Default: -."
     echo "-e: The database instance type. Default: $default_db_instance_type."
     echo "-i: The instance type used for IS nodes. Default: $default_is_instance_type."
     echo "-b: The instance type used for the bastion node. Default: $default_bastion_instance_type."
     echo "-w: The minimum time to wait in minutes before polling for cloudformation stack's CREATE_COMPLETE status."
     echo "    Default: $default_minimum_stack_creation_wait_time minutes."
     echo "-v: The required testing mode [FULL/QUICK]"
-    echo "-t: Keystore type. Default: $keystore_type."
     echo "-g: Number of IS nodes."
     echo "-m: Database type. Default: $db_type."
-    echo "-l: Case insensitivity of the username and attributes. Default: $is_case_insensitive_username_and_attributes."
     echo "-h: Display this help and exit."
     echo ""
 }
@@ -88,12 +81,8 @@ function execute_db_command() {
     local sql_file="$2"
     # Construct the database-specific command
     local db_command=""
-    if [[ $db_type == "mysql" ]]; then
-        db_command="mysql -h $db_host -u wso2carbon -pwso2carbon < $sql_file"
-    elif [[ $db_type == "mssql" ]]; then
-        db_command="sqlcmd -S $db_host -U wso2carbon -P wso2carbon -i $sql_file"
-    elif [[ $db_type == "postgres" ]]; then
-        db_command="psql -h $db_host -U wso2carbon -d postgres -f $sql_file"
+    if [[ $db_type == "postgres" ]]; then
+        db_command="psql -h $db_host -U asgthunder -d postgres -f $sql_file"
     else
         echo "Unsupported database type: $db_type"
         return 1
@@ -101,7 +90,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
+while getopts "q:k:c:j:n:u:p:e:i:b:w:g:m:r:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -127,9 +116,6 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     r)
         concurrency=${OPTARG}
         ;;
-    s)
-        db_snapshot_id=${OPTARG}
-        ;;
     e)
         db_instance_type=${OPTARG}
         ;;
@@ -142,17 +128,11 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     w)
         minimum_stack_creation_wait_time=${OPTARG}
         ;;
-    t)
-        keystore_type=${OPTARG}
-        ;;
     g)
         no_of_nodes=${OPTARG}
         ;;
     m)
         db_type=${OPTARG}
-        ;;
-    l)
-        is_case_insensitive_username_and_attributes=${OPTARG}
         ;;
     h)
         usage
@@ -185,16 +165,8 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# TODO: add snapshot support for other db types
-if [[ $db_snapshot_id != "-" && $db_type == "mysql" ]]; then
-    use_db_snapshot=true
-else
-    db_snapshot_id=""
-    use_db_snapshot=false
-fi
-
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency} -v ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -r ${concurrency} -v ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."
@@ -233,12 +205,6 @@ fi
 
 if [[ $no_of_nodes -eq 1 ]]; then
     no_of_nodes_string="single"
-elif [[ $no_of_nodes -eq 2 ]]; then
-    no_of_nodes_string="two"
-elif [[ $no_of_nodes -eq 3 ]]; then
-    no_of_nodes_string="three"
-elif [[ $no_of_nodes -eq 4 ]]; then
-    no_of_nodes_string="four"
 else
     echo "Invalid value for no_of_nodes. Please provide a valid number."
     exit 1
@@ -267,8 +233,6 @@ echo ""
 echo "Extracting IS Performance Distribution to $results_dir"
 if [[ $no_of_nodes -eq 1 ]]; then
     tar -xf target/is-performance-singlenode-*.tar.gz -C "$results_dir"
-else
-    tar -xf target/is-performance-${no_of_nodes_string}node-cluster*.tar.gz -C "$results_dir"
 fi
 
 cp run-performance-tests.sh "$results_dir"/jmeter/
@@ -297,9 +261,6 @@ echo "random_number: $random_number"
 if [[ $no_of_nodes -eq 1 ]]; then
     template_file_name="new-single-node.yml"
     cp single-node.yaml "$template_file_name"
-else
-    template_file_name="new-$no_of_nodes-node-cluster.yml"
-    cp "$no_of_nodes-node-cluster.yml" "$template_file_name"
 fi
 sed -i "s/suffix/$random_number/" "$template_file_name"
 
@@ -327,12 +288,8 @@ create_stack_command="aws cloudformation create-stack --stack-name $stack_name \
         ParameterKey=DBPassword,ParameterValue=$db_password \
         ParameterKey=DBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=DBType,ParameterValue=$db_type \
-        ParameterKey=SessionDBUsername,ParameterValue=$db_username \
-        ParameterKey=SessionDBPassword,ParameterValue=$db_password \
-        ParameterKey=SessionDBInstanceType,ParameterValue=$db_instance_type \
         ParameterKey=WSO2InstanceType,ParameterValue=$wso2_is_instance_type \
         ParameterKey=BastionInstanceType,ParameterValue=$bastion_instance_type \
-        ParameterKey=DBSnapshotId,ParameterValue=$db_snapshot_id \
         ParameterKey=EnableHighConcurrencyMode,ParameterValue=$enable_high_concurrency \
         ParameterKey=UserTag,ParameterValue=$user_tag \
     --capabilities CAPABILITY_IAM"
@@ -377,41 +334,11 @@ echo "Getting WSO2 IS Node 1 Private IP..."
 wso2_is_1_ip=$(get_private_ip "$stack_id" "WSO2ISNode1AutoScalingGroup$random_number")
 echo "WSO2 IS Node 1 Private IP: $wso2_is_1_ip"
 
-wso2_is_2_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 2 Private IP..."
-    wso2_is_2_ip=$(get_private_ip "$stack_id" "WSO2ISNode2AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 2 Private IP: $wso2_is_2_ip"
-fi
-
-wso2_is_3_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 2 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 3 Private IP..."
-    wso2_is_3_ip=$(get_private_ip "$stack_id" "WSO2ISNode3AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 3 Private IP: $wso2_is_3_ip"
-fi
-
-wso2_is_4_ip="x.x.x.x"
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Getting WSO2 IS Node 4 Private IP..."
-    wso2_is_4_ip=$(get_private_ip "$stack_id" "WSO2ISNode4AutoScalingGroup$random_number")
-    echo "WSO2 IS Node 4 Private IP: $wso2_is_4_ip"
-fi
-
 echo ""
 echo "Getting RDS Hostname..."
 rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
 rds_host="$(aws rds describe-db-instances --db-instance-identifier "$rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
 echo "RDS Hostname: $rds_host"
-
-echo ""
-echo "Getting Session DB RDS Hostname..."
-session_rds_instance="$(aws cloudformation describe-stack-resources --stack-name "$stack_id" --logical-resource-id WSO2ISSessionDBInstance"$random_number" | jq -r '.StackResources[].PhysicalResourceId')"
-session_rds_host="$(aws rds describe-db-instances --db-instance-identifier "$session_rds_instance" | jq -r '.DBInstances[].Endpoint.Address')"
-echo "Session DB RDS Hostname: $session_rds_host"
 
 if [[ -z $bastion_node_ip ]]; then
     echo "Bastion node IP could not be found. Exiting..."
@@ -425,24 +352,8 @@ if [[ -z $wso2_is_1_ip ]]; then
     echo "WSO2 node 1 IP could not be found. Exiting..."
     exit 1
 fi
-if [[ -z $wso2_is_2_ip ]]; then
-    echo "WSO2 node 2 IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $wso2_is_3_ip ]]; then
-    echo "WSO2 node 3 IP could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $wso2_is_4_ip ]]; then
-    echo "WSO2 node 4 IP could not be found. Exiting..."
-    exit 1
-fi
 if [[ -z $rds_host ]]; then
     echo "RDS host could not be found. Exiting..."
-    exit 1
-fi
-if [[ -z $session_rds_host ]]; then
-    echo "Session RDS host could not be found. Exiting..."
     exit 1
 fi
 
@@ -453,60 +364,25 @@ scp_r_bastion_cmd "$results_dir/setup" "/home/ubuntu/"
 scp_bastion_cmd "target/is-performance-*.tar.gz" "/home/ubuntu"
 
 scp_bastion_cmd "$jmeter_setup" "/home/ubuntu/"
-scp_bastion_cmd "$is_setup" "/home/ubuntu/wso2is.zip"
+scp_bastion_cmd "$is_setup" "/home/ubuntu/thunder.zip"
 scp_bastion_cmd "$key_file" "/home/ubuntu/private_key.pem"
 scp_r_bastion_cmd "$results_dir/lib/*" "/home/ubuntu/"
 
 echo ""
 echo "Running Bastion Node setup script..."
 echo "============================================"
-ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -i $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -l $nginx_instance_ip"
-
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Sleep for FD Limit"
-    sleep 5m
-fi
+ssh_bastion_cmd "sudo ./setup/setup-bastion.sh -n $no_of_nodes -w $wso2_is_1_ip -r $rds_host -l $nginx_instance_ip"
 
 echo ""
 echo "Creating databases in RDS..."
 echo "============================================"
-ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q wso2is.zip ; mv wso2is-* wso2is"
-if $use_db_snapshot; then
-    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/mysql/create_database_from_snapshot.sql"
-else
-    execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
-fi
+ssh_bastion_cmd "cd /home/ubuntu/ ; unzip -q thunder.zip ; mv thunder-* thunder"
+execute_db_command "$rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_database.sql"
 
 echo ""
-echo "Creating session database in RDS..."
-execute_db_command "$session_rds_host" "/home/ubuntu/workspace/setup/resources/$db_type/create_session_database.sql"
-
-echo ""
-echo "Running IS node 1 setup script..."
+echo "Running Thunder node 1 setup script..."
 echo "============================================"
-ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-
-if [[ $no_of_nodes -gt 1 ]]; then
-    echo ""
-    echo "Running IS node 2 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-fi
-
-if [[ $no_of_nodes -gt 2 ]]; then
-    echo ""
-    echo "Running IS node 3 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
-fi
-
-if [[ $no_of_nodes -gt 3 ]]; then
-    echo ""
-    echo "Running IS node 4 setup script..."
-    echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
-fi
+ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -a thunder1 -i $wso2_is_1_ip -r $rds_host"
 
 echo ""
 echo "Running performance tests..."
@@ -536,9 +412,6 @@ wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/downloa
 if [[ $no_of_nodes -eq 1 ]]; then
     "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
         -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
-else
-    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
 fi
 
 echo "Creating summary results markdown file..."

@@ -17,9 +17,9 @@
 # Restart Identity Server
 # ----------------------------------------------------------------------------
 
-default_carbon_home=$(realpath ~/wso2is)
+default_carbon_home=$(realpath ~/thunder)
 carbon_home=$default_carbon_home
-default_waiting_time=100
+default_waiting_time=30
 waiting_time=$default_waiting_time
 default_heap_size="4g"
 heap_size="$default_heap_size"
@@ -77,20 +77,14 @@ echo ""
 echo "Cleaning up any previous log files..."
 rm -rf $carbon_home/repository/logs/*
 
-echo "Killing All Carbon Servers..."
-killall java
-
-echo "Enabling GC Logs..."
-export JAVA_OPTS="-XX:+PrintGC -XX:+PrintGCDetails -Xloggc:${carbon_home}/repository/logs/gc.log"
-JAVA_OPTS+=" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${carbon_home}/repository/logs/heap-dump.hprof""
-export JVM_MEM_OPTS="-Xms${heap_size} -Xmx${heap_size}"
-echo "JAVA_OPTS: $JAVA_OPTS"
-echo "JVM_MEM_OPTS: $JVM_MEM_OPTS"
-
-echo "Restarting identity server..."
-sh $carbon_home/bin/wso2server.sh restart
+echo "Restarting Thunder..."
+cd "$carbon_home"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="thunder_${TIMESTAMP}.log"
+bash start.sh > "$LOG_FILE" 2>&1 &
+cd "../"
 
 echo "Waiting $waiting_time seconds..."
 sleep $waiting_time
 
-echo "Finished starting identity server..."
+echo "Finished starting Thunder..."

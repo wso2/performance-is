@@ -225,6 +225,8 @@ sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
 sed -i "s|{keystore_type}|$keystore_type|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 sed -i "s|{is_case_insensitive_username_and_attributes}|$is_case_insensitive_username_and_attributes|g" \
+  "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!" \
+sed -i "s|{identity_default_auto_commit}|false|g" \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"
 if [[ $db_type == "mysql" ]]; then
     update_mysql_config

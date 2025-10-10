@@ -33,7 +33,7 @@ username = "wso2carbon"
 password = "wso2carbon"
 [database.identity_db.pool_options]
 maxActive = "1500"
-defaultAutoCommit=false
+defaultAutoCommit={identity_default_auto_commit}
 testOnBorrow = true
 testWhileIdle = true
 validationInterval="30000"

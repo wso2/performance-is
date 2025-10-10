@@ -64,6 +64,7 @@ function update_mysql_config() {
       "s|{user_db_url}|jdbc:mysql://$db_instance_ip:3306/UM_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
       "s|{reg_db_url}|jdbc:mysql://$db_instance_ip:3306/REG_DB?useSSL=false\&amp;rewriteBatchedStatements=true|g"
       "s|{db_driver}|com.mysql.jdbc.Driver|g"
+      "s|{identity_default_auto_commit}|true|g"
     )
     
     for config in "${configs[@]}"; do
@@ -263,5 +264,12 @@ echo "Restarting WSO2 IS server..."
 echo "-------------------------------------------"
 ./wso2is/bin/wso2server.sh stop
 sleep 10s
+
+if [[ $db_type == "mysql" ]]; then
+    echo "Reverting default auto commit to false for the identity db..."
+    echo "-------------------------------------------"
+    sed -i "s|{identity_default_auto_commit}|false|g" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+fi
+
 ./wso2is/bin/wso2server.sh start
 sleep 60s

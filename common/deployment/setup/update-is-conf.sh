@@ -268,9 +268,10 @@ echo "-------------------------------------------"
 sleep 10s
 
 if [[ $db_type == "mysql" ]]; then
+    echo ""
     echo "Reverting default auto commit to false for the identity db..."
     echo "-------------------------------------------"
-    sed -i "s|{identity_default_auto_commit}|false|g" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
+    sed -i "s|defaultAutoCommit=true|defaultAutoCommit=false|g" "$carbon_home/repository/conf/deployment.toml" || echo "Editing deployment.toml file failed!"
 fi
 
 ./wso2is/bin/wso2server.sh start

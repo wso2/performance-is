@@ -66,7 +66,7 @@ test_duration=$default_test_duration
 default_warm_up_time=5
 warm_up_time=$default_warm_up_time
 # Heap size of JMeter Client
-default_jmeter_client_heap_size=4G
+default_jmeter_client_heap_size=2G
 jmeter_client_heap_size=$default_jmeter_client_heap_size
 
 # Scenario names to include
@@ -614,6 +614,7 @@ function initiailize_test() {
         mv test-metadata.json results/
 
         if [ $mode == "B2B" ]; then
+            userCount=100
             run_b2b_test_data_scripts
         elif [ $use_db_snapshot == "true" ]; then
             run_test_data_scripts_with_user_snapshot

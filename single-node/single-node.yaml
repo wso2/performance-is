@@ -479,7 +479,7 @@ Resources:
             DEBIAN_FRONTEND=noninteractive env ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
             export PATH=/opt/mssql-tools/bin:$PATH
             echo "export PATH=$PATH" >>/etc/environment
-            curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-11.0.15.1_linux-x64_bin.tar.gz
+            curl -o jdk-setup.tar.gz https://performance-is-packs.s3.amazonaws.com/resources/jdk-21.0.5.11_linux-x64_bin.tar.gz
             sudo mkdir /usr/lib/jvm
             sudo tar -xvf jdk-setup.tar.gz -C /usr/lib/jvm
             sudo mv /usr/lib/jvm/jdk* /usr/lib/jvm/jdk

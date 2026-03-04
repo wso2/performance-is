@@ -567,67 +567,125 @@ function test_scenarios() {
             if [ "$skip" = true ]; then
                 continue
             fi
+
             local scenario_name=${scenario[name]}
             local jmx_file=${scenario[jmx]}
+            local scenario_mode=${scenario[modes]:-""}
+
+            # Determine org count sweep: B2B scenarios iterate over org counts,
+            # all other scenarios use a single-element sentinel array so the
+            # inner loop body runs exactly once with no org-count JMeter param.
+            local -a org_counts_for_scenario
+            if [ "$scenario_mode" = "B2B" ]; then
+                org_counts_for_scenario=("${b2b_org_counts_array[@]}")
+            else
+                org_counts_for_scenario=("__non_b2b__")   # sentinel
+            fi
+
             for users in "${concurrent_users_array[@]}"; do
-                if [ "$estimate" = true ]; then
-                    record_scenario_duration "$scenario_name" $((test_duration * 60 + estimated_processing_time_in_between_tests))
-                    continue
-                fi
-                local start_time=$(date +%s)
+                for org_count in "${org_counts_for_scenario[@]}"; do
 
-                local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
-                echo "# Starting the performance test"
-                echo "$scenario_desc"
-                echo "=========================================================================================="
+                    if [ "$estimate" = true ]; then
+                        record_scenario_duration "$scenario_name" \
+                            $((test_duration * 60 + estimated_processing_time_in_between_tests))
+                        continue
+                    fi
 
-                report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+                    local start_time=$(date +%s)
 
-                echo ""
-                echo "Report location is $report_location"
-                mkdir -p "$report_location"
-                credentials="$superAdminUsername:$superAdminPassword"
-                base64EncodedCredentials=$(echo -n "$credentials" | base64)
-                time=$(expr "$test_duration" \* 60)
-                declare -ag jmeter_params=("concurrency=$users" "time=$time" "host=$lb_host" "port=$is_port" "adminCredentials=$base64EncodedCredentials" "noOfBurst=$burstTraffic")
-                local tenantMode=${scenario[tenantMode]}
-                if [ "$tenantMode" = true ]; then
-                      jmeter_params+=" -JtenantMode=true -JnoOfTenants=$noOfTenants -JspCount=$spCount -JidpCount=$idpCount -JuserCount=$userCount"
-                fi
+                    # ── Build a human-readable label that includes org count
+                    #    only when this is a B2B scenario.
+                    local scenario_desc
+                    if [ "$scenario_mode" = "B2B" ]; then
+                        scenario_desc="Scenario Name: $scenario_name, Duration: ${test_duration}m, \
+Concurrent Users: $users, B2B Orgs: $org_count"
+                    else
+                        scenario_desc="Scenario Name: $scenario_name, Duration: ${test_duration}m, \
+Concurrent Users: $users"
+                    fi
 
-                before_execute_test_scenario
+                    echo "# Starting the performance test"
+                    echo "$scenario_desc"
+                    echo "=========================================================================================="
 
-                export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size -Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
+                    # ── Report path: org count becomes part of directory tree
+                    #    for B2B scenarios so results don't overwrite each other.
+                    if [ "$scenario_mode" = "B2B" ]; then
+                        report_location=$PWD/results/${scenario_name}/${heap}_heap/${org_count}_orgs/${users}_users
+                    else
+                        report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+                    fi
 
-                local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
-                for param in "${jmeter_params[@]}"; do
-                    jmeter_command+=" -J$param"
-                done
+                    echo ""
+                    echo "Report location is $report_location"
+                    mkdir -p "$report_location"
 
-                jmeter_command+=" -l $report_location/results.jtl"
+                    local credentials="$superAdminUsername:$superAdminPassword"
+                    local base64EncodedCredentials
+                    base64EncodedCredentials=$(echo -n "$credentials" | base64)
+                    local time
+                    time=$(( test_duration * 60 ))
 
-                echo $jmeter_command
+                    declare -ag jmeter_params=(
+                        "concurrency=$users"
+                        "time=$time"
+                        "host=$lb_host"
+                        "port=$is_port"
+                        "adminCredentials=$base64EncodedCredentials"
+                        "noOfBurst=$burstTraffic"
+                    )
 
-                echo ""
-                echo "Starting JMeter Client with JVM_ARGS=$JVM_ARGS"
-                echo ""
-                echo "Running JMeter command: $jmeter_command"
-                $jmeter_command
+                    # ── Tenant-mode params (unchanged from original)
+                    local tenantMode=${scenario[tenantMode]}
+                    if [ "$tenantMode" = true ]; then
+                        jmeter_params+=(
+                            "tenantMode=true"
+                            "noOfTenants=$noOfTenants"
+                            "spCount=$spCount"
+                            "idpCount=$idpCount"
+                            "userCount=$userCount"
+                        )
+                    fi
 
-                write_server_metrics jmeter
+                    # ── B2B-specific param: pass org count to JMeter
+                    if [ "$scenario_mode" = "B2B" ]; then
+                        jmeter_params+=("noOfOrgs=$org_count")
+                    fi
 
-                "$HOME"/workspace/jtl-splitter/jtl-splitter.sh -- -f "$report_location"/results.jtl -t "$warm_up_time" -s
+                    before_execute_test_scenario
 
-                echo ""
-                echo "Zipping JTL files in $report_location"
-                zip -jm "$report_location"/jtls.zip "$report_location"/results*.jtl
+                    export JVM_ARGS="-Xms$jmeter_client_heap_size -Xmx$jmeter_client_heap_size \
+-Xloggc:$report_location/jmeter_gc.log $JMETER_JVM_ARGS"
 
-                local current_execution_duration="$(measure_time "$start_time")"
-                echo -n "# Completed the performance test."
-                echo " $scenario_desc"
-                echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
-                record_scenario_duration "$scenario_name" "$current_execution_duration"
-            done
-        done
-    done
+                    local jmeter_command="jmeter -n -t $script_dir/$jmx_file"
+                    for param in "${jmeter_params[@]}"; do
+                        jmeter_command+=" -J$param"
+                    done
+                    jmeter_command+=" -l $report_location/results.jtl"
+
+                    echo ""
+                    echo "Starting JMeter Client with JVM_ARGS=$JVM_ARGS"
+                    echo "Running JMeter command: $jmeter_command"
+                    $jmeter_command
+
+                    write_server_metrics jmeter
+
+                    "$HOME"/workspace/jtl-splitter/jtl-splitter.sh -- \
+                        -f "$report_location"/results.jtl -t "$warm_up_time" -s
+
+                    echo ""
+                    echo "Zipping JTL files in $report_location"
+                    zip -jm "$report_location"/jtls.zip "$report_location"/results*.jtl
+
+                    local current_execution_duration
+                    current_execution_duration="$(measure_time "$start_time")"
+                    echo -n "# Completed the performance test."
+                    echo " $scenario_desc"
+                    echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
+                    record_scenario_duration "$scenario_name" "$current_execution_duration"
+
+                done  # org_count
+            done      # users
+        done          # scenario
+    done              # heap
 }

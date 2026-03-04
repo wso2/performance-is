@@ -22,10 +22,20 @@
 
 import csv
 import os
+import re
+from collections import defaultdict
 
 rows = []  # To store each row of the summary.csv file
 scenarioCount = []  # To keep scenario count orderly
 burst_keyword = "Burst"  # Keyword to identify burst scenarios
+
+
+def parse_org_count(name):
+    """Return (org_count_str, base_name) for B2B scenarios, or (None, name) otherwise."""
+    m = re.search(r'_(\d+)_orgs$', name)
+    if m:
+        return m.group(1), name[:m.start()]
+    return None, name
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
 scenarios = {
@@ -111,11 +121,7 @@ scenarios = {
         "2 Submit username and password",
         "3 Get tokens"]}
 
-scenarios_critical_requests = scenarios.copy()
-
-# Replace all values in the copied dictionary with an empty list
-for key in scenarios_critical_requests:
-    scenarios_critical_requests[key] = []
+scenarios_critical_requests = defaultdict(list)
 
 # Read generated result file and append each row to an array
 with open('summary.csv') as file:
@@ -123,13 +129,14 @@ with open('summary.csv') as file:
     for row in reader:
         rows.append(row)
 
-scenario = rows[1][0]  # Assign first scenario
+scenario = rows[1][0]  # Assign first scenario (may include _N_orgs suffix)
 count = 0  # Number of times each scenario appears
 concurrency = rows[1][2]
 scenario_concurrency_sum = 0
 for row in rows[1:]:
     if scenario == row[0]:
-        if row[3] in scenarios.get(scenario) or row[3] in [burst_keyword + " " + request for request in scenarios.get(scenario)]:
+        _, base_name = parse_org_count(scenario)
+        if row[3] in scenarios.get(base_name) or row[3] in [burst_keyword + " " + request for request in scenarios.get(base_name)]:
             if concurrency == row[2]:
                 scenario_concurrency_sum += int(row[14])
             else:
@@ -143,7 +150,8 @@ for row in rows[1:]:
         scenario = row[0]
         scenario_concurrency_sum = 0
         concurrency = row[2]
-        if row[3] in scenarios.get(scenario) or row[3] in [burst_keyword + " " + request for request in scenarios.get(scenario)]:
+        _, base_name = parse_org_count(scenario)
+        if row[3] in scenarios.get(base_name) or row[3] in [burst_keyword + " " + request for request in scenarios.get(base_name)]:
             scenario_concurrency_sum += int(row[14])
         count = 1
 scenarioCount.append(count)  # Append the count of the last scenario
@@ -157,10 +165,10 @@ for i in range(scenarioCount[0]):
         concurrentUserCounts += 1  # Increase the count when a new number appears
         userCount = rows[1 + i][2]  # Assign the newly met count
 
-# Write Scenario name, Concurrent Users, Throughput (Requests/sec), Average Response Time (ms) into a new file
+# Write Scenario name, Concurrent Users, Throughput (Requests/sec), Org Count into a new file
 with open('updated_summary.csv', 'w') as file:
     writer = csv.writer(file)
-    writer.writerow([rows[0][0], rows[0][2], rows[0][14]])  # Write column names
+    writer.writerow([rows[0][0], rows[0][2], rows[0][14], "Org Count"])  # Write column names
 
     rowNumber = 1  # Row number of the original data file
 
@@ -173,15 +181,18 @@ with open('updated_summary.csv', 'w') as file:
             # Throughput and response time are rounded to first two decimal places
             # Read column wise for getting average throughput and total of average response times using numpy nd arrays
 
+            raw_name = rows[rowNumber][0]
+            org_count, base_name = parse_org_count(raw_name)
+
             # If burst enabled scenario, add another line for burst scenario
             if burst_keyword in rows[rowNumber][3]:
                 writer.writerow(
-                    [rows[rowNumber][0] + " [" + burst_keyword + "]", rows[rowNumber][2],
-                     scenarios_critical_requests[rows[rowNumber][0]][i]])
+                    [base_name + " [" + burst_keyword + "]", rows[rowNumber][2],
+                     scenarios_critical_requests[raw_name][i], org_count or ""])
             else:
                 writer.writerow(
-                    [rows[rowNumber][0], rows[rowNumber][2],
-                     scenarios_critical_requests[rows[rowNumber][0]][i]])
+                    [base_name, rows[rowNumber][2],
+                     scenarios_critical_requests[raw_name][i], org_count or ""])
 
             rowNumber += stepsCount  # Increment the row number for the next write
 

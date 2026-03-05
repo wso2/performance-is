@@ -22,20 +22,11 @@
 
 import csv
 import os
-import re
 from collections import defaultdict
 
 rows = []  # To store each row of the summary.csv file
 scenarioCount = []  # To keep scenario count orderly
 burst_keyword = "Burst"  # Keyword to identify burst scenarios
-
-
-def parse_org_count(name):
-    """Return (org_count_str, base_name) for B2B scenarios, or (None, name) otherwise."""
-    m = re.search(r'_(\d+)_orgs$', name)
-    if m:
-        return m.group(1), name[:m.start()]
-    return None, name
 
 # Define the dictionary {Scenario_Name: Critical_Request_Name}
 scenarios = {
@@ -129,19 +120,30 @@ with open('summary.csv') as file:
     for row in reader:
         rows.append(row)
 
-scenario = rows[1][0]  # Assign first scenario (may include _N_orgs suffix)
+# Detect column indices from header
+header = rows[0]
+org_count_col = header.index("Org Count") if "Org Count" in header else None
+# If Org Count was inserted at index 3 (before request label), shift dependent columns
+col_shift = 1 if (org_count_col is not None and org_count_col <= 3) else 0
+request_label_col = 3 + col_shift
+throughput_col = 14 + col_shift
+
+scenario = rows[1][0]  # Assign first scenario
 count = 0  # Number of times each scenario appears
 concurrency = rows[1][2]
 scenario_concurrency_sum = 0
 for row in rows[1:]:
+    critical_requests = scenarios.get(row[0])
+    if critical_requests is None:
+        continue  # skip unknown/unregistered scenarios
     if scenario == row[0]:
-        _, base_name = parse_org_count(scenario)
-        if row[3] in scenarios.get(base_name) or row[3] in [burst_keyword + " " + request for request in scenarios.get(base_name)]:
+        if row[request_label_col] in critical_requests or \
+                row[request_label_col] in [burst_keyword + " " + r for r in critical_requests]:
             if concurrency == row[2]:
-                scenario_concurrency_sum += int(row[14])
+                scenario_concurrency_sum += int(row[throughput_col])
             else:
                 scenarios_critical_requests[scenario].append(scenario_concurrency_sum)
-                scenario_concurrency_sum = int(row[14])
+                scenario_concurrency_sum = int(row[throughput_col])
                 concurrency = row[2]
         count += 1  # Increase the count when the same scenario appears
     else:
@@ -150,9 +152,9 @@ for row in rows[1:]:
         scenario = row[0]
         scenario_concurrency_sum = 0
         concurrency = row[2]
-        _, base_name = parse_org_count(scenario)
-        if row[3] in scenarios.get(base_name) or row[3] in [burst_keyword + " " + request for request in scenarios.get(base_name)]:
-            scenario_concurrency_sum += int(row[14])
+        if row[request_label_col] in critical_requests or \
+                row[request_label_col] in [burst_keyword + " " + r for r in critical_requests]:
+            scenario_concurrency_sum += int(row[throughput_col])
         count = 1
 scenarioCount.append(count)  # Append the count of the last scenario
 scenarios_critical_requests[scenario].append(scenario_concurrency_sum)
@@ -165,35 +167,39 @@ for i in range(scenarioCount[0]):
         concurrentUserCounts += 1  # Increase the count when a new number appears
         userCount = rows[1 + i][2]  # Assign the newly met count
 
-# Write Scenario name, Concurrent Users, Throughput (Requests/sec), Org Count into a new file
+# Build output header: Scenario Name, Concurrent Users, Throughput[, Org Count]
+out_header = [header[0], header[2], header[throughput_col]]
+if org_count_col is not None:
+    out_header.append("Org Count")
+
+# Write Scenario name, Concurrent Users, Throughput (Requests/sec)[, Org Count] into a new file
 with open('updated_summary.csv', 'w') as file:
     writer = csv.writer(file)
-    writer.writerow([rows[0][0], rows[0][2], rows[0][14], "Org Count"])  # Write column names
+    writer.writerow(out_header)
 
     rowNumber = 1  # Row number of the original data file
 
     for count in scenarioCount:
-        if burst_keyword in rows[rowNumber][3]:
+        if burst_keyword in rows[rowNumber][request_label_col]:
             concurrentUserCounts = concurrentUserCounts * 2  # If burst scenario, double the concurrent user count
         for i in range(concurrentUserCounts):
             stepsCount = int(count / concurrentUserCounts)  # Get the number of steps for each scenario
-            # 0 - Scenario name, 2 - Concurrent users, 7 - Throughput (Requests/sec), 8 - Average Response Time (ms)
-            # Throughput and response time are rounded to first two decimal places
-            # Read column wise for getting average throughput and total of average response times using numpy nd arrays
 
-            raw_name = rows[rowNumber][0]
-            org_count, base_name = parse_org_count(raw_name)
+            scenario_name = rows[rowNumber][0]
+            org_count_val = rows[rowNumber][org_count_col] if org_count_col is not None else None
 
             # If burst enabled scenario, add another line for burst scenario
-            if burst_keyword in rows[rowNumber][3]:
-                writer.writerow(
-                    [base_name + " [" + burst_keyword + "]", rows[rowNumber][2],
-                     scenarios_critical_requests[raw_name][i], org_count or ""])
+            if burst_keyword in rows[rowNumber][request_label_col]:
+                out_row = [scenario_name + " [" + burst_keyword + "]", rows[rowNumber][2],
+                           scenarios_critical_requests[scenario_name][i]]
             else:
-                writer.writerow(
-                    [base_name, rows[rowNumber][2],
-                     scenarios_critical_requests[raw_name][i], org_count or ""])
+                out_row = [scenario_name, rows[rowNumber][2],
+                           scenarios_critical_requests[scenario_name][i]]
 
+            if org_count_col is not None:
+                out_row.append(org_count_val or "")
+
+            writer.writerow(out_row)
             rowNumber += stepsCount  # Increment the row number for the next write
 
 # Rename file to keep existing implementation as it is

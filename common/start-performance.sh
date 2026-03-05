@@ -533,12 +533,24 @@ echo "============================================"
 cd "$results_dir"
 unzip -q results.zip
 wget -q http://sourceforge.net/projects/gcviewer/files/gcviewer-1.35.jar/download -O gcviewer.jar
-if [[ $no_of_nodes -eq 1 ]]; then
-    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 1 -g gcviewer.jar
+if [[ "${run_performance_tests_options[*]}" == *"B2B"* ]]; then
+    extra_c_col=('-c' 'Org Count')
+    extra_r_col=('-r' '([0-9]+)_orgs')
 else
-    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is -c "Heap Size" \
-        -c "Concurrent Users" -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" -i -l -k 2 -g gcviewer.jar
+    extra_c_col=()
+    extra_r_col=()
+fi
+
+if [[ $no_of_nodes -eq 1 ]]; then
+    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is \
+        -c "Heap Size" -c "Concurrent Users" "${extra_c_col[@]}" \
+        -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" "${extra_r_col[@]}" \
+        -i -l -k 1 -g gcviewer.jar
+else
+    "$results_dir"/jmeter/create-summary-csv.sh -d results -n "WSO2 Identity Server" -p wso2is \
+        -c "Heap Size" -c "Concurrent Users" "${extra_c_col[@]}" \
+        -r "([0-9]+[a-zA-Z])_heap" -r "([0-9]+)_users" "${extra_r_col[@]}" \
+        -i -l -k 2 -g gcviewer.jar
 fi
 
 echo "Creating summary results markdown file..."

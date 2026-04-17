@@ -116,7 +116,7 @@ To use this feature, we have added the `performance_plots.py` script to the proj
 
 Additionally, we have updated the README.md file in the `performance_analysis` directory to provide detailed instructions on how to use the script, customize the settings, and understand the input CSV data format.
 
-To get started with the performance analysis feature, please refer to the [performance_analysis/README.md](performance_analysis/README.md) file for instructions and examples.
+To get started with the performance analysis feature, please refer to the [common/performance_analysis/README.md](common/performance_analysis/README.md) file for instructions and examples.
 
 ## Legacy Mode
 

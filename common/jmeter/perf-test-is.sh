@@ -56,6 +56,7 @@
 # Concurrent users (these will by multiplied by the number of JMeter servers)
 default_concurrent_users=""
 concurrency=""
+b2b_org_scale="1-50"   # default
 # Application heap Sizes
 default_heap_sizes="4G"
 
@@ -163,7 +164,7 @@ function usage() {
     echo ""
 }
 
-while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:z:h" opts; do
+while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:z:h:l" opts; do
     case $opts in
     c)
         concurrent_users+=("${OPTARG}")
@@ -234,6 +235,9 @@ while getopts "c:m:d:w:r:j:i:e:g:f:n:s:q:u:tp:k:v:x:o:y:b:a:z:h" opts; do
     b)
         db_type=${OPTARG}
         ;;
+    l)
+        b2b_org_scale="${OPTARG}"
+        ;;
     y)
         token_issuer=${OPTARG}
         ;;
@@ -268,6 +272,9 @@ elif [ "$concurrency" == "50-50" ]; then
 elif [ "$concurrency" == "50-1000" ]; then
     echo "Running tests for concurrency level 50-1000"
     default_concurrent_users="50 100 150 300 500 750 1000"
+elif [ "$concurrency" == "50-2000" ]; then
+    echo "Running tests for concurrency level 50-2000"
+    default_concurrent_users="50 100 150 300 500 750 1000 1500 2000"
 else
     echo "Running tests for concurrency level 50-3000"
     default_concurrent_users="50 100 150 300 500 750 1000 1500 2000 2500 3000"
@@ -307,6 +314,27 @@ if [[ -z $db_type ]]; then
     echo "Please provide the database type."
     exit 1
 fi
+
+if [ "$b2b_org_scale" == "1-10" ]; then
+    echo "Running B2B tests for org scale 1-10"
+    default_b2b_org_counts="1 5 10"
+elif [ "$b2b_org_scale" == "1-50" ]; then
+    echo "Running B2B tests for org scale 1-50"
+    default_b2b_org_counts="1 5 10 50"
+elif [ "$b2b_org_scale" == "1-100" ]; then
+    echo "Running B2B tests for org scale 1-100"
+    default_b2b_org_counts="1 5 10 50 100"
+elif [ "$b2b_org_scale" == "1-500" ]; then
+    echo "Running B2B tests for org scale 1-500"
+    default_b2b_org_counts="1 5 10 50 100 500"
+elif [ "$b2b_org_scale" == "1-1" ]; then
+    echo "Running B2B tests for org scale 1 (single org baseline)"
+    default_b2b_org_counts="1"
+else
+    echo "Running B2B tests for full org scale 1-1000"
+    default_b2b_org_counts="1 5 10 50 100 500 1000"
+fi
+read -ra b2b_org_counts_array <<< "$default_b2b_org_counts"
 
 # Check if the variable is true
 if [ "$enable_burst" = true ]; then
@@ -648,7 +676,17 @@ function test_scenarios() {
             fi
             local scenario_name=${scenario[name]}
             local jmx_file=${scenario[jmx]}
+            local scenario_mode=${scenario[modes]:-""}
+
+            local -a org_counts_for_scenario
+            if [[ "$scenario_mode" == *"B2B"* ]]; then
+                org_counts_for_scenario=("${b2b_org_counts_array[@]}")
+            else
+                org_counts_for_scenario=("__non_b2b__")
+            fi
+
             for users in "${concurrent_users_array[@]}"; do
+                for org_count in "${org_counts_for_scenario[@]}"; do
                 if [ "$estimate" = true ]; then
                     record_scenario_duration "$scenario_name" $((test_duration * 60 + estimated_processing_time_in_between_tests))
                     continue
@@ -656,11 +694,18 @@ function test_scenarios() {
                 local start_time=$(date +%s)
 
                 local scenario_desc="Scenario Name: $scenario_name, Duration: $test_duration m, Concurrent Users: $users"
+                if [[ "$scenario_mode" == *"B2B"* ]]; then
+                    scenario_desc="$scenario_desc, Org Count: $org_count"
+                fi
                 echo "# Starting the performance test"
                 echo "$scenario_desc"
                 echo "=========================================================================================="
 
-                report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+                if [[ "$scenario_mode" == *"B2B"* ]]; then
+                    report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users/${org_count}_orgs
+                else
+                    report_location=$PWD/results/${scenario_name}/${heap}_heap/${users}_users
+                fi
 
                 echo ""
                 echo "Report location is $report_location"
@@ -672,6 +717,10 @@ function test_scenarios() {
                 local tenantMode=${scenario[tenantMode]}
                 if [ "$tenantMode" = true ]; then
                     jmeter_params+=("tenantMode=true" "noOfTenants=$noOfTenants" "spCount=$spCount" "idpCount=$idpCount")
+                fi
+
+                if [[ "$scenario_mode" == *"B2B"* ]]; then
+                    jmeter_params+=("noOfOrgs=$org_count")
                 fi
 
                 before_execute_test_scenario "$db_type"
@@ -706,7 +755,8 @@ function test_scenarios() {
                 echo " $scenario_desc"
                 echo -e "Test execution time: $(format_time "$current_execution_duration")\n"
                 record_scenario_duration "$scenario_name" "$current_execution_duration"
-            done
+                done  # org_count
+            done  # users
         done
     done
 }

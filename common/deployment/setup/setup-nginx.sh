@@ -62,6 +62,22 @@ while getopts "n:i:w:j:k:h" opts; do
 done
 
 echo ""
+echo "Waiting for nginx to be installed..."
+echo "============================================"
+nginx_wait_attempts=0
+nginx_max_attempts=20
+until systemctl list-units --type=service 2>/dev/null | grep -q "nginx.service"; do
+    nginx_wait_attempts=$((nginx_wait_attempts + 1))
+    if [[ $nginx_wait_attempts -ge $nginx_max_attempts ]]; then
+        echo "ERROR: nginx did not become available after $((nginx_max_attempts * 15)) seconds. Exiting."
+        exit 1
+    fi
+    echo "nginx not yet available, waiting 15s... (attempt $nginx_wait_attempts/$nginx_max_attempts)"
+    sleep 15
+done
+echo "nginx is ready"
+
+echo ""
 echo "Coping files..."
 echo "============================================"
 sudo cp resources/server.* /etc/nginx/ssl/is/

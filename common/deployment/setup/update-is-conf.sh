@@ -118,6 +118,7 @@ function usage() {
     echo "-t: Keystore type."
     echo "-m: Database type."
     echo "-c: Case insensitivity of the username and attributes."
+    echo "-M: JVM heap size for the IS server (e.g. 2g, 4g). Default: 4g."
     echo ""
 }
 

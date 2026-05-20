@@ -56,7 +56,7 @@ function usage() {
     echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>] [-q <user_tag>]"
-    echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
+    echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-M <jvm_memory>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
@@ -79,6 +79,7 @@ function usage() {
     echo "-g: Number of IS nodes."
     echo "-m: Database type. Default: $db_type."
     echo "-l: Case insensitivity of the username and attributes. Default: $is_case_insensitive_username_and_attributes."
+    echo "-M: JVM heap size for IS nodes (e.g. 2g, 4g). Default: $jvm_memory."
     echo "-h: Display this help and exit."
     echo ""
 }

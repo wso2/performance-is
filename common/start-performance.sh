@@ -170,6 +170,17 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:M:h" opts; do
 done
 shift "$((OPTIND - 1))"
 
+# getopts stops at the first non-option word, so -M may not have been consumed
+# above if it appears after positional args (e.g. in ADDITIONAL_PARAMS). Scan
+# the remaining args and extract the value if present.
+remaining_args=("$@")
+for ((i = 0; i < ${#remaining_args[@]}; i++)); do
+    if [[ "${remaining_args[$i]}" == "-M" ]]; then
+        jvm_memory="${remaining_args[$((i + 1))]}"
+        break
+    fi
+done
+
 # Define an associative array to store excluded options
 declare -A excluded_options=(
   ["-i ${wso2_is_instance_type}"]=1
@@ -183,6 +194,10 @@ modified_options=()
 # excluding the options present in the excluded_options array
 while [[ $# -gt 0 ]]; do
   option="$1"
+  if [[ "$option" == "-M" ]]; then
+    shift 2
+    continue
+  fi
   if [[ -z "${excluded_options[$option]}" ]]; then
     modified_options+=("$option")
   fi

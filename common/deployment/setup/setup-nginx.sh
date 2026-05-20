@@ -65,8 +65,8 @@ echo ""
 echo "Waiting for nginx to be installed..."
 echo "============================================"
 nginx_wait_attempts=0
-nginx_max_attempts=20
-until systemctl list-units --type=service 2>/dev/null | grep -q "nginx.service"; do
+nginx_max_attempts=40
+until systemctl list-unit-files --type=service 2>/dev/null | grep -q "nginx.service"; do
     nginx_wait_attempts=$((nginx_wait_attempts + 1))
     if [[ $nginx_wait_attempts -ge $nginx_max_attempts ]]; then
         echo "ERROR: nginx did not become available after $((nginx_max_attempts * 15)) seconds. Exiting."

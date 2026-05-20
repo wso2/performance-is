@@ -118,13 +118,19 @@ function usage() {
     echo "-t: Keystore type."
     echo "-m: Database type."
     echo "-c: Case insensitivity of the username and attributes."
+    echo "-M: JVM heap size for the IS server (e.g. 2g, 4g). Default: 4g."
     echo ""
 }
 
-while getopts "n:w:i:j:k:r:s:t:m:c:h" opts; do
+jvm_memory="4g"
+
+while getopts "n:w:i:j:k:r:s:t:m:c:M:h" opts; do
     case $opts in
     n)
         no_of_nodes=${OPTARG}
+        ;;
+    M)
+        jvm_memory=${OPTARG}
         ;;
     w)
         wso2_is_1_ip=${OPTARG}
@@ -218,7 +224,7 @@ cp resources/deployment.toml "$carbon_home"/repository/conf/deployment.toml
 echo ""
 echo "Applying basic parameter changes..."
 echo "-------------------------------------------"
-sed -i 's/JVM_MEM_OPTS="-Xms256m -Xmx1024m"/JVM_MEM_OPTS="-Xms4g -Xmx4g"/g' \
+sed -i "s/JVM_MEM_OPTS=\"-Xms256m -Xmx1024m\"/JVM_MEM_OPTS=\"-Xms${jvm_memory} -Xmx${jvm_memory}\"/g" \
   "$carbon_home"/bin/wso2server.sh || echo "Editing wso2server.sh file failed!"
 sed -i 's|{keystore_extension}|'"$keystore_extension"'|g' \
   "$carbon_home"/repository/conf/deployment.toml || echo "Editing deployment.toml file failed!"

@@ -39,6 +39,7 @@ default_bastion_instance_type=c6i.2xlarge
 bastion_instance_type="$default_bastion_instance_type"
 keystore_type="JKS"
 db_type="mysql"
+jvm_memory="4g"
 is_case_insensitive_username_and_attributes="false"
 enable_high_concurrency=false
 use_db_snapshot=false
@@ -55,7 +56,7 @@ function usage() {
     echo "   [-u <db_username>] [-p <db_password>] [-e <db_instance_type>] [-s <db_snapshot_id>] [-r <concurrency>]"
     echo "   [-i <wso2_is_instance_type>] [-b <bastion_instance_type>] [-t <keystore_type>] [-m <db_type>]"
     echo "   [-l <is_case_insensitive_username_and_attributes>] [-q <user_tag>]"
-    echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-h]"
+    echo "   [-w <minimum_stack_creation_wait_time>] [-g <number_of_nodes>] [-v <testing_mode>] [-M <jvm_memory>] [-h]"
     echo ""
     echo "-k: The Amazon EC2 key file to be used to access the instances."
     echo "-c: The name of the IAM certificate."
@@ -78,6 +79,7 @@ function usage() {
     echo "-g: Number of IS nodes."
     echo "-m: Database type. Default: $db_type."
     echo "-l: Case insensitivity of the username and attributes. Default: $is_case_insensitive_username_and_attributes."
+    echo "-M: JVM heap size for IS nodes (e.g. 2g, 4g). Default: $jvm_memory."
     echo "-h: Display this help and exit."
     echo ""
 }
@@ -101,7 +103,7 @@ function execute_db_command() {
     ssh_bastion_cmd "$db_command"
 }
 
-while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
+while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:M:h" opts; do
     case $opts in
     q)
         user_tag=${OPTARG}
@@ -154,6 +156,9 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     l)
         is_case_insensitive_username_and_attributes=${OPTARG}
         ;;
+    M)
+        jvm_memory=${OPTARG}
+        ;;
     h)
         usage
         exit 0
@@ -165,6 +170,17 @@ while getopts "q:k:c:j:n:u:p:s:e:i:b:w:t:g:m:l:r:h" opts; do
     esac
 done
 shift "$((OPTIND - 1))"
+
+# getopts stops at the first non-option word, so -M may not have been consumed
+# above if it appears after positional args (e.g. in ADDITIONAL_PARAMS). Scan
+# the remaining args and extract the value if present.
+remaining_args=("$@")
+for ((i = 0; i < ${#remaining_args[@]}; i++)); do
+    if [[ "${remaining_args[$i]}" == "-M" ]]; then
+        jvm_memory="${remaining_args[$((i + 1))]}"
+        break
+    fi
+done
 
 # Define an associative array to store excluded options
 declare -A excluded_options=(
@@ -179,6 +195,10 @@ modified_options=()
 # excluding the options present in the excluded_options array
 while [[ $# -gt 0 ]]; do
   option="$1"
+  if [[ "$option" == "-M" ]]; then
+    shift 2
+    continue
+  fi
   if [[ -z "${excluded_options[$option]}" ]]; then
     modified_options+=("$option")
   fi
@@ -485,27 +505,27 @@ execute_db_command "$session_rds_host" "/home/ubuntu/workspace/setup/resources/$
 echo ""
 echo "Running IS node 1 setup script..."
 echo "============================================"
-ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is1 -t $keystore_type -i $wso2_is_1_ip -w $wso2_is_2_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -M $jvm_memory"
 
 if [[ $no_of_nodes -gt 1 ]]; then
     echo ""
     echo "Running IS node 2 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is2 -t $keystore_type -i $wso2_is_2_ip -w $wso2_is_1_ip -j $wso2_is_3_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -M $jvm_memory"
 fi
 
 if [[ $no_of_nodes -gt 2 ]]; then
     echo ""
     echo "Running IS node 3 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is3 -t $keystore_type -i $wso2_is_3_ip -w $wso2_is_2_ip -j $wso2_is_1_ip -k $wso2_is_4_ip -r $rds_host -s $session_rds_host -M $jvm_memory"
 fi
 
 if [[ $no_of_nodes -gt 3 ]]; then
     echo ""
     echo "Running IS node 4 setup script..."
     echo "============================================"
-    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host"
+    ssh_bastion_cmd "./setup/setup-is.sh -n $no_of_nodes -m $db_type -c $is_case_insensitive_username_and_attributes -a wso2is4 -t $keystore_type -i $wso2_is_4_ip -w $wso2_is_3_ip -j $wso2_is_2_ip -k $wso2_is_1_ip -r $rds_host -s $session_rds_host -M $jvm_memory"
 fi
 
 echo ""

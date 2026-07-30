@@ -83,6 +83,10 @@ killall java
 echo "Enabling GC Logs..."
 export JAVA_OPTS="-XX:+PrintGC -XX:+PrintGCDetails -Xloggc:${carbon_home}/repository/logs/gc.log"
 JAVA_OPTS+=" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="${carbon_home}/repository/logs/heap-dump.hprof""
+
+echo "Enabling JFR Recording..."
+jfr_recording_file="${carbon_home}/repository/logs/recording.jfr"
+JAVA_OPTS+=" -XX:StartFlightRecording=name=perf-recording,filename=${jfr_recording_file},dumponexit=true,maxsize=512m,maxage=60m"
 export JVM_MEM_OPTS="-Xms${heap_size} -Xmx${heap_size}"
 echo "JAVA_OPTS: $JAVA_OPTS"
 echo "JVM_MEM_OPTS: $JVM_MEM_OPTS"

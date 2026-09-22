@@ -213,8 +213,13 @@ else
     use_db_snapshot=false
 fi
 
+# run-performance-tests.sh restarts the IS nodes with -m before every scenario, which
+# overrides the heap configured by setup-is.sh. Forward the requested heap so the tests
+# run on the same value. Uppercase the unit since -m is validated against ^[0-9]+[MG]$.
+heap_size="$(echo "$jvm_memory" | tr '[:lower:]' '[:upper:]')"
+
 # Pass the modified options to the command
-run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -r ${concurrency} -v ${modified_options[@]}")
+run_performance_tests_options=("-b ${db_type} -g ${no_of_nodes} -a ${use_db_snapshot} -m ${heap_size} -r ${concurrency} -v ${modified_options[@]}")
 
 if [[ -z $user_tag ]]; then
     echo "Please provide the user tag."

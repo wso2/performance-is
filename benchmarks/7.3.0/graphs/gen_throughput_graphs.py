@@ -9,8 +9,9 @@ response-time graphs).
 
 The 50-500 charts carry five configurations; Two Node 2 Core was only measured
 over that range, so the 50-3000 charts stay on the four 4 Core configurations.
-A chart whose configurations differ by more than 8x at the same concurrency is
-drawn on a log y-axis, which its axis label states."""
+A 50-500 chart whose configurations differ by more than 8x at the same
+concurrency is drawn on a log y-axis, which its axis label states; the 50-3000
+charts stay linear."""
 import os
 import matplotlib
 matplotlib.use("Agg")
@@ -34,11 +35,15 @@ GRAPH_DIR = os.path.dirname(os.path.abspath(__file__))
 
 NA = None  # short alias for unavailable data points
 
-# A chart whose configurations differ by more than this multiple *at the same
-# concurrency* is drawn on a log y-axis — otherwise the four 4 Core series
+# A 50-500 chart whose configurations differ by more than this multiple *at the
+# same concurrency* is drawn on a log y-axis — otherwise the four 4 Core series
 # collapse into one flat band against a single 2 Core spike. The test is
 # deliberately per-concurrency: a series that simply climbs with the x sweep
 # must stay linear, or a straight line is drawn as a false saturation curve.
+#
+# The rule is scoped to the low-range charts, which are the ones carrying the
+# 2 Core series. The published 50-3000 charts stay linear as they have always
+# been, so that adding 2N2C does not silently restyle them.
 LOG_RATIO = 8.0
 
 
@@ -65,7 +70,8 @@ def apply_log_scale(ax, ylabel):
     return f"{ylabel} — log scale"
 
 
-def make_plot(scenario_dir, filename, cu_list, data_by_config, configs, ylabel):
+def make_plot(scenario_dir, filename, cu_list, data_by_config, configs,
+              allow_log, ylabel):
     os.makedirs(scenario_dir, exist_ok=True)
     fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -84,7 +90,7 @@ def make_plot(scenario_dir, filename, cu_list, data_by_config, configs, ylabel):
                     linewidth=2, markersize=6)
 
     ax.set_xlabel("Concurrent Users", fontsize=12)
-    if spread(cu_list, data_by_config, configs) > LOG_RATIO:
+    if allow_log and spread(cu_list, data_by_config, configs) > LOG_RATIO:
         ylabel = apply_log_scale(ax, ylabel)
     ax.set_ylabel(ylabel, fontsize=12)
     ax.legend(fontsize=10, loc="upper left")
@@ -102,8 +108,9 @@ def gen(folder, unit, data):
     ylabel = f"Throughput ({unit})"
     d = os.path.join(GRAPH_DIR, folder)
     for key, cu_list in RANGES.items():
-        configs = CONFIGS_LOW if key == "50_500" else CONFIGS_ALL
-        make_plot(d, f"{key}_throughput.png", cu_list, data, configs, ylabel)
+        low = key == "50_500"
+        configs = CONFIGS_LOW if low else CONFIGS_ALL
+        make_plot(d, f"{key}_throughput.png", cu_list, data, configs, low, ylabel)
 
 
 FLOWS = "Complete Flows/sec"
